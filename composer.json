@@ -1,0 +1,24 @@
+{
+    "name": "clancats/hydrahon",
+    "description": "Fast and simple Query Builder without extra bacon, written in PHP.",
+    "keywords": [
+        "query",
+        "builder",
+        "mysql",
+        "sqlite",
+        "database"
+    ],
+    "homepage": "https://github.com/ClanCats/Hydrahon",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Mario Döring",
+            "role": "Developer"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "ClanCats\\Hydrahon\\": "src/"
+        }
+    }
+}
