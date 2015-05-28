@@ -20,7 +20,7 @@ $hydrahon->notes->insert( ['title' => 'Hello'] );
 
 $hydrahon->notes->select(['id','title'])->where( 'title', 'like', 'H%' )->get();
 
-$hydrahon->get('other_db.notes')->find(1);
+$hydrahon->table('other_db.notes')->find(1);
 
-$hydrahon->get('notes')->delete()->where('created', '<', time() - 60 * 60 * 24 );
+$hydrahon->table('notes')->delete()->where('created', '<', time() - 60 * 60 * 24 );
 ```
