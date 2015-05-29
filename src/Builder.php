@@ -2,16 +2,16 @@
 
 /**
  * Query Builder manager
- ** 
+ **
  * @package         Hydrahon
  * @copyright       2015 Mario Döring
  */
 
 class Builder
-{   
+{
     /**
-     * Array of available query grammers
-     * 
+     * Array of available query grammars
+     *
      * @var array
      */
     protected static $grammar = array(
@@ -37,34 +37,34 @@ class Builder
 
     /**
      * Extend the query builder by a new grammar
-     * 
+     *
      * @throws ClanCats\Hydrahon\Exception
-     * 
-     * @param string                $grammerKey
+     *
+     * @param string                $grammarKey
      * @param string                $queryBuilder
      * @param string                $queryTranslator
      * @return void
      */
-    public static function extend( $grammerKey, $queryBuilder, $queryTranslator )
+    public static function extend($grammarKey, $queryBuilder, $queryTranslator)
     {
-        if ( isset( static::$grammar[$grammerKey] ) )
+        if (isset(static::$grammar[$grammarKey])) 
         {
-            throw new Exception( 'Cannot overwrite Hydrahon grammer.' );
+            throw new Exception('Cannot overwrite Hydrahon grammar.');
         }
 
-        static::$grammar[$grammerKey] = array( $queryBuilder, $queryTranslator );
+        static::$grammar[$grammarKey] = array($queryBuilder, $queryTranslator);
     }
 
     /**
-     * Currently loaded query builder
-     * 
-     * @var ClanCats\Hydrahon\Query
+     * The current query class
+     *
+     * @var string
      */
-    protected $queryBuilder = null;
+    protected $queryClass = null;
 
     /**
      * Currently loaded query translator
-     * 
+     *
      * @var ClanCats\Hydrahon\TranslatorInterface
      */
     protected $queryTranslator = null;
@@ -73,19 +73,62 @@ class Builder
      * Create a new Hydrahon builder instance using the giving grammar
      *
      * @throws ClanCats\Hydrahon\Exception
-     * 
-     * @param string                $grammerKey
+     *
+     * @param string                $grammarKey
+     * @param callable              $executionCallback
      * @return void
      */
-    public function __construct( $grammerKey )
+    public function __construct($grammarKey, $executionCallback)
     {
-        if ( isset( $this->grammar[$grammerKey] ) )
+        if (!isset($this->grammar[$grammarKey])) 
         {
-            throw new Exception( 'There is no Hydrahon grammer "'.$grammerKey.'" registered.' );
+            throw new Exception('There is no Hydrahon grammar "' . $grammarKey . '" registered.');
         }
 
-        
+        if (!is_callable($executionCallback)) 
+        {
+            throw new Exception('Invalid query exec callback given.');
+        }
+
+        // prepare the current grammar
+        list($this->queryClass, $translatorClass) = $this->grammar[$grammarKey];
+        $this->queryTranslator = new $translatorClass;
+
+        // check if the translator is valid
+        if (!$this->queryTranslator instanceof TranslatorInterface)
+        {
+            throw new Exception('A query translator must implement the "TranslatorInterface" interface.');
+        }
     }
 
-    
+    /**
+     * Creates a new query object with the given table and database and
+     * sets the query table and optinal the database seperated by a dott
+     * 
+     * @param string                        $table
+     * @return ClanCats\Hydrahon\Query
+     */
+    public function table($table)
+    {
+        $database = null;
+
+        if (strpos($table, '.') === false)
+        {
+            $table = $table;
+        }
+        else
+        {
+            $selection = explode('.', $table);
+
+            if (count($selection) !== 2))
+            {
+                throw new Exception( 'Invalid argument given. You can only define one seperator.' );
+            }
+
+            list($database, $table) = $selection;
+        }
+
+        // create and return new query instance
+        return new $this->queryClass(array($this, 'executeQuery'), $table, $database);
+    }
 }
