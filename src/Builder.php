@@ -70,6 +70,13 @@ class Builder
     protected $queryTranslator = null;
 
     /**
+     * User given execution callback
+     *
+     * @var callable
+     */
+    protected $executionCallback = null;
+
+    /**
      * Create a new Hydrahon builder instance using the giving grammar
      *
      * @throws ClanCats\Hydrahon\Exception
@@ -90,6 +97,8 @@ class Builder
             throw new Exception('Invalid query exec callback given.');
         }
 
+        $this->executionCallback = $executionCallback;
+
         // prepare the current grammar
         list($this->queryClass, $translatorClass) = static::$grammar[$grammarKey];
         $this->queryTranslator = new $translatorClass;
@@ -106,7 +115,7 @@ class Builder
      * sets the query table and optinal the database seperated by a dott
      * 
      * @param string                        $table
-     * @return ClanCats\Hydrahon\Query
+     * @return ClanCats\Hydrahon\BaseQuery
      */
     public function table($table)
     {
@@ -130,5 +139,16 @@ class Builder
 
         // create and return new query instance
         return new $this->queryClass(array($this, 'executeQuery'), $table, $database);
+    }
+
+    /**
+     * Translate a query and run the current execution callback
+     *
+     * @param ClanCats\Hydrahon\BaseQuery               $query
+     * @return mixed
+     */
+    public function executeQuery(BaseQuery $query)
+    {
+        
     }
 }
