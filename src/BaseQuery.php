@@ -55,4 +55,14 @@ abstract class BaseQuery
     {
         return new $className($this->resultFetcher, $this->table, $this->database);
     }
+
+    /**
+     * Run the result fetcher and return the results
+     *
+     * @return mixed
+     */
+    protected function executeResultFetcher()
+    {
+        return call_user_func_array($this->resultFetcher, array( &$this ));
+    }
 }

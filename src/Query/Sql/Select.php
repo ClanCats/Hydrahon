@@ -1,4 +1,4 @@
-<?php namespace ClanCats\Hydrahon;
+<?php namespace ClanCats\Hydrahon\Query\Sql;
 
 /**
  * SQL query object
@@ -9,7 +9,7 @@
 
 use ClanCats\Hydrahon\BaseQuery;
 
-class Sql extends BaseQuery
+class Select extends BaseQuery
 {
     /**
      * Create a new select sql query
