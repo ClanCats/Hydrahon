@@ -80,7 +80,7 @@ class Builder
      */
     public function __construct($grammarKey, $executionCallback)
     {
-        if (!isset($this->grammar[$grammarKey])) 
+        if (!isset(static::$grammar[$grammarKey])) 
         {
             throw new Exception('There is no Hydrahon grammar "' . $grammarKey . '" registered.');
         }
@@ -91,7 +91,7 @@ class Builder
         }
 
         // prepare the current grammar
-        list($this->queryClass, $translatorClass) = $this->grammar[$grammarKey];
+        list($this->queryClass, $translatorClass) = static::$grammar[$grammarKey];
         $this->queryTranslator = new $translatorClass;
 
         // check if the translator is valid
@@ -120,7 +120,7 @@ class Builder
         {
             $selection = explode('.', $table);
 
-            if (count($selection) !== 2))
+            if (count($selection) !== 2)
             {
                 throw new Exception( 'Invalid argument given. You can only define one seperator.' );
             }
