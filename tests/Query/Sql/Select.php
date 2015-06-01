@@ -133,4 +133,28 @@ class Query_Sql_Select_Test extends Query_QueryCase
 		// outer
 		$this->assertAttributes($this->createQuery()->outerJoin('avatars', 'users.id', '=', 'avatars.user_id'), array('joins' => array(array('outer', 'avatars', 'users.id', '=', 'avatars.user_id'))));
 	}
+
+	/**
+	 * Select::join
+	 */
+	public function testRun()
+	{
+		$data = array(array('id' => 1, 'name' => 'foo'));
+
+		// simple 
+		$select = $this->createQuery($data);
+		$this->assertEquals($data, $select->run());
+
+		// just one
+		$select->limit(1);
+		$this->assertEquals(reset($data), $select->run());
+
+		// invalid data array
+		$select = $this->createQuery('nope');
+		$this->assertEquals(array(), $select->run());
+
+		// no item found
+		$select = $this->createQuery(array())->limit(1);
+		$this->assertEquals(false, $select->run());
+	}
 }

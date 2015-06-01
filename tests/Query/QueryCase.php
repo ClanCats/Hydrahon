@@ -16,11 +16,15 @@ abstract class Query_QueryCase extends \PHPUnit_Framework_TestCase
 	/**
 	 * Returns an new query object
 	 * 
+	 * @param mixed 		$results
+	 * 
 	 * @return ClanCats\Hydrahon\Query\Sql\BaseQuery
 	 */
-	protected function createQuery()
+	protected function createQuery($result = null)
 	{
-		return new $this->queryClass(function( $query ){}, 'phpunit', 'db_phpunit' );
+		return new $this->queryClass(function( $query ) use( $result ) {
+			return $result;
+		} , 'phpunit', 'db_phpunit' );
 	}
 
 	/**
