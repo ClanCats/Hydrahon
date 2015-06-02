@@ -9,6 +9,19 @@ Hydrahon is a query builder, and only a query builder. It does not contain a PDO
 [![Packagist](https://img.shields.io/packagist/l/clancats/hydrahon.svg)]()
 [![GitHub release](https://img.shields.io/github/release/clancats/hydrahon.svg)]()
 
+## Status
+
+**This library is currently in work and not stable**
+
+ - [x] SQL query structure
+ - [x] SQL select query builder
+ - [x] Mysql select query translator
+ - [ ] SQL insert query builder and translator
+ - [ ] SQL update query builder and translator
+ - [ ] SQL delete query builder and translator
+
+## Usage
+
 ```php
 // ignore this...
 
