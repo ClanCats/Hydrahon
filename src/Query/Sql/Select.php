@@ -441,6 +441,6 @@ class Select extends BaseSql
      */
     public function count()
     {
-        return (int) $this->column($this->raw("count(*)"));
+        return (int) $this->column(array($this->raw("count(*)")));
     }
 }
