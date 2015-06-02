@@ -2,7 +2,7 @@
 
 ![Hydrahon banner](https://cloud.githubusercontent.com/assets/956212/7947360/e36d75ea-097c-11e5-89c0-be7b56bbf5ca.png)
 
-Hydrahon is a query builder, and only a query builder. It does not contain a PDO wrapper or something to actually execute theses queries. I'ts build to implement query building into existing systems where you can't start implmenting an entire new DB layer.
+Hydrahon is a query builder, and only a query builder. It does not contain a PDO wrapper or something. I'ts build to add query building into existing systems without implementing an entire new Database layer.
 
 [![Build Status](https://travis-ci.org/ClanCats/Hydrahon.svg?branch=master)](https://travis-ci.org/ClanCats/Hydrahon)
 [![Packagist](https://img.shields.io/packagist/dt/clancats/hydrahon.svg)]()
@@ -30,11 +30,41 @@ $ composer require 'clancats/hydrahon:dev-master'
 
 ## Usage
 
+### Creating hydrahon builder
+
+Again Hydrahon is **not** build as a database library, it's just a query builder. In this example im going to show you a dead simple PDO mysql implementation.
+
+```php 
+$connection = new PDO('mysql:host=localhost;dbname=my_database', 'username', 'password');
+
+$hydrahon = new \ClanCats\Hydrahon\Builder('mysql', function($query, $queryString, queryParameters) use($connection)
+{
+	$statement = $connection->prepare($queryString);
+    $statement->execute($queryParameters);
+
+    if ($query instanceof \ClanCats\Hydrahon\Query\Sql\Select)
+    {
+    	return $statement->fetchAll(\PDO::FETCH_ASSOC);
+    }
+});
+```
+
+### SQL query builder
+
+#### Select 
+
+##### Basics 
+
+```php
+$hydrahon->table('users')->select();
+```
+
+---
 
 ```php
 // ignore this...
 
-$hydrahon = new ClanCats\Hydrahon\Builder('mysql', function( $query, $translated )
+$hydrahon = new \ClanCats\Hydrahon\Builder('mysql', function( $query, $translated )
 {
 	// this is the callback function everytime executed when
 	// a query is run here you can implement your logic
