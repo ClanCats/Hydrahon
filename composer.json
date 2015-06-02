@@ -17,8 +17,9 @@
         }
     ],
     "autoload": {
-        "psr-4": {
-            "ClanCats\\Hydrahon\\": "src/"
-        }
+        "psr-4": { "ClanCats\\Hydrahon\\": "src/" }
+    },
+    "autoload-dev": {
+        "psr-4": { "ClanCats\\Hydrahon\\Test\\": "tests/" }
     }
 }

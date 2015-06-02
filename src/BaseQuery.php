@@ -102,4 +102,14 @@ class BaseQuery
 
         return call_user_func_array($this->resultFetcher, array( &$this ));
     }
+
+    /**
+     * Public alias of executeResultFetcher
+     * 
+     * @return mixed
+     */
+    public function execute()
+    {
+        return $this->executeResultFetcher();
+    }
 }

@@ -149,6 +149,9 @@ class Builder
      */
     public function executeQuery(BaseQuery $query)
     {
-        
+        $translatedArguments = $this->queryTranslator->translate($query);
+        $translatedArguments = array_merge(array($query), $translatedArguments);
+
+        return call_user_func_array($this->executionCallback, $translatedArguments);
     }
 }

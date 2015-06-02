@@ -119,7 +119,7 @@ class Query_Sql_Select_Test extends Query_QueryCase
 	public function testJoin()
 	{
 		// simple 
-		$this->assertAttributes($this->createQuery()->join('avatars', 'users.id', '=', 'avatars.user_id'), array('joins' => array(array(null, 'avatars', 'users.id', '=', 'avatars.user_id'))));
+		$this->assertAttributes($this->createQuery()->join('avatars', 'users.id', '=', 'avatars.user_id'), array('joins' => array(array('left', 'avatars', 'users.id', '=', 'avatars.user_id'))));
 
 		// left
 		$this->assertAttributes($this->createQuery()->leftJoin('avatars', 'users.id', '=', 'avatars.user_id'), array('joins' => array(array('left', 'avatars', 'users.id', '=', 'avatars.user_id'))));

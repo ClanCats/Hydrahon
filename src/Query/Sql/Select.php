@@ -198,10 +198,10 @@ class Select extends BaseSql
      * 
      * @return self
      */
-    public function join($table, $localKey, $operator, $referenceKey, $type = null)
+    public function join($table, $localKey, $operator, $referenceKey, $type = 'left')
     {
     	// validate the join type
-    	if (!is_null($type) && !in_array($type, array('inner', 'left', 'right', 'outer')))
+    	if (!in_array($type, array('inner', 'left', 'right', 'outer')))
     	{
     		throw new Exception('Invalid join type "'.$type.'" given. Available type: inner, left, right, outer');
     	}
@@ -219,7 +219,7 @@ class Select extends BaseSql
      * 
      * @return self
      */
-    public function leftJoin($table, $localKey, $operator, $referenceKey, $type = null)
+    public function leftJoin($table, $localKey, $operator, $referenceKey)
     {
     	return $this->join($table, $localKey, $operator, $referenceKey, 'left');
     }
@@ -234,7 +234,7 @@ class Select extends BaseSql
      * 
      * @return self
      */
-    public function rightJoin($table, $localKey, $operator, $referenceKey, $type = null)
+    public function rightJoin($table, $localKey, $operator, $referenceKey)
     {
     	return $this->join($table, $localKey, $operator, $referenceKey, 'right');
     }
@@ -249,7 +249,7 @@ class Select extends BaseSql
      * 
      * @return self
      */
-    public function innerJoin($table, $localKey, $operator, $referenceKey, $type = null)
+    public function innerJoin($table, $localKey, $operator, $referenceKey)
     {
     	return $this->join($table, $localKey, $operator, $referenceKey, 'inner');
     }
@@ -264,7 +264,7 @@ class Select extends BaseSql
      * 
      * @return self
      */
-    public function outerJoin($table, $localKey, $operator, $referenceKey, $type = null)
+    public function outerJoin($table, $localKey, $operator, $referenceKey)
     {
     	return $this->join($table, $localKey, $operator, $referenceKey, 'outer');
     }

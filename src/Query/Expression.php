@@ -38,4 +38,12 @@ class Expression
 	{
 		return $this->value;
 	}
+
+	/**
+	 * To string magic returns the expression value
+	 */
+	public function __toString()
+	{
+		return $this->value();
+	}
 }
