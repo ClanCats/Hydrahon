@@ -20,7 +20,16 @@ Hydrahon is a query builder, and only a query builder. It does not contain a PDO
  - [ ] SQL update query builder and translator
  - [ ] SQL delete query builder and translator
 
+## Installation
+
+Hydrahon follows `PSR-4` autoloading and can be installed using composer:
+
+```
+$ composer require 'clancats/hydrahon:dev-master'
+```
+
 ## Usage
+
 
 ```php
 // ignore this...
