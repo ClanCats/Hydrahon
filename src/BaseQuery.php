@@ -26,6 +26,13 @@ class BaseQuery
     protected $table = null;
 
     /**
+     * Query builder callback macros
+     * 
+     * @var array
+     */
+    protected $macros = array();
+
+    /**
      * The callback where we fetch the results from
      *
      * @var callable
@@ -48,6 +55,35 @@ class BaseQuery
     }
 
     /**
+     * Register a macro on the current query object
+     * 
+     * @param string                $method
+     * @param callable             $callback
+     * @return void
+     */
+    final public function macro($method, $callback)
+    {
+        $this->macros[$method] = $callback;
+    }
+
+    /**
+     * Allow macro calls 
+     * 
+     * @param stirng                $name
+     * @param array                 $arguments
+     * @return mixed
+     */ 
+    public function __call($name, $arguments) 
+    {
+        if (!isset($this->macros[$name]))
+        {
+            throw new \BadMethodCallException('There is no macro with the name "'.$name.'" registered.');
+        }
+
+        call_user_func_array($this->macros[$name], array_merge(array(&$this), $arguments)); return $this;
+    }
+
+    /**
      * Creates a new raw db expression instance
      * 
      * @param string                $expression
@@ -66,7 +102,7 @@ class BaseQuery
      */
     final public function attributes()
     {
-        $excluded = array('resultFetcher');
+        $excluded = array('resultFetcher', 'macros');
         $attributes = get_object_vars($this);
 
         foreach ($excluded as $key) 
@@ -112,4 +148,6 @@ class BaseQuery
     {
         return $this->executeResultFetcher();
     }
+
+
 }
