@@ -431,7 +431,13 @@ class Select extends BaseSql
      */
     public function column($column)
     {
-        $result = $this->fields($column)->one(); return reset($result);
+        $result = $this->fields($column)->one(); 
+
+        // only return something if something is found
+        if (is_array($result))
+        {
+            return reset($result);
+        }
     }
 
     /**
