@@ -7,7 +7,9 @@
  * @copyright       2015 Mario Döring
  */
 
-class Insert extends BaseSql
+use ClanCats\Hydrahon\BaseQuery;
+
+class Insert extends BaseQuery
 {
     /**
      * values container
