@@ -28,6 +28,8 @@ class Insert extends BaseQuery
     /**
      * Insert ignore setter
      *
+     *     ->ignore(true)
+     * 
      * @param bool                  $ignore
      * @return void
      */
@@ -39,6 +41,14 @@ class Insert extends BaseQuery
     /**
      * Add values to the insert
      *
+     *     ->values(['name' => 'Mario', 'age' => 42])
+     *     
+     *     // you can also add multiple rows 
+     *     ->values([
+     *          ['name' => 'Patrick', 'age' => 24],
+     *          ['name' => 'Valentin', 'age' => 21]
+     *     ])
+     * 
      * @param array                     $values
      * @return void
      */
