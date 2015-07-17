@@ -13,6 +13,7 @@ use ClanCats\Hydrahon\TranslatorInterface;
 use ClanCats\Hydrahon\Exception;
 
 use ClanCats\Hydrahon\Query\Sql\Select;
+use ClanCats\Hydrahon\Query\Sql\Insert;
 
 class Mysql implements TranslatorInterface
 {
@@ -55,6 +56,11 @@ class Mysql implements TranslatorInterface
     	{
     		$queryString = $this->translateSelect();
     	}
+        // handle SQL INSERT queries
+        elseif ($query instanceof Insert)
+        {
+            $queryString = $this->translateInsert();
+        }
     	// everything else is wrong
     	else
     	{
@@ -246,21 +252,27 @@ class Mysql implements TranslatorInterface
     /**
      * Build an insert query
      *
-     * @param Query     $query
      * @return string
      */
-    protected function translateInsert(&$query)
+    protected function translateInsert()
     {
-        $build = ($query->ignore ? 'insert ignore' : 'insert') . ' into ' . $this->escapeTable($query) . ' ';
+        $build = ($this->attr('ignore') ? 'insert ignore' : 'insert');
 
-        $value_collection = $query->values;
+        $build .= ' into ' . $this->escapeTable() . ' ';
+
+        if (!$valueCollection = $this->attr('values'))
+        {
+            throw new Exception('Cannot build insert query without values.');
+        }
 
         // Get the array keys from the first array in the collection.
-        // We use them as insert keys.
-        $build .= '(' . $this->escapeList(array_keys(reset($value_collection))) . ') values ';
+        // We use them as insert keys. If you pass an array collection with
+        // missing keys or a diffrent structure well... f*ck
+        $build .= '(' . $this->escapeList(array_keys(reset($valueCollection))) . ') values ';
 
         // add the array values.
-        foreach ($value_collection as $values) {
+        foreach ($valueCollection as $values) 
+        {
             $build .= '(' . $this->parameterize($values) . '), ';
         }
 
@@ -311,7 +323,6 @@ class Mysql implements TranslatorInterface
     /**
      * Build a select
      *
-     * @param Query     $query
      * @return string
      */
     protected function translateSelect()

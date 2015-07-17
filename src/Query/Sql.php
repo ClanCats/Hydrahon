@@ -28,9 +28,9 @@ class Sql extends BaseQuery
      * @param array                                     $data
      * @return ClanCats\Hydrahon\Query\Sql\Insert
      */
-    public function insert($data = null)
+    public function insert(array $values = array())
     {
-        return $this->createSubQuery('ClanCats\\Hydrahon\\Query\\Sql\\Insert')->insert($data);
+        return $this->createSubQuery('ClanCats\\Hydrahon\\Query\\Sql\\Insert')->values($values);
     }
 
     /**
@@ -39,7 +39,7 @@ class Sql extends BaseQuery
      * @param string|array                              $fields
      * @return ClanCats\Hydrahon\Query\Sql\Update
      */
-    public function update($values = null)
+    public function update(array $values = array())
     {
         return $this->createSubQuery('ClanCats\\Hydrahon\\Query\\Sql\\Update')->values($values);
     }

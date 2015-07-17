@@ -258,4 +258,51 @@ class Translator_Mysql_Test extends TranslatorCase
 				->innerJoin('profiles as p', 'u.id', '=', 'p.user_id');
 		});
 	}
+
+	/**
+	 * mysql grammar tests
+	 */
+	public function testInsertSimple()
+	{
+		// simple
+		$this->assertQueryTranslation('insert into `test` (`foo`) values (?)', array('bar'), function($q) 
+		{
+			return $q->table('test')->insert()->values(array('foo' => 'bar'));
+		});
+
+		// some more complexity
+		$this->assertQueryTranslation('insert into `test` (`bar`, `foo`) values (?, ?)', array('foo','bar'), function($q) 
+		{
+			return $q->table('test')->insert()->values(array('foo' => 'bar', 'bar' => 'foo'));
+		});
+	}
+
+	/**
+	 * mysql grammar tests
+	 */
+	public function testInsertIgnore()
+	{
+		// ignore
+		$this->assertQueryTranslation('insert ignore into `test` (`foo`) values (?)', array('bar'), function($q) 
+		{
+			return $q->table('test')->insert()->ignore()->values(array('foo' => 'bar'));
+		});
+	}
+
+	/**
+	 * mysql grammar tests
+	 */
+	public function testInsertBulk()
+	{
+		$this->assertQueryTranslation('insert into `test` (`foo`) values (?), (?)', array('bar', 'bar'), function($q) 
+		{
+			return $q->table('test')->insert()->values(array(array('foo' => 'bar'), array('foo' => 'bar')));
+		});
+
+		// 2x add valies
+		$this->assertQueryTranslation('insert into `test` (`foo`) values (?), (?)', array('bar', 'bar'), function($q) 
+		{
+			return $q->table('test')->insert()->values(array('foo' => 'bar'))->values(array('foo' => 'bar'));
+		});
+	}
 }
