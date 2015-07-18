@@ -37,7 +37,7 @@ class Mysql implements TranslatorInterface
      *
      * @var string
      */
-    protected $escape_pattern = '`%s`';
+    protected $escapePattern = '`%s`';
 
     /**
      * Translate the given query object and return the results as
@@ -189,7 +189,7 @@ class Mysql implements TranslatorInterface
      */
     protected function escapeString($string)
     {
-        return sprintf($this->escape_pattern, $string);
+        return sprintf($this->escapePattern, $string);
     }
 
     /**
