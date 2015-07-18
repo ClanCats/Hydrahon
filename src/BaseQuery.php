@@ -77,7 +77,7 @@ class BaseQuery
     {
         if (!isset($this->macros[$name]))
         {
-            throw new \BadMethodCallException('There is no macro with the name "'.$name.'" registered.');
+            throw new \BadMethodCallException('There is no macro or method with the name "'.$name.'" registered.');
         }
 
         call_user_func_array($this->macros[$name], array_merge(array(&$this), $arguments)); return $this;
