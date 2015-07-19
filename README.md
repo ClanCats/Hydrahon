@@ -274,9 +274,52 @@ select `users`.`name`, `img`.`url`
 
 The default join type is `left`, for every join type there is an own method.
 
- * leftJoin
- * rightJoin
- * innerJoin
- * outterJoin
+ * `leftJoin
+ * `rightJoin`
+ * `innerJoin`
+ * `outterJoin`
 
- 
+##### Limit, Offset and Page
+
+When setting the limit to just one entry you will receive your single result and not an array of them.
+
+```php
+$users->select()->limit(1); // returns single result
+```
+```sql
+select * from `users` limit 0, 1
+```
+
+```php
+$users->select()->limit(2); // returns an array of results.
+```
+```sql
+select * from `users` limit 0, 2
+```
+
+with offset:
+
+```php
+$users->select()->limit( 25, 10 );
+```
+```sql
+select * from `users` limit 25, 10
+```
+
+simple paging:
+
+```php
+users->select()->page(0);
+```
+```sql
+select * from `users` limit 0, 25
+```
+
+The default page size is 25 entries.
+
+```php
+users->select()->page(3, 15);
+```
+```sql
+select * from `users` limit 45, 15
+```
