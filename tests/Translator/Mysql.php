@@ -305,4 +305,33 @@ class Translator_Mysql_Test extends TranslatorCase
 			return $q->table('test')->insert()->values(array('foo' => 'bar'))->values(array('foo' => 'bar'));
 		});
 	}
+
+	/**
+	 * mysql grammar tests
+	 */
+	public function testUpdateSimple()
+	{
+		// simple
+		$this->assertQueryTranslation('update `test` set `foo` = ?', array('bar'), function($q) 
+		{
+			return $q->table('test')->update()->set(array('foo' => 'bar'));
+		});
+
+		$this->assertQueryTranslation('update `test` set `foo` = ?, `bar` = ?', array('bar', 'foo'), function($q) 
+		{
+			return $q->table('test')->update()->set(array('foo' => 'bar', 'bar' => 'foo'));
+		});
+	}
+
+	/**
+	 * mysql grammar tests
+	 */
+	public function testUpdateWithWhereAndLimit()
+	{
+		// simple
+		$this->assertQueryTranslation('update `test` set `foo` = ? where `id` = ? limit 0, 1', array('bar', 1), function($q) 
+		{
+			return $q->table('test')->update()->set(array('foo' => 'bar'))->where('id', 1)->limit(1);
+		});
+	}
 }

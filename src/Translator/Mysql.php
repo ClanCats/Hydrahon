@@ -14,6 +14,7 @@ use ClanCats\Hydrahon\Exception;
 
 use ClanCats\Hydrahon\Query\Sql\Select;
 use ClanCats\Hydrahon\Query\Sql\Insert;
+use ClanCats\Hydrahon\Query\Sql\Update;
 
 class Mysql implements TranslatorInterface
 {
@@ -60,6 +61,11 @@ class Mysql implements TranslatorInterface
         elseif ($query instanceof Insert)
         {
             $queryString = $this->translateInsert();
+        }
+        // handle SQL UPDATE queries
+        elseif ($query instanceof Update)
+        {
+            $queryString = $this->translateUpdate();
         }
     	// everything else is wrong
     	else
@@ -286,18 +292,28 @@ class Mysql implements TranslatorInterface
      * @param Query     $query
      * @return string
      */
-    protected function translateUpdate(&$query)
+    protected function translateUpdate()
     {
-        $build = 'update ' . $this->escapeTable($query) . ' set ';
+        $build = 'update ' . $this->escapeTable() . ' set ';
 
         // add the array values.
-        foreach ($query->values as $key => $value) {
+        foreach ($this->attr('values') as $key => $value) {
             $build .= $this->escape($key) . ' = ' . $this->param($value) . ', ';
         }
 
         $build = substr($build, 0, -2);
-        $build .= $this->translateWhere($query);
-        $build .= $this->translateLimit($query);
+
+        // build the where statements
+        if ($wheres = $this->attr('wheres'))
+        {
+            $build .= $this->translateWhere($wheres);
+        }
+    
+        // build offset and limit
+        if ($this->attr('limit') || $this->attr('offset'))
+        {
+             $build .= $this->translateLimitWithOffset();
+        }
 
         // cut the last comma away
         return $build;

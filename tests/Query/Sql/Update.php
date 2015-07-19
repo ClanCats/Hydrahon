@@ -41,6 +41,12 @@ class Query_Sql_Update_Test extends Query_QueryCase
 		$values = array('foo' => 'bar', 'bar' => 'foo');
 		$this->assertAttributes($this->createQuery()->set($values), array('values' => $values));
 
+		// single set
+		$this->assertAttributes($this->createQuery()->set('foo', 'bar'), array('values' => array('foo' => 'bar')));
+
+		// multi set
+		$this->assertAttributes($this->createQuery()->set('foo', 'bar')->set('bar', 'foo'), array('values' => array('foo' => 'bar', 'bar' => 'foo')));
+
 		// empty insert
 		$this->assertAttributes($this->createQuery()->set(array()));
 	}
