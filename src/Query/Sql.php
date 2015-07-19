@@ -61,4 +61,28 @@ class Sql extends BaseQuery
     {
         return $this->createSubQuery(__NAMESPACE__ . '\\Sql\\Delete');
     }
+
+    /**
+     * Create a new drop table query
+     * 
+     *     $h->table('users')->drop()
+     *
+     * @return ClanCats\Hydrahon\Query\Sql\Drop
+     */
+    public function drop()
+    {
+        return $this->createSubQuery(__NAMESPACE__ . '\\Sql\\Drop');
+    }
+
+    /**
+     * Create a new truncate table query
+     * 
+     *     $h->table('users')->truncate()
+     *
+     * @return ClanCats\Hydrahon\Query\Sql\Truncate
+     */
+    public function truncate()
+    {
+        return $this->createSubQuery(__NAMESPACE__ . '\\Sql\\Truncate');
+    }
 }

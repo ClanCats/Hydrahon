@@ -131,12 +131,12 @@ class BaseQuery
      */
     final protected function executeResultFetcher()
     {
-        if ( is_null($this->resultFetcher))
+        if (is_null($this->resultFetcher))
         {
             throw new Exception('Cannot execute result fetcher callbacks without inital assignment.');
         }
 
-        return call_user_func_array($this->resultFetcher, array( &$this ));
+        return call_user_func_array($this->resultFetcher, array(&$this));
     }
 
     /**
@@ -148,6 +148,4 @@ class BaseQuery
     {
         return $this->executeResultFetcher();
     }
-
-
 }

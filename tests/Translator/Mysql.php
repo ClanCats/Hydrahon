@@ -346,4 +346,28 @@ class Translator_Mysql_Test extends TranslatorCase
 			return $q->table('test')->delete()->where('id', 1)->limit(1);
 		});
 	}
+
+	/**
+	 * mysql grammar tests
+	 */
+	public function testDrop()
+	{
+		// simple
+		$this->assertQueryTranslation('drop table `test`;', array(), function($q) 
+		{
+			return $q->table('test')->drop();
+		});
+	}
+
+	/**
+	 * mysql grammar tests
+	 */
+	public function testTruncate()
+	{
+		// simple
+		$this->assertQueryTranslation('truncate table `test`;', array(), function($q) 
+		{
+			return $q->table('test')->truncate();
+		});
+	}
 }

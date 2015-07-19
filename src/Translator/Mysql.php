@@ -16,6 +16,8 @@ use ClanCats\Hydrahon\Query\Sql\Select;
 use ClanCats\Hydrahon\Query\Sql\Insert;
 use ClanCats\Hydrahon\Query\Sql\Update;
 use ClanCats\Hydrahon\Query\Sql\Delete;
+use ClanCats\Hydrahon\Query\Sql\Drop;
+use ClanCats\Hydrahon\Query\Sql\Truncate;
 
 class Mysql implements TranslatorInterface
 {
@@ -72,6 +74,16 @@ class Mysql implements TranslatorInterface
         elseif ($query instanceof Delete)
         {
             $queryString = $this->translateDelete();
+        }
+        // handle SQL DROP queries
+        elseif ($query instanceof Drop)
+        {
+            $queryString = $this->translateDrop();
+        }
+        // handle SQL TRUNCATE queries
+        elseif ($query instanceof Truncate)
+        {
+            $queryString = $this->translateTruncate();
         }
     	// everything else is wrong
     	else
@@ -260,6 +272,10 @@ class Mysql implements TranslatorInterface
 
         return implode(', ', $params);
     }
+
+    /*
+     * -- FROM HER TRANSLATE FUNCTIONS FOLLOW
+     */
 
     /**
      * Translate the current query to an SQL insert statement
@@ -530,5 +546,25 @@ class Mysql implements TranslatorInterface
     protected function translateLimit()
     {
         return ' limit ' . ((int) $this->attr('limit'));
+    }
+
+    /**
+     * Translate the current query to an sql DROP statement
+     *
+     * @return string
+     */
+    protected function translateDrop()
+    {
+        return 'drop table ' . $this->escapeTable() .';';
+    }
+
+    /**
+     * Translate the current query to an sql DROP statement
+     *
+     * @return string
+     */
+    protected function translateTruncate()
+    {
+        return 'truncate table ' . $this->escapeTable() .';';
     }
 }
