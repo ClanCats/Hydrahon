@@ -76,7 +76,7 @@ Selecting everything
 ```php
 $users->select()
 ```
-```mysql
+```sql
 select * from `users`
 ```
 
@@ -87,7 +87,7 @@ $users->select(['name', 'age'])
 // or
 $users->select('name, age')
 ```
-```mysql
+```sql
 select `name`, `age` from `users`
 ```
 
@@ -98,7 +98,7 @@ $users->select(['name', 'age', 'created_at' => 'c'])
 // or
 $users->select(['name', 'age', 'created_at as c'])
 ```
-```mysql
+```sql
 select `name`, `age`, `created_at` as `c` from `users`
 ```
 
@@ -107,6 +107,6 @@ Sometimes you might have a special case that hydrahon does not cover natively. F
 ```php
 $users->select([$users->raw("max('age')")])
 ```
-```mysql
+```sql
 select max('age') from `users`
 ```
