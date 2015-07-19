@@ -55,6 +55,14 @@ $hydrahon = new \ClanCats\Hydrahon\Builder('mysql', function($query, $queryStrin
 
 Please note that in the following examples the variable `$h` contains a Hydrahon query builder instance.
 
+ * [Select](#select)
+   * [Runners](#runners)
+   * [Basics](#basics)
+   * [Where](#where)
+   * [Order By](#ordering)
+   * [Join](#joins)
+   * [Limit and Offset](#limit-offset-and-page)
+
 #### Select 
 
 In our example we are going to execute multiple operations on the same table so instead of loading the table again and again we store it in a variable.
@@ -274,7 +282,7 @@ select `users`.`name`, `img`.`url`
 
 The default join type is `left`, for every join type there is an own method.
 
- * `leftJoin
+ * `leftJoin`
  * `rightJoin`
  * `innerJoin`
  * `outterJoin`
