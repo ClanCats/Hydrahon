@@ -16,9 +16,9 @@ Hydrahon is a query builder, and only a query builder. It does not contain a PDO
  - [x] SQL query structure
  - [x] SQL select query builder
  - [x] Mysql select query translator
- - [ ] SQL insert query builder and translator
- - [ ] SQL update query builder and translator
- - [ ] SQL delete query builder and translator
+ - [x] SQL insert query builder and translator
+ - [x] SQL update query builder and translator
+ - [x] SQL delete query builder and translator
 
 ## Installation
 
