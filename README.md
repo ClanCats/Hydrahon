@@ -105,7 +105,7 @@ This special guy returns you the count of the current query:
 $users->select()->where('age', '>', 18)->count();
 ```
 
-**single column resutl**
+**single column result**
 
 Sometimes you just need one value for that we have the column function
 
@@ -159,5 +159,56 @@ select max('age') from `users`
 
 The `where` statement does not only apply to the `select` query also to `update` and `delete`.
 
+```php
+$users->select()->where('active', 1)
 ```
+```sql
+select * from `users` where `active` = ?
+```
+You might wonder why there is an `?` in the query. The given `1` gets automatically passed as prepared parameter to avoid sql injection.
 
+Setting multiple where statements will result in an `and` statement.
+
+```php
+$users->select()->where('active', 1)->where('age', '>', 18)
+```
+```sql
+select * from `users` where `active` = ? and `age` > ?
+```	
+
+**or?**
+
+Of course there is also a or where statement.
+
+```php
+$users->select()->where('active', 1)->orWhere('admin', 1)
+```
+```sql
+select * from `users` where `active` = ? or `admin` = ?
+```	
+
+**Scopes**
+
+You can scope wheres by using callbacks.
+
+```php
+$users->select()
+	->where('age', '>', 18)
+	->where(function($q) {
+		$q->where('active', 1)->orWhere('admin', 1);
+	});
+```
+```sql
+select * from `users` where `age` > ? and ( `active` = ? or `admin` = ? )
+```	
+
+**in array**
+
+Arrays can also be passed as where parameters.
+
+```php
+$users->select()->where('id', 'in', [213, 32, 53, 43]);
+```
+```sql
+select * from `users` where `id` in (?, ?, ?, ?)
+```	
