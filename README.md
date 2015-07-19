@@ -63,10 +63,54 @@ In our example we are going to execute multiple operations on the same table so 
 $users = $h->table('users');
 ```
 
+##### Runners 
+
 Also the examples don't show the `run` mehtod which has to be executed to obviously run the query.
 
 ```php
 $users->select('name')->where('age', '>' 18)->run();
+```
+
+There are also other runners to cover common use cases.
+
+**single result**
+
+Instead of retrieving an array of results you can direclty access a single one.
+
+```php
+$users->select()->where('name', 'jeffry')->one();
+```
+
+**first and last result**
+
+Returns the first result of table orderd by the default key `id`.
+
+```php
+$users->select()->first();
+// or 
+$users->select()->last();
+```
+
+You can also pass a diffrent key
+
+```php
+$users->select()->first('created_at');
+```
+
+**count results**
+
+This special guy returns you the count of the current query:
+
+```php
+$users->select()->where('age', '>', 18)->count();
+```
+
+**single column resutl**
+
+Sometimes you just need one value for that we have the column function
+
+```php
+$users->select()->where('name', 'johanna')->column('age');
 ```
 
 ##### Basics 
@@ -110,3 +154,10 @@ $users->select([$users->raw("max('age')")])
 ```sql
 select max('age') from `users`
 ```
+
+##### Where
+
+The `where` statement does not only apply to the `select` query also to `update` and `delete`.
+
+```
+
