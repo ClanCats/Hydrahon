@@ -80,10 +80,12 @@ $users->select()
 select * from `users`
 ```
 
-Select some special fields
+Select some special fields. Hydrahon parses your input, that allows you to use the query the way your comfortable with it.
 
 ```php
 $users->select(['name', 'age'])
+// or
+$users->select('name, age')
 ```
 ```mysql
 select `name`, `age` from `users`
@@ -98,4 +100,13 @@ $users->select(['name', 'age', 'created_at as c'])
 ```
 ```mysql
 select `name`, `age`, `created_at` as `c` from `users`
+```
+
+Sometimes you might have a special case that hydrahon does not cover natively. For such cases you can make use of raw expressions, those wont get parsed or escaped.
+
+```php
+$users->select([$users->raw("max('age')")])
+```
+```mysql
+select max('age') from `users`
 ```
