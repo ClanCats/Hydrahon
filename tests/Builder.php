@@ -60,4 +60,27 @@ class Builder_Test extends \PHPUnit_Framework_TestCase
 	{	
 		$hydrahon = new Builder('mysql', 123);
 	}
+
+	/**
+	 * Builder::table test
+	 *
+	 * @expectedException ClanCats\Hydrahon\Exception
+	 */
+	public function testConsturctInvalidTableArgument()
+	{	
+		$hydrahon = new Builder('mysql', function() {});
+		$hydrahon->table('foo.bar.fail');
+	}
+
+	/**
+	 * Builder::constuct test
+	 *
+	 * @expectedException ClanCats\Hydrahon\Exception
+	 */
+	public function testConsturctInvalidTransltorClass()
+	{	
+		Builder::extend('invalidtranslator', '\\This\\Should\\Work', '\\ClanCats\\Hydrahon\\Exception');
+		// but now it should faile
+		$hydrahon = new Builder('invalidtranslator', function() {});
+	}
 }
