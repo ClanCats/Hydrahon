@@ -12,46 +12,53 @@ use ClanCats\Hydrahon\BaseQuery;
 class Sql extends BaseQuery
 {
     /**
-     * Create a new select sql query
+     * Create a new select query builder
+     * 
+     *     $h->table('users')->select(['name', 'age'])
      *
      * @param string|array                              $fields
      * @return ClanCats\Hydrahon\Query\Sql\Select
      */
     public function select($fields = null)
     {
-        return $this->createSubQuery('ClanCats\\Hydrahon\\Query\\Sql\\Select')->fields($fields);
+        return $this->createSubQuery(__NAMESPACE__ . '\\Sql\\Select')->fields($fields);
     }
 
     /**
-     * Create a new insert sql query
+     * Create a new insert query builder
+     * 
+     *     $h->table('users')->insert(['name' => 'Lucas', 'age' => 21])
      *
      * @param array                                     $values
      * @return ClanCats\Hydrahon\Query\Sql\Insert
      */
     public function insert(array $values = array())
     {
-        return $this->createSubQuery('ClanCats\\Hydrahon\\Query\\Sql\\Insert')->values($values);
+        return $this->createSubQuery(__NAMESPACE__ . '\\Sql\\Insert')->values($values);
     }
 
     /**
-     * Create a new update sql query
+     * Create a new update query builder
      *
-     * @param string|array                              $values
+     *     $h->table('users')->update(['age' => 25])->where('name', 'Johanna')
+     *         
+     * @param array                                  $values
      * @return ClanCats\Hydrahon\Query\Sql\Update
      */
     public function update(array $values = array())
     {
-        return $this->createSubQuery('ClanCats\\Hydrahon\\Query\\Sql\\Update')->set($values);
+        return $this->createSubQuery(__NAMESPACE__ . '\\Sql\\Update')->set($values);
     }
 
     /**
-     * Create a new select sql query
+     * Create a new delete sql builder
+     * 
+     *     $h->table('users')->delete()->where('age', '<', '18')
      *
-     * @param string|array                              $fields+
      * @return ClanCats\Hydrahon\Query\Sql\Delete
      */
-    public function delete($fields = null)
+    public function delete()
     {
-        return $this->createSubQuery('ClanCats\\Hydrahon\\Query\\Sql\\Delete')->select($fields);
+        return $this->createSubQuery(__NAMESPACE__ . '\\Sql\\Delete');
     }
 }
