@@ -5,9 +5,9 @@
 Hydrahon is a query builder, and only a query builder. It does not contain a PDO wrapper or something. I'ts build to add query building into existing systems without implementing an entire new Database layer.
 
 [![Build Status](https://travis-ci.org/ClanCats/Hydrahon.svg?branch=master)](https://travis-ci.org/ClanCats/Hydrahon)
-[![Packagist](https://img.shields.io/packagist/dt/clancats/hydrahon.svg)]()
+[![Packagist](https://img.shields.io/packagist/dt/clancats/hydrahon.svg)](https://packagist.org/packages/clancats/hydrahon)
 [![Packagist](https://img.shields.io/packagist/l/clancats/hydrahon.svg)]()
-[![GitHub release](https://img.shields.io/github/release/clancats/hydrahon.svg)]()
+[![GitHub release](https://img.shields.io/github/release/clancats/hydrahon.svg)](https://github.com/ClanCats/Hydrahon/releases)
 
 ## Status
 
