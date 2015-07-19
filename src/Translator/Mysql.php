@@ -15,6 +15,7 @@ use ClanCats\Hydrahon\Exception;
 use ClanCats\Hydrahon\Query\Sql\Select;
 use ClanCats\Hydrahon\Query\Sql\Insert;
 use ClanCats\Hydrahon\Query\Sql\Update;
+use ClanCats\Hydrahon\Query\Sql\Delete;
 
 class Mysql implements TranslatorInterface
 {
@@ -66,6 +67,11 @@ class Mysql implements TranslatorInterface
         elseif ($query instanceof Update)
         {
             $queryString = $this->translateUpdate();
+        }
+        // handle SQL UPDATE queries
+        elseif ($query instanceof Delete)
+        {
+            $queryString = $this->translateDelete();
         }
     	// everything else is wrong
     	else
@@ -256,7 +262,7 @@ class Mysql implements TranslatorInterface
     }
 
     /**
-     * Build an insert query
+     * Translate the current query to an SQL insert statement
      *
      * @return string
      */
@@ -287,9 +293,8 @@ class Mysql implements TranslatorInterface
     }
 
     /**
-     * Build an update query
+     * Translate the current query to an SQL update statement
      *
-     * @param Query     $query
      * @return string
      */
     protected function translateUpdate()
@@ -301,6 +306,7 @@ class Mysql implements TranslatorInterface
             $build .= $this->escape($key) . ' = ' . $this->param($value) . ', ';
         }
 
+        // cut away the last comma and space
         $build = substr($build, 0, -2);
 
         // build the where statements
@@ -315,29 +321,35 @@ class Mysql implements TranslatorInterface
              $build .= $this->translateLimitWithOffset();
         }
 
-        // cut the last comma away
         return $build;
     }
 
     /**
-     * Build an delete query
+     * Translate the current query to an SQL delete statement
      *
-     * @param Query     $query
      * @return string
      */
-    protected function translateDelete(&$query)
+    protected function translateDelete()
     {
-        $build = 'delete from ' . $this->escapeTable($query);
+        $build = 'delete from ' . $this->escapeTable();
 
-        $build .= $this->translateWhere($query);
-        $build .= $this->translateLimit($query);
+        // build the where statements
+        if ($wheres = $this->attr('wheres'))
+        {
+            $build .= $this->translateWhere($wheres);
+        }
+    
+        // build offset and limit
+        if ($this->attr('limit') || $this->attr('offset'))
+        {
+             $build .= $this->translateLimitWithOffset();
+        }
 
-        // cut the last comma away
         return $build;
     }
 
     /**
-     * Build a select
+     * Translate the current query to an SQL select statement
      *
      * @return string
      */

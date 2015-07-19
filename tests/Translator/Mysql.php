@@ -334,4 +334,16 @@ class Translator_Mysql_Test extends TranslatorCase
 			return $q->table('test')->update()->set(array('foo' => 'bar'))->where('id', 1)->limit(1);
 		});
 	}
+
+	/**
+	 * mysql grammar tests
+	 */
+	public function testDelete()
+	{
+		// simple
+		$this->assertQueryTranslation('delete from `test` where `id` = ? limit 0, 1', array(1), function($q) 
+		{
+			return $q->table('test')->delete()->where('id', 1)->limit(1);
+		});
+	}
 }
