@@ -195,6 +195,45 @@ class BaseSql extends BaseQuery
     	return $this->where($column, 'is', $this->raw('NULL'));
     }
 
+     /**
+     * Creates a where something is not null statement
+     * 
+     *     ->whereNotNull('created_at')
+     * 
+     * @param string                    $column
+     * @return self
+     */
+    public function whereNotNull($column)
+    {
+        return $this->where($column, 'is not', $this->raw('NULL'));
+    }
+
+    /**
+     * Creates a or where something is null statement
+     * 
+     *     ->orWhereNull('modified_at')
+     * 
+     * @param string                    $column
+     * @return self
+     */
+    public function orWhereNull($column)
+    {
+        return $this->orWhere($column, 'is', $this->raw('NULL'));
+    }
+
+    /**
+     * Creates a or where something is not null statement
+     * 
+     *     ->orWhereNotNull('modified_at')
+     * 
+     * @param string                    $column
+     * @return self
+     */
+    public function orWhereNotNull($column)
+    {
+        return $this->orWhere($column, 'is not', $this->raw('NULL'));
+    }
+
     /**
      * Set the query limit
      * 
