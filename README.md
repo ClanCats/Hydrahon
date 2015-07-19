@@ -255,4 +255,28 @@ $users->select()->orderBy(['name', 'created_at' => 'desc']);
 select * from `users` order by `name` asc, `created_at` desc
 ```	
 
+##### Joins
 
+The automatic escaping becomes really handy when working with multiple tables.
+
+```php
+$users->select(['users.name', 'img.url'])
+	->join('user_images as img', 'users.id', '=', 'img.user_id')
+	->where('img.active', 1)
+```
+
+```sql
+select `users`.`name`, `img`.`url` 
+	from `users` 
+	left join `user_images` as `img` on `users`.`id` = `img`.`user_id` 
+	where `img`.`active` = ?
+```
+
+The default join type is `left`, for every join type there is an own method.
+
+ * leftJoin
+ * rightJoin
+ * innerJoin
+ * outterJoin
+
+ 
