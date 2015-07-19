@@ -212,3 +212,47 @@ $users->select()->where('id', 'in', [213, 32, 53, 43]);
 ```sql
 select * from `users` where `id` in (?, ?, ?, ?)
 ```	
+
+##### Ordering
+
+```php
+$users->select()->orderBy('name');
+```
+```sql
+select * from `users` order by `name` asc
+```	
+
+Setting the order direction.
+
+```php
+$users->select()->orderBy('name', 'desc');
+```
+```sql
+select * from `users` order by `name` desc
+```	
+
+**Ordering with multiple keys**
+
+Again there are several ways how to do this, my philosphy is to allow as mutch freedom as possible.
+
+```php
+$users->select()->orderBy('name, created_at');
+// or 
+$users->select()->orderBy(['name', 'created_at']);
+// or 
+$users->select()->orderBy('name')->orderBy('created_at');
+```
+```sql
+select * from `users` order by `name` desc, `created_at` asc
+```	
+
+When passing an array you can also define the direction as array value.
+
+```php
+$users->select()->orderBy(['name', 'created_at' => 'desc']);
+```
+```sql
+select * from `users` order by `name` asc, `created_at` desc
+```	
+
+
