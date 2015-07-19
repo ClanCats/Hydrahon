@@ -39,24 +39,63 @@ Again Hydrahon is **not** build as a database library, it's just a query builder
 ```php 
 $connection = new PDO('mysql:host=localhost;dbname=my_database', 'username', 'password');
 
-$hydrahon = new \ClanCats\Hydrahon\Builder('mysql', function($query, $queryString, queryParameters) use($connection)
+$hydrahon = new \ClanCats\Hydrahon\Builder('mysql', function($query, $queryString, $queryParameters) use($connection)
 {
-	$statement = $connection->prepare($queryString);
+    $statement = $connection->prepare($queryString);
     $statement->execute($queryParameters);
 
     if ($query instanceof \ClanCats\Hydrahon\Query\Sql\Select)
     {
-    	return $statement->fetchAll(\PDO::FETCH_ASSOC);
+        return $statement->fetchAll(\PDO::FETCH_ASSOC);
     }
 });
 ```
 
 ### SQL query builder
 
+Please note that in the following examples the variable `$h` contains a Hydrahon query builder instance.
+
 #### Select 
+
+In our example we are going to execute multiple operations on the same table so instead of loading the table again and again we store it in a variable.
+
+```php
+$users = $h->table('users');
+```
+
+Also the examples don't show the `run` mehtod which has to be executed to obviously run the query.
+
+```php
+$users->select('name')->where('age', '>' 18)->run();
+```
 
 ##### Basics 
 
+Selecting everything
+
 ```php
-$hydrahon->table('users')->select();
+$users->select()
+```
+```mysql
+select * from `users`
+```
+
+Select some special fields
+
+```php
+$users->select(['name', 'age'])
+```
+```mysql
+select `name`, `age` from `users`
+```
+
+Of course you can alias fields, you can define them as array keys or with the as token.
+
+```php
+$users->select(['name', 'age', 'created_at' => 'c'])
+// or
+$users->select(['name', 'age', 'created_at as c'])
+```
+```mysql
+select `name`, `age`, `created_at` as `c` from `users`
 ```
