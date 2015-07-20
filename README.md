@@ -76,7 +76,7 @@ $users = $h->table('users');
 Also the examples don't show the `run` mehtod which has to be executed to obviously run the query.
 
 ```php
-$users->select('name')->where('age', '>' 18)->run();
+$users->select('name')->where('age', '>', 18)->run();
 ```
 
 There are also other runners to cover common use cases.
