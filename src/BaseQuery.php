@@ -84,6 +84,24 @@ class BaseQuery
     }
 
     /**
+     * Pass the own query to a callback
+     * 
+     * @param callable              $callback
+     * @return void
+     */
+    public function call($callback)
+    {
+        if (!is_callable($callback))
+        {
+            throw new Exception('Invalid query callback given.');
+        }
+
+        call_user_func_array($callback, array(&$this));
+
+        return $this;
+    }
+
+    /**
      * Creates a new raw db expression instance
      * 
      * @param string                $expression
