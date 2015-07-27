@@ -334,7 +334,7 @@ class Mysql implements TranslatorInterface
         // build offset and limit
         if ($this->attr('limit') || $this->attr('offset'))
         {
-             $build .= $this->translateLimitWithOffset();
+             $build .= $this->translateLimit();
         }
 
         return $build;
@@ -358,7 +358,7 @@ class Mysql implements TranslatorInterface
         // build offset and limit
         if ($this->attr('limit') || $this->attr('offset'))
         {
-             $build .= $this->translateLimitWithOffset();
+             $build .= $this->translateLimit();
         }
 
         return $build;

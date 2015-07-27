@@ -329,7 +329,7 @@ class Translator_Mysql_Test extends TranslatorCase
 	public function testUpdateWithWhereAndLimit()
 	{
 		// simple
-		$this->assertQueryTranslation('update `test` set `foo` = ? where `id` = ? limit 0, 1', array('bar', 1), function($q) 
+		$this->assertQueryTranslation('update `test` set `foo` = ? where `id` = ? limit 1', array('bar', 1), function($q) 
 		{
 			return $q->table('test')->update()->set(array('foo' => 'bar'))->where('id', 1)->limit(1);
 		});
@@ -341,7 +341,7 @@ class Translator_Mysql_Test extends TranslatorCase
 	public function testDelete()
 	{
 		// simple
-		$this->assertQueryTranslation('delete from `test` where `id` = ? limit 0, 1', array(1), function($q) 
+		$this->assertQueryTranslation('delete from `test` where `id` = ? limit 1', array(1), function($q) 
 		{
 			return $q->table('test')->delete()->where('id', 1)->limit(1);
 		});
