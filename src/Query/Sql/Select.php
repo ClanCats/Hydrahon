@@ -7,6 +7,8 @@
  * @copyright       2015 Mario Döring
  */
 
+use ClanCats\Hydrahon\Query\Expression;
+
 class Select extends BaseSql
 {
     /**
@@ -83,9 +85,15 @@ class Select extends BaseSql
      */
     public function fields($fields)
     {
+        // when a string is given
         if (is_string($fields)) 
         {
         	$fields = $this->stringArgumentToArray($fields);
+        }
+        // it also could be an object
+        elseif (is_object($fields))
+        {
+            return $this->addField($fields);
         }
 
         // do nothing if we get nothing
@@ -96,16 +104,15 @@ class Select extends BaseSql
 
         $this->fields = array();
 
-        foreach( $fields as $key => $field )
+        foreach($fields as $key => $field)
         {
         	// when we have a string as key we have an alias definition
         	if (is_string($key))
         	{
-        		$this->fields[] = array($key, $field);
+                $this->addField($key, $field);
         	} else {
-        		$this->fields[] = array($field, null);
+                $this->addField($field);
         	}
-        	
         }
 
         return $this;
@@ -123,6 +130,90 @@ class Select extends BaseSql
     public function addField($field, $alias = null)
     {
     	$this->fields[] = array($field, $alias); return $this;
+    }
+
+    /**
+     * Shortcut to add a count function
+     * 
+     *     ->addFieldCount('id')
+     *
+     * @param string                $field
+     * @param string                $alias
+     * @return self
+     */
+    public function addFieldCount($field, $alias = null)
+    {
+        $this->addField(new Func('count', $field), $alias); return $this;
+    }
+
+    /**
+     * Shortcut to add a max function
+     * 
+     *     ->addFieldMax('views')
+     *
+     * @param string                $field
+     * @param string                $alias
+     * @return self
+     */
+    public function addFieldMax($field, $alias = null)
+    {
+        $this->addField(new Func('max', $field), $alias); return $this;
+    }
+
+    /**
+     * Shortcut to add a min function
+     * 
+     *     ->addFieldMin('views')
+     *
+     * @param string                $field
+     * @param string                $alias
+     * @return self
+     */
+    public function addFieldMin($field, $alias = null)
+    {
+        $this->addField(new Func('min', $field), $alias); return $this;
+    }
+
+    /**
+     * Shortcut to add a sum function
+     * 
+     *     ->addFieldSum('views')
+     *
+     * @param string                $field
+     * @param string                $alias
+     * @return self
+     */
+    public function addFieldSum($field, $alias = null)
+    {
+        $this->addField(new Func('sum', $field), $alias); return $this;
+    }
+
+    /**
+     * Shortcut to add a avg function
+     * 
+     *     ->addFieldAvg('views')
+     *
+     * @param string                $field
+     * @param string                $alias
+     * @return self
+     */
+    public function addFieldAvg($field, $alias = null)
+    {
+        $this->addField(new Func('avg', $field), $alias); return $this;
+    }
+
+    /**
+     * Shortcut to add a price function
+     * 
+     *     ->addFieldRound('price')
+     *
+     * @param string                $field
+     * @param string                $alias
+     * @return self
+     */
+    public function addFieldRound($field, $decimals = 0, $alias = null)
+    {
+        $this->addField(new Func('round', $field, new Expression((int)$decimals)), $alias); return $this;
     }
 
     /**
@@ -447,6 +538,6 @@ class Select extends BaseSql
      */
     public function count()
     {
-        return (int) $this->column(array($this->raw("count(*)")));
+        return (int) $this->column(array($this->func('count', '*')));
     }
 }

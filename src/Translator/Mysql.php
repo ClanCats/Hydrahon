@@ -18,6 +18,7 @@ use ClanCats\Hydrahon\Query\Sql\Update;
 use ClanCats\Hydrahon\Query\Sql\Delete;
 use ClanCats\Hydrahon\Query\Sql\Drop;
 use ClanCats\Hydrahon\Query\Sql\Truncate;
+use ClanCats\Hydrahon\Query\Sql\Func;
 
 class Mysql implements TranslatorInterface
 {
@@ -120,6 +121,17 @@ class Mysql implements TranslatorInterface
     }
 
     /**
+     * Check if the given argument is an sql function
+     *
+     * @param mixed                 $expression
+     * @return bool
+     */
+    protected function isFunction($function)
+    {
+        return $function instanceof Func;
+    }
+
+    /**
      * Clear all set parameters
      *
      * @return void
@@ -172,15 +184,26 @@ class Mysql implements TranslatorInterface
     /**
      * Escape / wrap an string for sql
      *
-     * @param string|Expression        $string
+     * @param string|object                 $string
      */
     protected function escape($string)
     {
-        if ($this->isExpression($string)) 
+        if (is_object($string))
         {
-            return $string->value();
+            if ($this->isExpression($string)) 
+            {
+                return $string->value();
+            }
+            elseif ($this->isFunction($string))
+            {
+                return $this->escapeFunction($string);
+            }
+            else
+            {
+                throw new Exception('Cannot translate object of class: ' . get_class($string));
+            }
         }
-
+        
         // the string might contain an 'as' statement that we wil have to split.
         if (strpos($string, ' as ') !== false) 
         {
@@ -203,6 +226,26 @@ class Mysql implements TranslatorInterface
         }
 
         return $this->escapeString($string);
+    }
+
+    /**
+     * Escapes an sql function object
+     * 
+     * @param Func              $function
+     * @return string
+     */
+    protected function escapeFunction($function)
+    {
+        $buffer = $function->name() . '(';
+
+        $arguments = $function->arguments();
+
+        foreach($arguments as &$argument)
+        {
+            $argument = $this->escape($argument);
+        }
+
+        return $buffer . implode(', ', $arguments) . ')';
     }
 
     /**

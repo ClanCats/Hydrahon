@@ -11,7 +11,9 @@
  * @group Hydrahon_Query_Sql
  */
 
+use ClanCats\Hydrahon\Query\Sql\Func;
 use ClanCats\Hydrahon\Query\Sql\Select;
+use ClanCats\Hydrahon\Query\Expression;
 
 class Query_Sql_Select_Test extends Query_QueryCase
 {
@@ -33,7 +35,7 @@ class Query_Sql_Select_Test extends Query_QueryCase
 	public function testDistinct()
 	{
 		// simple 
-		$this->assertAttributes($this->createQuery()->distinct(), array('distinct' => true ));
+		$this->assertAttributes($this->createQuery()->distinct(), array('distinct' => true));
 
 		// disable
 		$this->assertAttributes($this->createQuery()->distinct(false));
@@ -60,6 +62,19 @@ class Query_Sql_Select_Test extends Query_QueryCase
 
 		// with alias
 		$this->assertAttributes($this->createQuery()->fields(array('page_title' => 'title')), array('fields' => array(array( 'page_title', 'title' ))));
+
+		// with raw expression
+		$field = new Expression('max(views)');
+		$this->assertAttributes($this->createQuery()->fields($field), array('fields' => array(array($field, null))));
+
+		// raw expression in array
+		$field = new Expression('max(views)');
+		$this->assertAttributes($this->createQuery()->fields(array($field, $field)), array('fields' => array(array($field, null), array($field, null))));
+
+		// with sql function
+		$field = new Func('max', 'views');
+		$this->assertAttributes($this->createQuery()->fields($field), array('fields' => array(array($field, null))));
+
 	}
 
 	/**
@@ -77,6 +92,10 @@ class Query_Sql_Select_Test extends Query_QueryCase
 
 		// add another one
 		$this->assertAttributes($query->addField('active', 'a'), array('fields' => array(array('id', null), array('name', null), array('created_at', null), array('active', 'a'))));	
+
+		// test add function field
+		$field = new Func('max', 'views');
+		$this->assertAttributes($this->createQuery()->addField($field, 'max_views'), array('fields' => array(array($field, 'max_views'))));
 	}
 
 	/**
@@ -135,7 +154,7 @@ class Query_Sql_Select_Test extends Query_QueryCase
 	}
 
 	/**
-	 * Select::join
+	 * Select::run
 	 */
 	public function testRun()
 	{

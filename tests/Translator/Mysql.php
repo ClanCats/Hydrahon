@@ -13,6 +13,7 @@
 
 use ClanCats\Hydrahon\Query\Sql\BaseSql;
 use ClanCats\Hydrahon\Query\Expression;
+use ClanCats\Hydrahon\Query\Sql\Func;
 
 class Translator_Mysql_Test extends TranslatorCase
 {
@@ -79,6 +80,155 @@ class Translator_Mysql_Test extends TranslatorCase
 		$this->assertQueryTranslation('select count(id) as count from `phpunit`', array(), function($q) 
 		{
 			return $q->table('phpunit')->select(array(new Expression('count(id) as count')));
+		});
+
+		// with raw outside of the array 
+		$this->assertQueryTranslation('select count(id) from `phpunit`', array(), function($q) 
+		{
+			return $q->table('phpunit')->select(new Expression('count(id)'));
+		});
+
+		// with raw function
+		$this->assertQueryTranslation('select count(`id`) from `phpunit`', array(), function($q) 
+		{
+			return $q->table('phpunit')->select(new Func('count', 'id'));
+		});
+	}
+
+	/**
+	 * mysql grammar tests
+	 */
+	public function testSelectAddField()
+	{
+		$this->assertQueryTranslation('select `foo` from `phpunit`', array(), function($q) 
+		{
+			return $q->table('phpunit')->select()->addField('foo');
+		});
+
+		// test with alias
+		$this->assertQueryTranslation('select `foo` as `bar` from `phpunit`', array(), function($q) 
+		{
+			return $q->table('phpunit')->select()->addField('foo', 'bar');
+		});
+
+		// add field with function
+		$this->assertQueryTranslation('select max(`views`) as `max_views` from `phpunit`', array(), function($q) 
+		{
+			return $q->table('phpunit')->select()->addField(new Func('max', 'views'), 'max_views');
+		});
+	}
+
+	/**
+	 * mysql grammar tests
+	 */
+	public function testSelectAddFieldCount()
+	{
+		$this->assertQueryTranslation('select count(`id`) from `phpunit`', array(), function($q) 
+		{
+			return $q->table('phpunit')->select()->addFieldCount('id');
+		});
+
+		// with alias
+		$this->assertQueryTranslation('select count(`id`) as `count` from `phpunit`', array(), function($q) 
+		{
+			return $q->table('phpunit')->select()->addFieldCount('id', 'count');
+		});
+
+		// with raw 
+		$this->assertQueryTranslation('select count(*) from `phpunit`', array(), function($q) 
+		{
+			return $q->table('phpunit')->select()->addFieldCount(new Expression('*'));
+		});
+	}
+
+	/**
+	 * mysql grammar tests
+	 */
+	public function testSelectAddFieldMax()
+	{
+		$this->assertQueryTranslation('select max(`views`) from `phpunit`', array(), function($q) 
+		{
+			return $q->table('phpunit')->select()->addFieldMax('views');
+		});
+
+		// with alias
+		$this->assertQueryTranslation('select max(`views`) as `max_views` from `phpunit`', array(), function($q) 
+		{
+			return $q->table('phpunit')->select()->addFieldMax('views', 'max_views');
+		});
+	}
+
+	/**
+	 * mysql grammar tests
+	 */
+	public function testSelectAddFieldMin()
+	{
+		$this->assertQueryTranslation('select min(`views`) from `phpunit`', array(), function($q) 
+		{
+			return $q->table('phpunit')->select()->addFieldMin('views');
+		});
+
+		// with alias
+		$this->assertQueryTranslation('select min(`views`) as `min_views` from `phpunit`', array(), function($q) 
+		{
+			return $q->table('phpunit')->select()->addFieldMin('views', 'min_views');
+		});
+	}
+
+	/**
+	 * mysql grammar tests
+	 */
+	public function testSelectAddFieldSum()
+	{
+		$this->assertQueryTranslation('select sum(`views`) from `phpunit`', array(), function($q) 
+		{
+			return $q->table('phpunit')->select()->addFieldSum('views');
+		});
+
+		// with alias
+		$this->assertQueryTranslation('select sum(`views`) as `total_views` from `phpunit`', array(), function($q) 
+		{
+			return $q->table('phpunit')->select()->addFieldSum('views', 'total_views');
+		});
+	}
+
+	/**
+	 * mysql grammar tests
+	 */
+	public function testSelectAddFieldAvg()
+	{
+		$this->assertQueryTranslation('select avg(`views`) from `phpunit`', array(), function($q) 
+		{
+			return $q->table('phpunit')->select()->addFieldAvg('views');
+		});
+
+		// with alias
+		$this->assertQueryTranslation('select avg(`views`) as `avarage_views` from `phpunit`', array(), function($q) 
+		{
+			return $q->table('phpunit')->select()->addFieldAvg('views', 'avarage_views');
+		});
+	}
+
+	/**
+	 * mysql grammar tests
+	 */
+	public function testSelectAddFieldRound()
+	{
+		$this->assertQueryTranslation('select round(`price`, 0) from `phpunit`', array(), function($q) 
+		{
+			return $q->table('phpunit')->select()->addFieldRound('price');
+		});
+
+		// with custom decimal
+		$this->assertQueryTranslation('select round(`price`, 2) from `phpunit`', array(), function($q) 
+		{
+			return $q->table('phpunit')->select()->addFieldRound('price', 2);
+		});
+
+		// with alias
+		$this->assertQueryTranslation('select round(`price`, 2) as `rounded_price` from `phpunit`', array(), function($q) 
+		{
+			return $q->table('phpunit')->select()->addFieldRound('price', 2, 'rounded_price');
 		});
 	}
 
