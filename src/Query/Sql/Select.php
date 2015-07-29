@@ -85,6 +85,9 @@ class Select extends BaseSql
      */
     public function fields($fields)
     {
+        // we always have to reset the fields
+        $this->fields = array();
+
         // when a string is given
         if (is_string($fields)) 
         {
@@ -97,13 +100,9 @@ class Select extends BaseSql
         }
 
         // do nothing if we get nothing
-        if (empty($fields) || $fields === array('*') || $fields === array('')) 
-        {
-            $this->fields = array(); return $this;
-        }
+        if (empty($fields) || $fields === array('*') || $fields === array('')) { return $this; }
 
-        $this->fields = array();
-
+        // add the fields
         foreach($fields as $key => $field)
         {
         	// when we have a string as key we have an alias definition
