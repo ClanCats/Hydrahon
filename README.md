@@ -2,7 +2,7 @@
 
 ![Hydrahon banner](https://cloud.githubusercontent.com/assets/956212/7947360/e36d75ea-097c-11e5-89c0-be7b56bbf5ca.png)
 
-Hydrahon is a query builder, and only a query builder. It does not contain a PDO wrapper or something. I'ts build to add query building into existing systems without implementing an entire new Database layer.
+Hydrahon is a query builder, and only a query builder. It does not contain a PDO wrapper or anything. It's built to add query building into existing systems without implementing an entire new Database layer.
 
 [![Build Status](https://travis-ci.org/ClanCats/Hydrahon.svg?branch=master)](https://travis-ci.org/ClanCats/Hydrahon)
 [![Packagist](https://img.shields.io/packagist/dt/clancats/hydrahon.svg)](https://packagist.org/packages/clancats/hydrahon)
@@ -34,7 +34,7 @@ $ composer require 'clancats/hydrahon:dev-master'
 
 ### Creating hydrahon builder
 
-Again Hydrahon is **not** build as a database library, it's just a query builder. In this example im going to show you a dead simple PDO mysql implementation.
+Again Hydrahon is **not** built as a database library, it's just a query builder. In this example, I'm going to present you an easy example of a PDO mysql implementation.
 
 ```php 
 $connection = new PDO('mysql:host=localhost;dbname=my_database', 'username', 'password');
@@ -65,15 +65,14 @@ Please note that in the following examples the variable `$h` contains a Hydrahon
 
 #### Select 
 
-In our example we are going to execute multiple operations on the same table so instead of loading the table again and again we store it in a variable.
+In our example we are going to execute multiple operations on the same table, so instead of loading the table over and over again we store it in a variable.
 
 ```php
 $users = $h->table('users');
 ```
 
 ##### Runners 
-
-Also the examples don't show the `run` mehtod which has to be executed to obviously run the query.
+Also, the examples do not show the `run` method, which has to be executed to (obviously) run the query.
 
 ```php
 $users->select('name')->where('age', '>', 18)->run();
@@ -99,7 +98,7 @@ $users->select()->first();
 $users->select()->last();
 ```
 
-You can also pass a diffrent key
+You can also pass a different key.
 
 ```php
 $users->select()->first('created_at');
@@ -115,7 +114,7 @@ $users->select()->where('age', '>', 18)->count();
 
 **single column result**
 
-Sometimes you just need one value for that we have the column function
+Sometimes you just need one value, for that we have the column function
 
 ```php
 $users->select()->where('name', 'johanna')->column('age');
@@ -132,7 +131,7 @@ $users->select()
 select * from `users`
 ```
 
-Select some special fields. Hydrahon parses your input, that allows you to use the query the way your comfortable with it.
+Select some special fields. Hydrahon parses your input, that allows you to use the query builder the way you are comfortable with.
 
 ```php
 $users->select(['name', 'age'])
@@ -154,7 +153,7 @@ $users->select(['name', 'age', 'created_at as c'])
 select `name`, `age`, `created_at` as `c` from `users`
 ```
 
-Sometimes you might have a special case that hydrahon does not cover natively. For such cases you can make use of raw expressions, those wont get parsed or escaped.
+Sometimes you might have a special case that hydrahon does not cover natively. For such cases you can make use of raw expressions, those will not get parsed or escaped.
 
 ```php
 $users->select([$users->raw("max('age')")])
@@ -164,8 +163,7 @@ select max('age') from `users`
 ```
 
 ##### Where
-
-The `where` statement does not only apply to the `select` query also to `update` and `delete`.
+The `where` statement does not only apply to the `select` query, but also to update and `delete`.
 
 ```php
 $users->select()->where('active', 1)
@@ -186,7 +184,7 @@ select * from `users` where `active` = ? and `age` > ?
 
 **or?**
 
-Of course there is also a or where statement.
+Of course there is also an or where statement.
 
 ```php
 $users->select()->where('active', 1)->orWhere('admin', 1)
@@ -241,7 +239,7 @@ select * from `users` order by `name` desc
 
 **Ordering with multiple keys**
 
-Again there are several ways how to do this, my philosphy is to allow as mutch freedom as possible.
+Again, there are several ways you can do this, my philosophy is to give you as much freedom as possible.
 
 ```php
 $users->select()->orderBy('name, created_at');
@@ -254,7 +252,7 @@ $users->select()->orderBy('name')->orderBy('created_at');
 select * from `users` order by `name` desc, `created_at` asc
 ```	
 
-When passing an array you can also define the direction as array value.
+When passing an array, you can also define the direction as array value.
 
 ```php
 $users->select()->orderBy(['name', 'created_at' => 'desc']);
@@ -280,7 +278,7 @@ select `users`.`name`, `img`.`url`
 	where `img`.`active` = ?
 ```
 
-The default join type is `left`, for every join type there is an own method.
+The default join type is `left`, for every join type there is its own method.
 
  * `leftJoin`
  * `rightJoin`
@@ -289,7 +287,7 @@ The default join type is `left`, for every join type there is an own method.
 
 ##### Limit, Offset and Page
 
-When setting the limit to just one entry you will receive your single result and not an array of them.
+When setting the limit to just one entry, you will receive it as a single result and not as result collection.
 
 ```php
 $users->select()->limit(1); // returns single result
