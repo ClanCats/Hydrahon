@@ -45,4 +45,28 @@ abstract class TranslatorCase extends \PHPUnit_Framework_TestCase
 		$this->assertEquals($expectedQueryString, $queryString);
 		$this->assertEquals($expectedQueryParameters, $queryParameters);
 	}
+
+	/**
+	 * Asserts the attributes of the given query
+	 * 
+	 * @param array 					$resultSet
+	 * @param string 					$expectedQueryString
+	 * @param string 					$expectedQueryParameters
+	 * @param callable 					$callback
+	 * @return void
+	 */
+	protected function assertQueryExecution(array $resultSet, $expectedResult, $expectedQueryString, $expectedQueryParameters, $callback)
+	{
+		$that = $this;
+
+		$builder = new Builder($this->grammar, function($query, $queryString, $queryParameters) use($resultSet, $that, $expectedQueryString, $expectedQueryParameters)
+		{
+			$that->assertEquals($expectedQueryString, $queryString);
+			$that->assertEquals($expectedQueryParameters, $queryParameters);
+
+			return $resultSet;
+		});
+
+		$this->assertEquals($expectedResult, call_user_func_array($callback, array($builder)));
+	}
 }

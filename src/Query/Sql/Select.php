@@ -536,8 +536,15 @@ class Select extends BaseSql
      *
      * @return int
      */
-    public function count()
+    public function count($field = null)
     {
-        return (int) $this->column(array($this->func('count', '*')));
+        // when no field is given we use *
+        if (is_null($field))
+        {
+            $field = new Expression('*');
+        }
+
+        // return the column
+        return (int) $this->column(new Func('count', $field));
     }
 }

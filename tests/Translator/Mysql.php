@@ -520,4 +520,21 @@ class Translator_Mysql_Test extends TranslatorCase
 			return $q->table('test')->truncate();
 		});
 	}
+
+	/**
+	 * mysql grammar tests
+	 */
+	public function testCount()
+	{
+		$this->assertQueryExecution(array(array('count(*)' => 42)), 42, 'select count(*) from `test` limit 0, 1', array(), function($q)
+		{
+			return $q->table('test')->select()->count();
+		});
+
+		// with diffrent field
+		$this->assertQueryExecution(array(array('count(`id`)' => 42)), 42, 'select count(`id`) from `test` limit 0, 1', array(), function($q)
+		{
+			return $q->table('test')->select()->count('id');
+		});
+	}
 }
