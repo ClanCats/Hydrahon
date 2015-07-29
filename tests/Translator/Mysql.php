@@ -537,4 +537,48 @@ class Translator_Mysql_Test extends TranslatorCase
 			return $q->table('test')->select()->count('id');
 		});
 	}
+
+	/**
+	 * mysql grammar tests
+	 */
+	public function testSum()
+	{
+		$this->assertQueryExecution(array(array('sum(`views`)' => 123)), 123, 'select sum(`views`) from `test` limit 0, 1', array(), function($q)
+		{
+			return $q->table('test')->select()->sum('views');
+		});
+	}
+
+	/**
+	 * mysql grammar tests
+	 */
+	public function testMax()
+	{
+		$this->assertQueryExecution(array(array('max(`views`)' => 2343)), 2343, 'select max(`views`) from `test` limit 0, 1', array(), function($q)
+		{
+			return $q->table('test')->select()->max('views');
+		});
+	}
+
+	/**
+	 * mysql grammar tests
+	 */
+	public function testMin()
+	{
+		$this->assertQueryExecution(array(array('min(`views`)' => 12)), 12, 'select min(`views`) from `test` limit 0, 1', array(), function($q)
+		{
+			return $q->table('test')->select()->min('views');
+		});
+	}
+
+	/**
+	 * mysql grammar tests
+	 */
+	public function testAvg()
+	{
+		$this->assertQueryExecution(array(array('avg(`views`)' => 2342.324)), 2342.324, 'select avg(`views`) from `test` limit 0, 1', array(), function($q)
+		{
+			return $q->table('test')->select()->avg('views');
+		});
+	}
 }

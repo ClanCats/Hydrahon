@@ -534,6 +534,7 @@ class Select extends BaseSql
     /**
      * Just return the number of results 
      *
+     * @param string                    $field
      * @return int
      */
     public function count($field = null)
@@ -546,5 +547,49 @@ class Select extends BaseSql
 
         // return the column
         return (int) $this->column(new Func('count', $field));
+    }
+
+    /**
+     * Helper the get the sum of a column
+     *
+     * @param string            $field
+     * @return int
+     */
+    public function sum($field)
+    {
+        return $this->column(new Func('sum', $field));
+    }
+
+    /**
+     * Helper the get the max of a column
+     *
+     * @param string            $field
+     * @return int
+     */
+    public function max($field)
+    {
+        return $this->column(new Func('max', $field));
+    }
+
+    /**
+     * Helper the get the min of a column
+     *
+     * @param string            $field
+     * @return int
+     */
+    public function min($field)
+    {
+        return $this->column(new Func('min', $field));
+    }
+
+    /**
+     * Helper the get the avarage of a column
+     *
+     * @param string            $field
+     * @return int
+     */
+    public function avg($field)
+    {
+        return $this->column(new Func('avg', $field));
     }
 }
