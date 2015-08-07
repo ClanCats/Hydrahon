@@ -121,11 +121,7 @@ class Builder
     {
         $database = null;
 
-        if (strpos($table, '.') === false)
-        {
-            $table = $table;
-        }
-        else
+        if (is_string($table) && strpos($table, '.') !== false)
         {
             $selection = explode('.', $table);
 
@@ -135,6 +131,14 @@ class Builder
             }
 
             list($database, $table) = $selection;
+        }
+
+        // the table might include an alias we need to parse that one out 
+        if (is_string($table) && strpos($table, ' as ') !== false)
+        {
+            $tableParts = explode(' as ', $table);
+            $table = array($tableParts[0] => $tableParts[1]);
+            unset($tableParts);
         }
 
         // create and return new query instance

@@ -53,14 +53,14 @@ class Mysql implements TranslatorInterface
      */
     public function translate(BaseQuery $query)
     {
-    	// retrive the query attributes
-    	$this->attributes = $query->attributes();
+        // retrive the query attributes
+        $this->attributes = $query->attributes();
 
-    	// handle SQL SELECT queries
-    	if ($query instanceof Select)
-    	{
-    		$queryString = $this->translateSelect();
-    	}
+        // handle SQL SELECT queries
+        if ($query instanceof Select)
+        {
+            $queryString = $this->translateSelect();
+        }
         // handle SQL INSERT queries
         elseif ($query instanceof Insert)
         {
@@ -86,27 +86,27 @@ class Mysql implements TranslatorInterface
         {
             $queryString = $this->translateTruncate();
         }
-    	// everything else is wrong
-    	else
-    	{
-    		throw new Exception('Unknown query type. Cannot translate: '.get_class($query));
-    	}
+        // everything else is wrong
+        else
+        {
+            throw new Exception('Unknown query type. Cannot translate: '.get_class($query));
+        }
 
-    	// get the query parameters and reset
-    	$queryParameters = $this->parameters; $this->clearParameters();
+        // get the query parameters and reset
+        $queryParameters = $this->parameters; $this->clearParameters();
 
-    	return array($queryString, $queryParameters);
+        return array($queryString, $queryParameters);
     }
 
     /**
      * Returns the an attribute value for the given key
      * 
-     * @param string 				$key
+     * @param string                $key
      * @return mixed
      */
     protected function attr($key)
     {
-    	return $this->attributes[$key];
+        return $this->attributes[$key];
     }
 
     /**
@@ -280,25 +280,31 @@ class Mysql implements TranslatorInterface
      *
      * @return string
      */
-    protected function escapeTable()
+    protected function escapeTable($allowAlias = true)
     {
         $table = $this->attr('table');
         $database = $this->attr('database');
-
         $buffer = '';
 
         if (!is_null($database))
         {
-        	$buffer .= $this->escape($database) . '.';
+            $buffer .= $this->escape($database) . '.';
         }
 
         if (is_array($table)) 
         {
-            reset($table); $table = key($table) . ' as ' . $table[key($table)];
+            reset($table); 
+
+            if ($allowAlias)
+            {
+                $table = key($table) . ' as ' . $table[key($table)];
+            } else {
+                $table = key($table);
+            }
         }
 
         return $buffer . $this->escape($table);    
-  	}
+    }
 
     /**
      * Convert data to parameters and bind them to the query
@@ -329,7 +335,7 @@ class Mysql implements TranslatorInterface
     {
         $build = ($this->attr('ignore') ? 'insert ignore' : 'insert');
 
-        $build .= ' into ' . $this->escapeTable() . ' ';
+        $build .= ' into ' . $this->escapeTable(false) . ' ';
 
         if (!$valueCollection = $this->attr('values'))
         {
@@ -414,7 +420,7 @@ class Mysql implements TranslatorInterface
      */
     protected function translateSelect()
     {
-    	// normal or distinct selection?
+        // normal or distinct selection?
         $build = ($this->attr('distinct') ? 'select distinct' : 'select') . ' ';
 
         // build the selected fields 
@@ -424,7 +430,7 @@ class Mysql implements TranslatorInterface
         {
             foreach ($fields as $key => $field) 
             {
-            	list($column, $alias) = $field;
+                list($column, $alias) = $field;
 
                 if (!is_null($alias)) 
                 {
@@ -451,31 +457,31 @@ class Mysql implements TranslatorInterface
         // build the join statements
         if ($this->attr('joins'))
         {
-        	$build .= $this->translateJoins();
+            $build .= $this->translateJoins();
         }
 
         // build the where statements
         if ($wheres = $this->attr('wheres'))
         {
-        	$build .= $this->translateWhere($wheres);
+            $build .= $this->translateWhere($wheres);
         }
 
         // build the groups
         if ($this->attr('groups'))
         {
-        	$build .= $this->translateGroupBy();
+            $build .= $this->translateGroupBy();
         }
 
         // build the order statement
         if ($this->attr('orders'))
         {
-        	$build .= $this->translateOrderBy();
+            $build .= $this->translateOrderBy();
         }
     
         // build offset and limit
         if ($this->attr('limit') || $this->attr('offset'))
         {
-        	 $build .= $this->translateLimitWithOffset();
+            $build .= $this->translateLimitWithOffset();
         }
 
         return $build;
@@ -484,7 +490,7 @@ class Mysql implements TranslatorInterface
     /**
      * Translate the where statements into sql 
      * 
-     * @param array 				$wheres
+     * @param array                 $wheres
      * @return string
      */
     protected function translateWhere($wheres)
@@ -497,7 +503,7 @@ class Mysql implements TranslatorInterface
             // wich will create a new query where you can add your nested wheres
             if (!isset($where[2]) && isset( $where[1] ) && $where[1] instanceof BaseQuery ) 
             {
-            	$subAttributes = $where[1]->attributes();
+                $subAttributes = $where[1]->attributes();
 
                 // The parameters get added by the call of compile where
                 $build .= ' ' . $where[0] . ' ( ' . substr($this->translateWhere($subAttributes['wheres']), 7) . ' )';
@@ -535,8 +541,8 @@ class Mysql implements TranslatorInterface
 
         foreach ($this->attr('joins') as $join) 
         {
-        	list($type, $table, $localKey, $operator, $referenceKey) = $join;
-        	$build .= ' ' . $type . ' join ' . $this->escape($table) . ' on ' . $this->escape($localKey) . ' ' . $operator . ' ' . $this->escape($referenceKey);
+            list($type, $table, $localKey, $operator, $referenceKey) = $join;
+            $build .= ' ' . $type . ' join ' . $this->escape($table) . ' on ' . $this->escape($localKey) . ' ' . $operator . ' ' . $this->escape($referenceKey);
         }
 
         return $build;

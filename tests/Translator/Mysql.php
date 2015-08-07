@@ -430,6 +430,24 @@ class Translator_Mysql_Test extends TranslatorCase
 	/**
 	 * mysql grammar tests
 	 */
+	public function testInsertWithUnwantedAlias()
+	{
+		// simple
+		$this->assertQueryTranslation('insert into `test` (`foo`) values (?)', array('bar'), function($q) 
+		{
+			return $q->table('test as foo')->insert()->values(array('foo' => 'bar'));
+		});
+
+		// some more complexity
+		$this->assertQueryTranslation('insert into `test` (`bar`, `foo`) values (?, ?)', array('foo','bar'), function($q) 
+		{
+			return $q->table(array('test' => 'nope'))->insert()->values(array('foo' => 'bar', 'bar' => 'foo'));
+		});
+	}
+
+	/**
+	 * mysql grammar tests
+	 */
 	public function testInsertIgnore()
 	{
 		// ignore
