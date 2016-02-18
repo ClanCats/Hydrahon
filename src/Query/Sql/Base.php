@@ -71,7 +71,7 @@ class Base extends BaseQuery
                 throw new Exception('You must define an alias when working with subselects.');
             }
 
-            $table = [$alias => $table];
+            $table = array($alias => $table);
         } 
 
         // Check if the $table is an array and the value is an closure
