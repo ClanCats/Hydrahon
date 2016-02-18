@@ -1,16 +1,19 @@
-<?php namespace ClanCats\Hydrahon\Query\Sql;
+<?php 
+
+namespace ClanCats\Hydrahon\Query\Sql;
 
 /**
- * Base sql class
+ * Select base 
+ * 
+ * Implements common filtering functions like: where, limit and offset
+ * 
  **
  * @package         Hydrahon
  * @copyright       2015 Mario Döring
  */
 
-use ClanCats\Hydrahon\BaseQuery;
-
-class BaseSql extends BaseQuery
-{
+class SelectBase extends Base
+{ 
     /**
      * The query where statements
      *
@@ -87,7 +90,7 @@ class BaseSql extends BaseQuery
         // when column is an array we assume to make a bulk and where.
         if (is_array($column)) 
         {
-        	$subquery = new BaseSql;
+        	$subquery = new SelectBase;
             foreach ($column as $key => $val) 
             {
                 $subquery->where($key, $val, null, $type);
@@ -101,7 +104,7 @@ class BaseSql extends BaseQuery
         if (is_object($column) && ($column instanceof \Closure)) 
         {
         	// create new query object
-        	$subquery = new BaseSql;
+        	$subquery = new SelectBase;
 
         	// run the closure callback on the sub query
         	call_user_func_array($column, array( &$subquery ));

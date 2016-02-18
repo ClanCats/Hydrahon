@@ -9,7 +9,7 @@
 
 use ClanCats\Hydrahon\BaseQuery;
 
-class Truncate extends BaseQuery
+class Truncate extends Base
 {
     // also here we need the class only to identify the query
 }

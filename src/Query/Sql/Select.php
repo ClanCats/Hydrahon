@@ -1,4 +1,6 @@
-<?php namespace ClanCats\Hydrahon\Query\Sql;
+<?php 
+
+namespace ClanCats\Hydrahon\Query\Sql;
 
 /**
  * SQL query object
@@ -9,7 +11,7 @@
 
 use ClanCats\Hydrahon\Query\Expression;
 
-class Select extends BaseSql
+class Select extends SelectBase
 {
     /**
      * fields to be selected

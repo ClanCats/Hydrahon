@@ -7,7 +7,7 @@
  * @copyright       2015 Mario Döring
  */
 
-class Update extends BaseSql
+class Update extends SelectBase
 {
     /**
      * values container

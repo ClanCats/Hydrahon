@@ -283,6 +283,25 @@ class Mysql implements TranslatorInterface
     protected function escapeTable($allowAlias = true)
     {
         $table = $this->attr('table');
+
+        // the table might be a subselect so check that
+        // first and compile the select if it is one
+        if ($table instanceof Select)
+        {
+            $translator = new static;
+
+            // translate the subselect
+            list($subQuery, $subQueryParameters) = $translator->translate($table);
+
+            // merge the parameters
+            foreach($subQueryParameters as $parameter)
+            {
+                $this->addParameter($parameter);
+            }
+
+            return '(' . $subQuery . ')';
+        }
+
         $database = $this->attr('database');
         $buffer = '';
 
@@ -323,7 +342,7 @@ class Mysql implements TranslatorInterface
     }
 
     /*
-     * -- FROM HER TRANSLATE FUNCTIONS FOLLOW
+     * -- FROM HERE TRANSLATE FUNCTIONS FOLLOW
      */
 
     /**

@@ -71,7 +71,6 @@ class Builder_Test extends \PHPUnit_Framework_TestCase
 		$hydrahon = new Builder('mysql', function() {});
 		$hydrahon->table('foo.bar.fail');
 	}
-
 	/**
 	 * Builder::constuct test
 	 *
@@ -79,8 +78,21 @@ class Builder_Test extends \PHPUnit_Framework_TestCase
 	 */
 	public function testConsturctInvalidTransltorClass()
 	{	
-		Builder::extend('invalidtranslator', '\\This\\Should\\Work', '\\ClanCats\\Hydrahon\\Exception');
-		// but now it should faile
+		Builder::extend('invalidtranslator',  'ClanCats\\Hydrahon\\Query\\Sql', 'ClanCats\\Hydrahon\\Exception');
+
+		// but now it should fail
+		$hydrahon = new Builder('invalidtranslator', function() {});
+	}
+
+	/**
+	 * Builder::constuct test
+	 *
+	 * @expectedException ClanCats\Hydrahon\Exception
+	 */
+	public function testConsturctInvalidBuilderClass()
+	{	
+		Builder::extend('invalidBuilder', 'ClanCats\\Hydrahon\\Exception','ClanCats\\Hydrahon\\Translator\\Mysql');
+		// but now it should fail
 		$hydrahon = new Builder('invalidtranslator', function() {});
 	}
 }

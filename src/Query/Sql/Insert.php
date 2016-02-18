@@ -9,7 +9,7 @@
 
 use ClanCats\Hydrahon\BaseQuery;
 
-class Insert extends BaseQuery
+class Insert extends Base
 {
     /**
      * values container
