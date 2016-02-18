@@ -283,25 +283,6 @@ class Mysql implements TranslatorInterface
     protected function escapeTable($allowAlias = true)
     {
         $table = $this->attr('table');
-
-        // the table might be a subselect so check that
-        // first and compile the select if it is one
-        if ($table instanceof Select)
-        {
-            $translator = new static;
-
-            // translate the subselect
-            list($subQuery, $subQueryParameters) = $translator->translate($table);
-
-            // merge the parameters
-            foreach($subQueryParameters as $parameter)
-            {
-                $this->addParameter($parameter);
-            }
-
-            return '(' . $subQuery . ')';
-        }
-
         $database = $this->attr('database');
         $buffer = '';
 
@@ -310,10 +291,30 @@ class Mysql implements TranslatorInterface
             $buffer .= $this->escape($database) . '.';
         }
 
+        // when the table is an array we have a table with alias
         if (is_array($table)) 
         {
-            reset($table); 
+            reset($table);
 
+            // the table might be a subselect so check that
+            // first and compile the select if it is one
+            if ($table[key($table)] instanceof Select)
+            {
+                $translator = new static;
+
+                // translate the subselect
+                list($subQuery, $subQueryParameters) = $translator->translate($table[key($table)]);
+
+                // merge the parameters
+                foreach($subQueryParameters as $parameter)
+                {
+                    $this->addParameter($parameter);
+                }
+
+                return '(' . $subQuery . ') as ' . $this->escape(key($table));
+            }
+
+            // otherwise continue with normal table
             if ($allowAlias)
             {
                 $table = key($table) . ' as ' . $table[key($table)];

@@ -27,9 +27,9 @@ class Sql extends BaseQuery
      * @param string|array                              $fields
      * @return Select
      */
-    public function table($table = null)
+    public function table($table = null, $alias = null)
     {
-        $query = new Table($this); return $query->table($table);
+        $query = new Table($this); return $query->table($table, $alias);
     }
 
     /**

@@ -55,7 +55,7 @@ class Base extends BaseQuery
      * @param string                   $table
      * @return self
      */
-    public function table($table)
+    public function table($table, $alias = null)
     {
         $database = null;
 
@@ -63,13 +63,35 @@ class Base extends BaseQuery
         // we have an subselect inside the table
         if (is_object($table) && ($table instanceof \Closure)) 
         {
+            // we have to check if an alias isset 
+            // otherwise throw an exception to prevent the 
+            // "Every derived table must have its own alias" error
+            if (is_null($alias))
+            {
+                throw new Exception('You must define an alias when working with subselects.');
+            }
+
+            $table = [$alias => $table];
+        } 
+
+        // Check if the $table is an array and the value is an closure
+        // that we can pass a new query object as subquery 
+        if (is_array($table) && is_object(reset($table)) && (reset($table) instanceof \Closure)) 
+        {
+            $alias = key($table);
+            $table = reset($table);
+
             // create new query object
             $subquery = new Select;
 
             // run the closure callback on the sub query
-            call_user_func_array($table, array( &$subquery ));
+            call_user_func_array($table, array(&$subquery));
 
-            $table = $subquery;
+            // set the table 
+            // IMPORTANT: Only if we have a closure as table
+            // we set the alias as key. This might cause some confusion
+            // but only this way we can keep the normal ['table' => 'alias'] syntax
+            $table = array($alias => $subquery);
         } 
 
         // other wise normally try to split the table and database name
@@ -90,7 +112,6 @@ class Base extends BaseQuery
         {
             $tableParts = explode(' as ', $table);
             $table = array($tableParts[0] => $tableParts[1]);
-            unset($tableParts);
         }
 
         // assing the result
