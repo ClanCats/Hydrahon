@@ -1,4 +1,7 @@
-<?php namespace ClanCats\Hydrahon\Test;
+<?php 
+
+namespace ClanCats\Hydrahon\Test\Translator;
+
 /**
  * Hydrahon builder test 
  ** 
@@ -15,7 +18,7 @@ use ClanCats\Hydrahon\Query\Sql\BaseSql;
 use ClanCats\Hydrahon\Query\Expression;
 use ClanCats\Hydrahon\Query\Sql\Func;
 
-class Translator_Mysql_Test extends TranslatorCase
+class MysqlTest extends \ClanCats\Hydrahon\Test\TranslatorCase
 {
 	protected $grammar = 'mysql';
 

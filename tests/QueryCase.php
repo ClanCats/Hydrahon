@@ -1,4 +1,7 @@
-<?php namespace ClanCats\Hydrahon\Test;
+<?php 
+
+namespace ClanCats\Hydrahon\Test;
+
 /**
  * Hydrahon builder test 
  ** 
@@ -9,7 +12,7 @@
 
 use ClanCats\Hydrahon\BaseQuery;
 
-abstract class Query_QueryCase extends \PHPUnit_Framework_TestCase
+abstract class QueryCase extends \PHPUnit_Framework_TestCase
 {
 	protected $queryClass;
 

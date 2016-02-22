@@ -14,7 +14,7 @@
 
 use ClanCats\Hydrahon\Query\Sql\Select;
 
-class Query_Sql_Insert_Test extends Query_QueryCase
+class Query_Sql_Insert_Test extends \ClanCats\Hydrahon\Test\QueryCase
 {
 	protected $queryClass = 'ClanCats\\Hydrahon\\Query\\Sql\\Insert';
 

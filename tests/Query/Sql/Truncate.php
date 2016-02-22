@@ -12,7 +12,7 @@
  * @group Hydrahon_Query_Sql_Truncate
  */
 
-class Query_Sql_Truncate_Test extends Query_QueryCase
+class Query_Sql_Truncate_Test extends \ClanCats\Hydrahon\Test\QueryCase
 {
 	protected $queryClass = 'ClanCats\\Hydrahon\\Query\\Sql\\Truncate';
 

@@ -1,4 +1,7 @@
-<?php namespace ClanCats\Hydrahon\Test;
+<?php 
+
+namespace ClanCats\Hydrahon\Test;
+
 /**
  * Hydrahon builder test 
  ** 
@@ -12,7 +15,7 @@
 
 use ClanCats\Hydrahon\Builder;
 
-class Builder_Test extends \PHPUnit_Framework_TestCase
+class BuilderTest extends \PHPUnit_Framework_TestCase
 {
 	/**
 	 * Builder::extend test

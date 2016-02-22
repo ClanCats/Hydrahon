@@ -13,7 +13,7 @@
 
 use ClanCats\Hydrahon\Query\Sql\BaseSql;
 
-class Query_Sql_BaseSql_Test extends Query_QueryCase
+class Query_Sql_BaseSql_Test extends \ClanCats\Hydrahon\Test\QueryCase
 {
 	protected $queryClass = 'ClanCats\\Hydrahon\\Query\\Sql\\SelectBase';
 

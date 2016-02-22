@@ -15,7 +15,7 @@ use ClanCats\Hydrahon\Query\Sql\Func;
 use ClanCats\Hydrahon\Query\Sql\Select;
 use ClanCats\Hydrahon\Query\Expression;
 
-class Query_Sql_Select_Test extends Query_QueryCase
+class Query_Sql_Select_Test extends \ClanCats\Hydrahon\Test\QueryCase
 {
 	protected $queryClass = 'ClanCats\\Hydrahon\\Query\\Sql\\Select';
 

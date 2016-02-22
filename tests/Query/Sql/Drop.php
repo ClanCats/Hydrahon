@@ -12,7 +12,7 @@
  * @group Hydrahon_Query_Sql_Drop
  */
 
-class Query_Sql_Drop_Test extends Query_QueryCase
+class Query_Sql_Drop_Test extends \ClanCats\Hydrahon\Test\QueryCase
 {
 	protected $queryClass = 'ClanCats\\Hydrahon\\Query\\Sql\\Drop';
 
