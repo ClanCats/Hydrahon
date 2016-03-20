@@ -53,24 +53,19 @@ class Arangodb implements TranslatorInterface
         // start the loops
         $queryString = $this->translateFor();
 
+        // translate the filters
+        $queryString = $this->translateFilter();
+
         // build limit and offset
         $queryString .= $this->translateLimitWithOffset();
 
         // translate subuery
         if ($this->attr('subquery') && $this->attr('subquery') instanceof Aql)
         {
-            $translator = new static;
-
-            list($subQuery, $subQueryParameters) = $translator->translate($this->attr('subquery'));
-
-            // merge the parameters
-            foreach($subQueryParameters as $parameter)
-            {
-                $this->addParameter($parameter);
-            }
-
-            $queryString .= ' ' . $subQuery;
+            $queryString .= $this->translateSubquery($this->attr('subquery'));
         }
+
+        $queryString .= $this->translateReturn();
 
         // get the query parameters and reset
         $queryParameters = $this->parameters; $this->clearParameters();
@@ -276,6 +271,27 @@ class Arangodb implements TranslatorInterface
      */
 
     /**
+     * Translate a subquery object with the given callback
+     * 
+     * @param callable
+     * @return string
+     */
+    protected function translateSubquery($callback)
+    {
+        $translator = new static;
+
+        list($subQuery, $subQueryParameters) = $translator->translate($this->attr('subquery'));
+
+        // merge the parameters
+        foreach($subQueryParameters as $parameter)
+        {
+            $this->addParameter($parameter);
+        }
+
+        return $subQuery;
+    }
+
+    /**
      * Translate the current query to an SQL select statement
      *
      * @return string
@@ -284,7 +300,7 @@ class Arangodb implements TranslatorInterface
     {
         if ($this->attr('for') && $this->attr('in'))
         {
-            return  'FOR ' . $this->attr('for') . ' IN ' . $this->attr('in');
+            return  'FOR ' . $this->escape($this->attr('for')) . ' IN ' . $this->escape($this->attr('in'));
         }
 
         return '';
@@ -304,5 +320,73 @@ class Arangodb implements TranslatorInterface
         }
 
         return '';        
+    }
+
+    /**
+     * Build the limit and offset part
+     *
+     * @param Query         $query
+     * @return stringlimit
+     */
+    protected function translateReturn()
+    {
+        if ($return = $this->attr('return'))
+        {
+            return ' RETURN ' . $this->escape($return);
+        }
+
+        return '';        
+    }
+
+    /**
+     * Build the limit and offset part
+     *
+     * @param Query         $query
+     * @return stringlimit
+     */
+    protected function translateFilter()
+    {
+        $build = 'FILTER ';
+
+        foreach ($this->attr('filters') as $filterKey => $filter) 
+        {
+            // ad the filter type if not the first filter
+            if ($filterKey !== 0) 
+            {
+                $filterType = reset($filter);
+
+                if ($filterType === 'and') {
+                    $build .= '&& ';
+                }  elseif ($filterType === 'or') {
+                    $build .= '|| ';
+                }
+            }
+
+            // to make nested filters possible you can pass a closure
+            // wich will create a new query where you can add your nested wheres
+            if (!isset($filter[3]) && isset($filter[2]) && $filter[2] instanceof Aql) 
+            {
+                // The parameters get added by the call of compile where
+                $build .= ' (' . $this->translateSubquery($filter[2]) . ')'; continue;
+            }
+
+            var_dump($filter); die;
+            // when we have an array as where values we have
+            // to parameterize them
+            if (is_array($where[3])) 
+            {
+                $where[3] = '(' . $this->parameterize($where[3]) . ')';
+            } else {
+                $where[3] = $this->param($where[3]);
+            }
+
+            // we always need to escepe where 1 wich referrs to the key
+            $where[1] = $this->escape($where[1]);
+
+            // implode the beauty
+            $build .= ' ' . implode(' ', $where);
+        }
+
+        return $build;    
     }
 }

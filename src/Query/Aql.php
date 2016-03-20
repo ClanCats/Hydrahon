@@ -27,6 +27,20 @@ class Aql extends BaseQuery
     protected $in = null;
 
     /**
+     * the return statement
+     *
+     * @var string|object
+     */
+    protected $return = null;
+
+    /**
+     * The filters
+     *
+     * @var array()
+     */
+    protected $filters = null;
+
+    /**
      * Subquery
      *
      * @var string|object
@@ -91,6 +105,96 @@ class Aql extends BaseQuery
         // assing item and collection
         $this->for = $item;
         $this->in = $collection;
+
+        return $this;
+    }
+
+    /**
+     * Set the return value
+     * 
+     * @param string|object
+     * @return self
+     */
+    public function return($return)
+    {
+        $this->return = $return; return $this;
+    }
+
+    /**
+     * Alias of the return method but the value will not be escaped
+     * 
+     * @param string
+     * @return self
+     */
+    public function returnRaw($return)
+    {
+        return $this->return($this->raw($return));
+    }
+
+    /**
+     * Create a filter statement
+     *
+     * example:
+     *     ->filter('movie.title', 'Moon')
+     *     ->filter('user.age', '>', 18)
+     *     ->filter('post.category', 'in', array('css', 'javascript'))
+     *     ->filter('post.category', 'not in', 'user.hiddenCategories', false)
+     *
+     * @param string            $column             The SQL column
+     * @param mixed             $param1
+     * @param mixed             $param2
+     * @param bool              $parameterize       Shold the given value be parameterized?
+     * @param string            $type               The where type ( and, or )
+     *
+     * @return self
+     */
+    public function filter($column, $param1 = null, $param2 = null, $parameterize = true, $type = 'and')
+    {
+        // check if the where type is valid
+        if ($type !== 'and' && $type !== 'or')
+        {
+            throw new Exception('Invalid filter type "'.$type.'"');
+        }
+
+        // when column is an array we assume to make a bulk and where.
+        if (is_array($column)) 
+        {
+            $subquery = new static;
+            foreach ($column as $key => $val) 
+            {
+                $subquery->filter($key, $val, null, $parameterize, $type);
+            }
+
+            $this->filters[] = array($type, $parameterize, $subquery); return $this;
+        }
+
+        // to make nested wheres possible you can pass an closure
+        // wich will create a new query where you can add your nested wheres
+        if (is_object($column) && ($column instanceof \Closure)) 
+        {
+            // create new query object
+            $subquery = new static;
+
+            // run the closure callback on the sub query
+            call_user_func_array($column, array(&$subquery));
+ 
+            $this->filters[] = array($type, $parameterize, $subquery); return $this;
+        }
+
+        // when param2 is null we replace param2 with param one as the
+        // value holder and make param1 to the = operator.
+        if (is_null($param2)) 
+        {
+            $param2 = $param1; $param1 = '==';
+        }
+
+        // Remove dublicated items for in statements
+        if (is_array($param2)) {
+            $param2 = array_unique($param2);
+        }
+
+        // add a normal filter
+        $this->filters[] = array($type, $parameterize, $column, $param1, $param2);
 
         return $this;
     }
