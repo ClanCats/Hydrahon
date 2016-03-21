@@ -24,6 +24,14 @@ class Arangodb implements TranslatorInterface
     protected $parameters = array();
 
     /**
+     * Should the parameters be binded to named parameters
+     * int the translation process?
+     * 
+     * @var bool
+     */
+    protected $bindParameters = true;
+
+    /**
      * The current query attributes
      * 
      * @param array
@@ -54,7 +62,7 @@ class Arangodb implements TranslatorInterface
         $queryString = $this->translateFor();
 
         // translate the filters
-        $queryString = $this->translateFilter();
+        $queryString .= $this->translateFilter();
 
         // build limit and offset
         $queryString .= $this->translateLimitWithOffset();
@@ -69,6 +77,18 @@ class Arangodb implements TranslatorInterface
 
         // get the query parameters and reset
         $queryParameters = $this->parameters; $this->clearParameters();
+
+        // if named parameter binding is enabled
+        // replace the unmaed parameters with named ones.
+        if ($this->bindParameters)
+        {
+            foreach($queryParameters as $key => $parameter) 
+            {
+                $queryString = preg_replace('/\@\?/', '@p' . $key, $queryString, 1);
+                $queryParameters['p' . $key] = $parameter;
+                unset($queryParameters[$key]);
+            }
+        }
 
         return array($queryString, $queryParameters);
     }
@@ -136,7 +156,7 @@ class Arangodb implements TranslatorInterface
     {
         if (!$this->isExpression($value)) 
         {
-            $this->addParameter($value); return '?';
+            $this->addParameter($value); return '@?';
         }
 
         return $value;
@@ -279,6 +299,7 @@ class Arangodb implements TranslatorInterface
     protected function translateSubquery($callback)
     {
         $translator = new static;
+        $translator->bindParameters = false;
 
         list($subQuery, $subQueryParameters) = $translator->translate($this->attr('subquery'));
 
@@ -300,7 +321,7 @@ class Arangodb implements TranslatorInterface
     {
         if ($this->attr('for') && $this->attr('in'))
         {
-            return  'FOR ' . $this->escape($this->attr('for')) . ' IN ' . $this->escape($this->attr('in'));
+            return 'FOR ' . $this->escape($this->attr('for')) . ' IN ' . $this->escape($this->attr('in'));
         }
 
         return '';
@@ -346,47 +367,56 @@ class Arangodb implements TranslatorInterface
      */
     protected function translateFilter()
     {
-        $build = 'FILTER ';
-
-        foreach ($this->attr('filters') as $filterKey => $filter) 
+        if ($filters = $this->attr('filters'))
         {
-            // ad the filter type if not the first filter
-            if ($filterKey !== 0) 
-            {
-                $filterType = reset($filter);
+            $build = ' FILTER ';
 
-                if ($filterType === 'and') {
-                    $build .= '&& ';
-                }  elseif ($filterType === 'or') {
-                    $build .= '|| ';
+            foreach ($this->attr('filters') as $filterKey => $filter) 
+            {
+                $filterType = array_shift($filter);
+                $parameterize = array_shift($filter);
+
+                // ad the filter type if not the first filter
+                if ($filterKey !== 0) 
+                {
+                    $filterType = reset($filter);
+
+                    if ($filterType === 'and') {
+                        $build .= '&& ';
+                    }  elseif ($filterType === 'or') {
+                        $build .= '|| ';
+                    }
                 }
+
+                // normalize the keys
+                $filter = array_values($filter);
+
+                // to make nested filters possible you can pass a closure
+                // wich will create a new query where you can add your nested wheres
+                if (!isset($filter[1]) && isset($filter[0]) && $filter[0] instanceof Aql) 
+                {
+                    // The parameters get added by the call of compile where
+                    $build .= '(' . $this->translateSubquery($filter[0]) . ')'; continue;
+                }
+
+                // otherwise we have a normal filter
+                list($column, $operator, $value) = $filter;
+
+                $build .= $this->escape($column) . ' ' .  $operator . ' ';
+
+                if ($parameterize)
+                {
+                    $value = $this->param($value);
+                } else {
+                    $value = $this->escape($value);
+                }
+
+                $build .= $value;
             }
 
-            // to make nested filters possible you can pass a closure
-            // wich will create a new query where you can add your nested wheres
-            if (!isset($filter[3]) && isset($filter[2]) && $filter[2] instanceof Aql) 
-            {
-                // The parameters get added by the call of compile where
-                $build .= ' (' . $this->translateSubquery($filter[2]) . ')'; continue;
-            }
-
-            var_dump($filter); die;
-            // when we have an array as where values we have
-            // to parameterize them
-            if (is_array($where[3])) 
-            {
-                $where[3] = '(' . $this->parameterize($where[3]) . ')';
-            } else {
-                $where[3] = $this->param($where[3]);
-            }
-
-            // we always need to escepe where 1 wich referrs to the key
-            $where[1] = $this->escape($where[1]);
-
-            // implode the beauty
-            $build .= ' ' . implode(' ', $where);
+            return $build;
         }
 
-        return $build;    
+        return '';
     }
 }

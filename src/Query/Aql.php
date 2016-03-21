@@ -79,7 +79,7 @@ class Aql extends BaseQuery
             
             // run the callback
             $this->subquery->call($scope);
-
+            
             // return self
             return $this;
         }
