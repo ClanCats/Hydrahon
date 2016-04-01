@@ -401,7 +401,7 @@ class Mysql implements TranslatorInterface
         }
     
         // build offset and limit
-        if ($this->attr('limit') || $this->attr('offset'))
+        if ($this->attr('limit'))
         {
              $build .= $this->translateLimit();
         }
@@ -425,7 +425,7 @@ class Mysql implements TranslatorInterface
         }
     
         // build offset and limit
-        if ($this->attr('limit') || $this->attr('offset'))
+        if ($this->attr('limit'))
         {
              $build .= $this->translateLimit();
         }
