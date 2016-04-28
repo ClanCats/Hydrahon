@@ -140,6 +140,27 @@ class BaseQuery
     }
 
     /**
+     * Overwrite the query attributes
+     * 
+     * Jesuz only use this if you really really know what your are doing 
+     * otherwise you might break stuff add sql injection and all other bad stuff..
+     * 
+     * @return array
+     */
+    final public function overwriteAttributes($attributes)
+    {
+        foreach($attributes as $key => $attribute)
+        {
+            if (isset($this->{$key}))
+            {
+                $this->{$key} = $attribute;
+            }
+        }
+
+        return $attributes;
+    }
+
+    /**
      * Run the result fetcher and return the results
      *
      * @return mixed
