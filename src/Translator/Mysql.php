@@ -579,8 +579,9 @@ class Mysql implements TranslatorInterface
                 reset($subAttributes['ons']);
                 $subAttributes['ons'][key($subAttributes['ons'])][0] = '';
 
-                foreach($subAttributes['ons'] as list($type, $localKey, $operator, $referenceKey))
+                foreach($subAttributes['ons'] as $on)
                 {
+                    list($type, $localKey, $operator, $referenceKey) = $on;
                     $joinConditions .= ' ' . $type . ' ' . $this->escape($localKey) . ' ' . $operator . ' ' . $this->escape($referenceKey);
                 }
 
