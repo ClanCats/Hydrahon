@@ -9,7 +9,7 @@
 
 use ClanCats\Hydrahon\BaseQuery;
 
-class Drop extends BaseQuery
+class Drop extends Base
 {
     // also here we need the class only to identify the query
 }

@@ -12,20 +12,6 @@ use ClanCats\Hydrahon\Query\Expression;
 class BaseQuery
 {   
     /**
-     * The database the query should be executed on
-     * 
-     * @var string
-     */
-    protected $database = null;
-
-    /**
-     * The table the query should be executed on
-     * 
-     * @var string
-     */
-    protected $table = null;
-
-    /**
      * Query builder callback macros
      * 
      * @var array
@@ -37,21 +23,43 @@ class BaseQuery
      *
      * @var callable
      */
-    private $resultFetcher = null;
+    protected $resultFetcher = null;
 
     /**
-     * Construct new query object
+     * Construct new query object and inherit properties
      *
-     * @param callable              $resultFetcher
-     * @param string                $table
-     * @param string                $database
+     * @param BaseQuery             $parent
      * @return void
      */
-    public function __construct($resultFetcher = null, $table = null, $database = null)
+    final public function __construct(BaseQuery $parent = null)
+    {
+        if (!is_null($parent))
+        {
+            $this->inheritFromParent($parent);
+        }
+    }
+
+    /**
+     * Inherit property values from parent query
+     * 
+     * @param BaseQuery             $parent
+     * @return void
+     */
+    protected function inheritFromParent(BaseQuery $parent)
+    {
+        $this->macros = $parent->macros;
+        $this->resultFetcher = $parent->resultFetcher;   
+    }
+
+    /**
+     * Set the result fetcher of the query
+     *
+     * @param callable              $resultFetcher
+     * @return void
+     */
+    public function setResultFetcher($resultFetcher = null)
     {
         $this->resultFetcher = $resultFetcher;
-        $this->table = $table;
-        $this->database = $database;
     }
 
     /**
@@ -132,14 +140,24 @@ class BaseQuery
     }
 
     /**
-     * Creates another query instance with the current parameters
-     *
-     * @param string                            $className
-     * @return ClanCats\Hydrahon\BaseQuery
+     * Overwrite the query attributes
+     * 
+     * Jesuz only use this if you really really know what your are doing 
+     * otherwise you might break stuff add sql injection and all other bad stuff..
+     * 
+     * @return array
      */
-    final protected function createSubQuery($className)
+    final public function overwriteAttributes($attributes)
     {
-        return new $className($this->resultFetcher, $this->table, $this->database);
+        foreach($attributes as $key => $attribute)
+        {
+            if (isset($this->{$key}))
+            {
+                $this->{$key} = $attribute;
+            }
+        }
+
+        return $attributes;
     }
 
     /**

@@ -154,6 +154,58 @@ class Query_Sql_Select_Test extends Query_QueryCase
 	}
 
 	/**
+	 * Select::join
+	 */
+	public function testJoinCallbacks()
+	{
+		// simple clojure
+		$this->assertAttributes($this->createQuery()
+		->join('avatars', function($join) {
+			$join->on('user.id', '=', 'avatars.user_id');
+		}), array(
+			'joins' => array(
+				array('left', 'avatars', array( 'ons' => array(
+					array('and', 'user.id', '=', 'avatars.user_id'),
+				))),
+			)
+		));
+
+		// with or
+		$this->assertAttributes($this->createQuery()
+		->join('avatars', function($join) {
+			$join->on('user.id', '=', 'avatars.user_id');
+			$join->orOn('user.id', '=', 'avatars.other_user_id');
+		}), array(
+			'joins' => array(
+				array('left', 'avatars', array( 'ons' => array(
+					array('and', 'user.id', '=', 'avatars.user_id'),
+					array('or', 'user.id', '=', 'avatars.other_user_id'),
+				))),
+			)
+		));
+
+		// with or and wheres
+		$this->assertAttributes($this->createQuery()
+		->join('avatars', function($join) {
+			$join->on('user.id', '=', 'avatars.user_id');
+			$join->orOn('user.id', '=', 'avatars.other_user_id');
+			$join->where('avatars.active', 1);
+		}), array(
+			'joins' => array(
+				array('left', 'avatars', array( 
+					'ons' => array(
+						array('and', 'user.id', '=', 'avatars.user_id'),
+						array('or', 'user.id', '=', 'avatars.other_user_id'),
+					),
+					'wheres' => array(
+						array('where', 'avatars.active', '=', 1),
+					),
+				)),
+			)
+		));
+	}
+
+	/**
 	 * Select::run
 	 */
 	public function testRun()

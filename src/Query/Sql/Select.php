@@ -1,4 +1,6 @@
-<?php namespace ClanCats\Hydrahon\Query\Sql;
+<?php 
+
+namespace ClanCats\Hydrahon\Query\Sql;
 
 /**
  * SQL query object
@@ -9,7 +11,7 @@
 
 use ClanCats\Hydrahon\Query\Expression;
 
-class Select extends BaseSql
+class Select extends SelectBase
 {
     /**
      * fields to be selected
@@ -288,13 +290,27 @@ class Select extends BaseSql
      * 
      * @return self
      */
-    public function join($table, $localKey, $operator, $referenceKey, $type = 'left')
+    public function join($table, $localKey, $operator = null, $referenceKey = null, $type = 'left')
     {
     	// validate the join type
     	if (!in_array($type, array('inner', 'left', 'right', 'outer')))
     	{
     		throw new Exception('Invalid join type "'.$type.'" given. Available type: inner, left, right, outer');
     	}
+
+        // to make nested joins possible you can pass an closure
+        // wich will create a new query where you can add your nested wheres
+        if (is_object($localKey) && ($localKey instanceof \Closure)) 
+        {
+            // create new query object
+            $subquery = new SelectJoin;
+
+            // run the closure callback on the sub query
+            call_user_func_array($localKey, array(&$subquery));
+    
+            // add the join
+            $this->joins[] = array($type, $table, $subquery); return $this;
+        }
 
     	$this->joins[] = array($type, $table, $localKey, $operator, $referenceKey); return $this;
     }
@@ -309,7 +325,7 @@ class Select extends BaseSql
      * 
      * @return self
      */
-    public function leftJoin($table, $localKey, $operator, $referenceKey)
+    public function leftJoin($table, $localKey, $operator = null, $referenceKey = null)
     {
     	return $this->join($table, $localKey, $operator, $referenceKey, 'left');
     }
@@ -324,7 +340,7 @@ class Select extends BaseSql
      * 
      * @return self
      */
-    public function rightJoin($table, $localKey, $operator, $referenceKey)
+    public function rightJoin($table, $localKey, $operator = null, $referenceKey = null)
     {
     	return $this->join($table, $localKey, $operator, $referenceKey, 'right');
     }
@@ -339,7 +355,7 @@ class Select extends BaseSql
      * 
      * @return self
      */
-    public function innerJoin($table, $localKey, $operator, $referenceKey)
+    public function innerJoin($table, $localKey, $operator = null, $referenceKey = null)
     {
     	return $this->join($table, $localKey, $operator, $referenceKey, 'inner');
     }
@@ -354,7 +370,7 @@ class Select extends BaseSql
      * 
      * @return self
      */
-    public function outerJoin($table, $localKey, $operator, $referenceKey)
+    public function outerJoin($table, $localKey, $operator = null, $referenceKey = null)
     {
     	return $this->join($table, $localKey, $operator, $referenceKey, 'outer');
     }

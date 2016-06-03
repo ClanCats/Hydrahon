@@ -9,80 +9,101 @@
 
 use ClanCats\Hydrahon\BaseQuery;
 
+use ClanCats\Hydrahon\Query\Sql\Select;
+use ClanCats\Hydrahon\Query\Sql\Insert;
+use ClanCats\Hydrahon\Query\Sql\Update;
+use ClanCats\Hydrahon\Query\Sql\Delete;
+use ClanCats\Hydrahon\Query\Sql\Drop;
+use ClanCats\Hydrahon\Query\Sql\Truncate;
+use ClanCats\Hydrahon\Query\Sql\Table;
+
 class Sql extends BaseQuery
 {
     /**
-     * Create a new select query builder
+     * Create a new table instance
      * 
-     *     $h->table('users')->select(['name', 'age'])
+     *     $h->table('users')
      *
      * @param string|array                              $fields
-     * @return ClanCats\Hydrahon\Query\Sql\Select
+     * @return Select
      */
-    public function select($fields = null)
+    public function table($table = null, $alias = null)
     {
-        return $this->createSubQuery(__NAMESPACE__ . '\\Sql\\Select')->fields($fields);
+        $query = new Table($this); return $query->table($table, $alias);
+    }
+
+    /**
+     * Create a new select query builder
+     * 
+     *     $h->select('users', ['name', 'age'])
+     *
+     * @param string|array                              $fields
+     * @return Select
+     */
+    public function select($table = null, $fields = null)
+    {
+        return $this->table($table)->select($fields);
     }
 
     /**
      * Create a new insert query builder
      * 
-     *     $h->table('users')->insert(['name' => 'Lucas', 'age' => 21])
+     *     $h->insert('users', ['name' => 'Lucas', 'age' => 21])
      *
      * @param array                                     $values
-     * @return ClanCats\Hydrahon\Query\Sql\Insert
+     * @return Insert
      */
-    public function insert(array $values = array())
+    public function insert($table = null, array $values = array())
     {
-        return $this->createSubQuery(__NAMESPACE__ . '\\Sql\\Insert')->values($values);
+        return $this->table($table)->insert($values);
     }
 
     /**
      * Create a new update query builder
      *
-     *     $h->table('users')->update(['age' => 25])->where('name', 'Johanna')
+     *     $h->update('users', ['age' => 25])->where('name', 'Johanna')
      *         
      * @param array                                  $values
-     * @return ClanCats\Hydrahon\Query\Sql\Update
+     * @return Update
      */
-    public function update(array $values = array())
+    public function update($table = null, array $values = array())
     {
-        return $this->createSubQuery(__NAMESPACE__ . '\\Sql\\Update')->set($values);
+        return $this->table($table)->update($values);
     }
 
     /**
      * Create a new delete sql builder
      * 
-     *     $h->table('users')->delete()->where('age', '<', '18')
+     *     $h->delete('users')->where('age', '<', '18')
      *
-     * @return ClanCats\Hydrahon\Query\Sql\Delete
+     * @return Delete
      */
-    public function delete()
+    public function delete($table = null)
     {
-        return $this->createSubQuery(__NAMESPACE__ . '\\Sql\\Delete');
+        return $this->table($table)->delete();
     }
 
     /**
      * Create a new drop table query
      * 
-     *     $h->table('users')->drop()
+     *     $h->drop('users')
      *
-     * @return ClanCats\Hydrahon\Query\Sql\Drop
+     * @return Drop
      */
-    public function drop()
+    public function drop($table = null)
     {
-        return $this->createSubQuery(__NAMESPACE__ . '\\Sql\\Drop');
+        return $this->table($table)->drop();
     }
 
     /**
      * Create a new truncate table query
      * 
-     *     $h->table('users')->truncate()
+     *     $h->truncate('users')
      *
-     * @return ClanCats\Hydrahon\Query\Sql\Truncate
+     * @return Truncate
      */
-    public function truncate()
+    public function truncate($table = null)
     {
-        return $this->createSubQuery(__NAMESPACE__ . '\\Sql\\Truncate');
+        return $this->table($table)->truncate();
     }
 }

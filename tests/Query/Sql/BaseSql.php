@@ -15,7 +15,7 @@ use ClanCats\Hydrahon\Query\Sql\BaseSql;
 
 class Query_Sql_BaseSql_Test extends Query_QueryCase
 {
-	protected $queryClass = 'ClanCats\\Hydrahon\\Query\\Sql\\BaseSql';
+	protected $queryClass = 'ClanCats\\Hydrahon\\Query\\Sql\\SelectBase';
 
 	/**
 	 * BaseSql::construct
@@ -236,5 +236,20 @@ class Query_Sql_BaseSql_Test extends Query_QueryCase
 
 		// custom page size
 		$this->assertAttributes($this->createQuery()->page(2, 5), array('limit' => 5, 'offset' => 10));
+	}
+
+	/**
+	 * BaseSql::page
+	 */
+	public function testOverwriteAttributes()
+	{
+		$query = $this->createQuery();
+		$query->where('id', 42);
+
+		$this->assertAttributes($query, array('wheres' => array(array('where', 'id', '=', 42))));
+
+		// overwrite the wheres
+		$query->overwriteAttributes(array('wheres' => array()));
+		$this->assertAttributes($query, array());
 	}
 }

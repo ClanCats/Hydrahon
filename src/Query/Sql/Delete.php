@@ -7,7 +7,7 @@
  * @copyright       2015 Mario Döring
  */
 
-class Delete extends BaseSql
+class Delete extends SelectBase
 {
     // currently delete does nothing sepecial so go on do other stuff..
 }

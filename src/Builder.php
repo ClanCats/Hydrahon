@@ -100,62 +100,58 @@ class Builder
         $this->executionCallback = $executionCallback;
 
         // prepare the current grammar
-        list($this->queryClass, $translatorClass) = static::$grammar[$grammarKey];
+        list($queryBuilderClass, $translatorClass) = static::$grammar[$grammarKey];
+
+        // create the query builder specific instances
         $this->queryTranslator = new $translatorClass;
+        $this->queryBuilder = new $queryBuilderClass;
+
+        // assign the result fetcher
+        $this->queryBuilder->setResultFetcher(array($this, 'executeQuery'));
 
         // check if the translator is valid
         if (!$this->queryTranslator instanceof TranslatorInterface)
         {
             throw new Exception('A query translator must implement the "TranslatorInterface" interface.');
         }
+
+        // check if the query builder is an instance of Base Query
+        if (!$this->queryBuilder instanceof BaseQuery)
+        {
+            throw new Exception('A query builder must be an instance of the "BaseQuery".');
+        }
     }
 
     /**
-     * Creates a new query object with the given table and database and
-     * sets the query table and optinal the database seperated by a dott
+     * Forwards calls to the current query builder
      * 
      * @param string                        $table
      * @return ClanCats\Hydrahon\BaseQuery
      */
-    public function table($table)
+    public function __call($method, $arguments)
     {
-        $database = null;
+        return call_user_func_array(array($this->queryBuilder, $method), $arguments);
+    }
 
-        if (is_string($table) && strpos($table, '.') !== false)
-        {
-            $selection = explode('.', $table);
-
-            if (count($selection) !== 2)
-            {
-                throw new Exception( 'Invalid argument given. You can only define one seperator.' );
-            }
-
-            list($database, $table) = $selection;
-        }
-
-        // the table might include an alias we need to parse that one out 
-        if (is_string($table) && strpos($table, ' as ') !== false)
-        {
-            $tableParts = explode(' as ', $table);
-            $table = array($tableParts[0] => $tableParts[1]);
-            unset($tableParts);
-        }
-
-        // create and return new query instance
-        return new $this->queryClass(array($this, 'executeQuery'), $table, $database);
+    /**
+     * Translate the given query
+     * 
+     * @param BaseQuery                 $query
+     * @return array
+     */
+    public function translateQuery(BaseQuery $query)
+    {
+        return $this->queryTranslator->translate($query);
     }
 
     /**
      * Translate a query and run the current execution callback
      *
-     * @param ClanCats\Hydrahon\BaseQuery               $query
+     * @param BaseQuery               $query
      * @return mixed
      */
     public function executeQuery(BaseQuery $query)
     {
-        $translatedArguments = $this->queryTranslator->translate($query);
-        $translatedArguments = array_merge(array($query), $translatedArguments);
-
-        return call_user_func_array($this->executionCallback, $translatedArguments);
+        return call_user_func_array($this->executionCallback, array_merge(array($query), $this->translateQuery($query)));
     }
 }

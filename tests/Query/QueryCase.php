@@ -22,16 +22,20 @@ abstract class Query_QueryCase extends \PHPUnit_Framework_TestCase
 	 */
 	protected function createQuery($result = null)
 	{
-		return new $this->queryClass(function( $query ) use( $result ) {
+		$query = new $this->queryClass;
+		$query->setResultFetcher(function() use($result)
+		{
 			return $result;
-		} , 'phpunit', 'db_phpunit' );
+		});
+
+		return $query;
 	}
 
 	/**
 	 * Returns all attributes or a specific one
 	 * 
-	 * @param ClanCats\Hydrahon\Query\Sql\BaseQuery 		$query
-	 * @param string 										$key
+	 * @param BaseQuery 						$query
+	 * @param string 							$key
 	 * @return mixed
 	 */
 	protected function attributes(BaseQuery $query, $key = null)
@@ -47,6 +51,17 @@ abstract class Query_QueryCase extends \PHPUnit_Framework_TestCase
 					if (isset($where[1]) && $where[1] instanceof BaseQuery)
 					{
 						$where[1] = $this->attributes($where[1]);
+					}
+				}
+			}
+
+			if ($queryKey === 'joins' && is_array($value))
+			{
+				foreach($value as &$join)
+				{
+					if (isset($join[2]) && $join[2] instanceof BaseQuery)
+					{
+						$join[2] = $this->attributes($join[2]);
 					}
 				}
 			}
@@ -74,11 +89,6 @@ abstract class Query_QueryCase extends \PHPUnit_Framework_TestCase
 	 */
 	protected function assertAttributes(BaseQuery $query, array $attributes = array())
 	{
-		$attributes = array_merge(array(
-			'database' => 'db_phpunit',
-			'table' => 'phpunit'
-		), $attributes);
-
 		$this->assertEquals($attributes, $this->attributes($query));
 	}
 }
