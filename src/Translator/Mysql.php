@@ -416,7 +416,7 @@ class Mysql implements TranslatorInterface
      */
     protected function translateDelete()
     {
-        $build = 'delete from ' . $this->escapeTable();
+        $build = 'delete from ' . $this->escapeTable(false);
 
         // build the where statements
         if ($wheres = $this->attr('wheres'))
