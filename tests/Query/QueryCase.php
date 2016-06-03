@@ -54,6 +54,17 @@ abstract class Query_QueryCase extends \PHPUnit_Framework_TestCase
 					}
 				}
 			}
+
+			if ($queryKey === 'joins' && is_array($value))
+			{
+				foreach($value as &$join)
+				{
+					if (isset($join[2]) && $join[2] instanceof BaseQuery)
+					{
+						$join[2] = $this->attributes($join[2]);
+					}
+				}
+			}
 		}
 
 		if (!is_null($key))
