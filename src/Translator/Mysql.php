@@ -561,8 +561,43 @@ class Mysql implements TranslatorInterface
 
         foreach ($this->attr('joins') as $join) 
         {
-            list($type, $table, $localKey, $operator, $referenceKey) = $join;
-            $build .= ' ' . $type . ' join ' . $this->escape($table) . ' on ' . $this->escape($localKey) . ' ' . $operator . ' ' . $this->escape($referenceKey);
+            // get the type and table
+            $type = $join[0]; $table = $join[1];
+
+            // start the join
+            $build .= ' ' . $type . ' join ' . $this->escape($table) . ' on ';
+
+            // to make nested join conditions possible you can pass an closure
+            // wich will create a new query where you can add your nested ons and wheres
+            if (!isset($join[3]) && isset($join[2]) && $join[2] instanceof BaseQuery) 
+            {
+                $subAttributes = $join[2]->attributes();
+
+                $joinConditions = '';
+
+                // remove the first type from the ons
+                reset($subAttributes['ons']);
+                $subAttributes['ons'][key($subAttributes['ons'])][0] = '';
+
+                foreach($subAttributes['ons'] as list($type, $localKey, $operator, $referenceKey))
+                {
+                    $joinConditions .= ' ' . $type . ' ' . $this->escape($localKey) . ' ' . $operator . ' ' . $this->escape($referenceKey);
+                }
+
+                $build .= trim($joinConditions);
+
+                // compile the where if set
+                if (!empty($subAttributes['wheres']))
+                {
+                    $build .= ' and ' . substr($this->translateWhere($subAttributes['wheres']), 7);
+                }
+            }
+            else
+            {
+                // othewise default join
+                list($type, $table, $localKey, $operator, $referenceKey) = $join;
+                $build .= $this->escape($localKey) . ' ' . $operator . ' ' . $this->escape($referenceKey);
+            }
         }
 
         return $build;
