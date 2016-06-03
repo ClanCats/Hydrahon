@@ -575,6 +575,18 @@ class Translator_Mysql_Test extends TranslatorCase
 		{
 			return $q->table('test')->delete()->where('id', 1)->limit(1);
 		});
+
+		// simple with db
+		$this->assertQueryTranslation('delete from `db`.`test` where `id` = ? limit 1', array(1), function($q) 
+		{
+			return $q->table('db.test')->delete()->where('id', 1)->limit(1);
+		});
+
+		// simple with alias which is invalid and should not be set
+		$this->assertQueryTranslation('delete from `db`.`test` where `id` = ? limit 1', array(1), function($q) 
+		{
+			return $q->table('db.test as test')->delete()->where('id', 1)->limit(1);
+		});
 	}
 
 	/**
