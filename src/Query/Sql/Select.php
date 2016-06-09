@@ -53,7 +53,7 @@ class Select extends SelectBase
      *
      * @var false|string
      */
-    protected $groupResult = false;
+    protected $groupResults = false;
 
     /**
      * Forward a value as key
@@ -381,14 +381,14 @@ class Select extends SelectBase
      * @param string|bool        $key
      * @return self
      */
-    public function forward_key($key = true)
+    public function forwardKey($key = true)
     {
         if ($key === false) {
-            $this->forward_key = false;
+            $this->forwardKey = false;
         } elseif ($key === true) {
-            $this->forward_key = \ClanCats::$config->get('database.default_primary_key', 'id');
+            $this->forwardKey = \ClanCats::$config->get('database.default_primary_key', 'id');
         } else {
-            $this->forward_key = $key;
+            $this->forwardKey = $key;
         }
 
         return $this;
@@ -413,12 +413,12 @@ class Select extends SelectBase
      * @param string|bool        $key
      * @return self
      */
-    public function group_result($key)
+    public function groupResults($key)
     {
         if ($key === false) {
-            $this->group_result = false;
+            $this->groupResults = false;
         } else {
-            $this->group_result = $key;
+            $this->groupResults = $key;
         }
 
         return $this;
@@ -426,53 +426,56 @@ class Select extends SelectBase
 
     /**
      * Executes the 'executeResultFetcher' callback and handles the results
-     *
-     * @param string         $handler
-     * @return mixed
      */
-    public function run()
+    public function get()
     {
-        // run the callbacks to retirve the results
+         // run the callbacks to retirve the results
         $results = $this->executeResultFetcher();
 
         // we always exprect an array here!
         if (!is_array($results))
         {
-        	$results = array();
+            $results = array();
         }
 
         // In case we should forward a key means using a value
         // from every result as array key.
-        // if ($this->forward_key !== false) {
-        //     $raw_results = $results;
-        //     $results = array();
+        if ($this->forwardKey !== false && is_string($this->forwardKey)) 
+        {
+            $rawResults = $results;
+            $results = array();
 
-        //     if (in_array('assoc', $this->fetch_arguments)) {
-        //         foreach ($raw_results as $result) {
-        //             $results[$result[$this->forward_key]] = $result;
-        //         }
-        //     } else {
-        //         foreach ($raw_results as $result) {
-        //             $results[$result->{$this->forward_key}] = $result;
-        //         }
-        //     }
-        // }
+            // check if the collection is beeing fetched 
+            // as an associated array 
+            if (!is_array(reset($rawResults)))
+            {
+                throw new Exception('Cannot forward key, the result is no associated array.');
+            }
 
-        // // Group the results by a value
-        // if ($this->group_result !== false) {
-        //     $raw_results = $results;
-        //     $results = array();
+            foreach ($rawResults as $result) 
+            {
+                $results[$result[$this->forwardKey]] = $result;
+            }
+        }
 
-        //     if (in_array('assoc', $this->fetch_arguments)) {
-        //         foreach ($raw_results as $key => $result) {
-        //             $results[$result[$this->group_result]][$key] = $result;
-        //         }
-        //     } else {
-        //         foreach ($raw_results as $key => $result) {
-        //             $results[$result->{$this->group_result}][$key] = $result;
-        //         }
-        //     }
-        // }
+        // Group the resuls by a items value
+        if ($this->groupResults !== false && is_string($this->groupResults)) 
+        {
+            $rawResults = $results;
+            $results = array();
+
+            // check if the collection is beeing fetched 
+            // as an associated array 
+            if (!is_array(reset($rawResults)))
+            {
+                throw new Exception('Cannot forward key, the result is no associated array.');
+            }
+
+            foreach ($rawResults as $key => $result) 
+            {
+                $results[$result[$this->groupResults]][$key] = $result;
+            }
+        }
 
         // when the limit is specified to exactly one result we
         // return directly that one result instead of the entire array
@@ -485,13 +488,29 @@ class Select extends SelectBase
     }
 
     /**
+     * Executes the 'executeResultFetcher' callback and handles the results
+     *
+     * @param string         $handler
+     * @return mixed
+     */
+    public function run()
+    {
+        // run is basically ported from CCF, laravels `get` just feels 
+        // much better so lets move on...
+        trigger_error('The `run` method is deprecated, `get` method instead.', E_USER_DEPRECATED);
+
+        // run the get method
+        return $this->get();
+    }
+
+    /**
      * Get one result sets limit to 1 and executes
      *
      * @return mixed
      */
     public function one()
     {
-        return $this->limit(0, 1)->run();
+        return $this->limit(0, 1)->get();
     }
 
     /**

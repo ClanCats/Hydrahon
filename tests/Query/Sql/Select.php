@@ -214,18 +214,75 @@ class Query_Sql_Select_Test extends Query_QueryCase
 
 		// simple 
 		$select = $this->createQuery($data);
-		$this->assertEquals($data, $select->run());
+		$this->assertEquals($data, $select->get());
 
 		// just one
 		$select->limit(1);
-		$this->assertEquals(reset($data), $select->run());
+		$this->assertEquals(reset($data), $select->get());
 
 		// invalid data array
 		$select = $this->createQuery('nope');
-		$this->assertEquals(array(), $select->run());
+		$this->assertEquals(array(), $select->get());
 
 		// no item found
 		$select = $this->createQuery(array())->limit(1);
-		$this->assertEquals(false, $select->run());
+		$this->assertEquals(false, $select->get());
+	}
+
+	/**
+	 * Select::forwardKey
+	 */
+	public function testForwardKey()
+	{
+		$data = array(
+			array('id' => 1, 'name' => 'Mario', 'age' => 23),
+			array('id' => 2, 'name' => 'Johnna', 'age' => 20),
+		);
+
+		$select = $this->createQuery($data);
+
+		// control
+		$this->assertEquals($data, $select->get());
+
+		// now group by age
+		$select->forwardKey('name');
+		$result = $select->get();
+
+		$this->assertEquals(23, $result['Mario']['age']);
+		$this->assertEquals(20, $result['Johnna']['age']);
+	}
+
+	/**
+	 * Select::groupResults
+	 */
+	public function testGroupResults()
+	{
+		$data = array(
+			array('id' => 1, 'name' => 'Mario', 'age' => 23),
+			array('id' => 2, 'name' => 'Johnna', 'age' => 20),
+			array('id' => 3, 'name' => 'Tarek', 'age' => 22),
+			array('id' => 4, 'name' => 'Michel', 'age' => 22),
+			array('id' => 5, 'name' => 'Johnna', 'age' => 22),
+		);
+
+		$select = $this->createQuery($data);
+
+		// control
+		$this->assertEquals($data, $select->get());
+
+		// now group by age
+		$select->groupResults('age');
+		$grouped = $select->get();
+
+		$this->assertCount(1, $grouped[23]);
+		$this->assertCount(1, $grouped[20]);
+		$this->assertCount(3, $grouped[22]);
+
+		// now also forward the keys
+		$select->forwardKey('id');
+		$grouped = $select->get();
+
+		$this->assertEquals('Johnna', $grouped[22][5]['name']);
+		$this->assertEquals('Johnna', $grouped[20][2]['name']);
 	}
 }
