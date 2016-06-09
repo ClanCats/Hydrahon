@@ -214,18 +214,18 @@ class Query_Sql_Select_Test extends Query_QueryCase
 
 		// simple 
 		$select = $this->createQuery($data);
-		$this->assertEquals($data, $select->run());
+		$this->assertEquals($data, $select->get());
 
 		// just one
 		$select->limit(1);
-		$this->assertEquals(reset($data), $select->run());
+		$this->assertEquals(reset($data), $select->get());
 
 		// invalid data array
 		$select = $this->createQuery('nope');
-		$this->assertEquals(array(), $select->run());
+		$this->assertEquals(array(), $select->get());
 
 		// no item found
 		$select = $this->createQuery(array())->limit(1);
-		$this->assertEquals(false, $select->run());
+		$this->assertEquals(false, $select->get());
 	}
 }

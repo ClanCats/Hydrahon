@@ -426,19 +426,16 @@ class Select extends SelectBase
 
     /**
      * Executes the 'executeResultFetcher' callback and handles the results
-     *
-     * @param string         $handler
-     * @return mixed
      */
-    public function run()
+    public function get()
     {
-        // run the callbacks to retirve the results
+         // run the callbacks to retirve the results
         $results = $this->executeResultFetcher();
 
         // we always exprect an array here!
         if (!is_array($results))
         {
-        	$results = array();
+            $results = array();
         }
 
         // In case we should forward a key means using a value
@@ -485,13 +482,29 @@ class Select extends SelectBase
     }
 
     /**
+     * Executes the 'executeResultFetcher' callback and handles the results
+     *
+     * @param string         $handler
+     * @return mixed
+     */
+    public function run()
+    {
+        // run is basically ported from CCF, laravels `get` just feels 
+        // much better so lets move on...
+        trigger_error('The `run` method is deprecated, `get` method instead.', E_USER_DEPRECATED);
+
+        // run the get method
+        return $this->get();
+    }
+
+    /**
      * Get one result sets limit to 1 and executes
      *
      * @return mixed
      */
     public function one()
     {
-        return $this->limit(0, 1)->run();
+        return $this->limit(0, 1)->get();
     }
 
     /**
