@@ -52,6 +52,36 @@ class SelectBase extends Base
     }
 
     /**
+     * Will reset the current selects where conditions
+     * 
+     * @return self
+     */
+    public function resetWheres()
+    {
+        $this->wheres = array(); return $this;
+    }
+
+    /**
+     * Will reset the current selects limit
+     * 
+     * @return self
+     */
+    public function resetLimit()
+    {
+        $this->limit = null; return $this;
+    }
+
+    /**
+     * Will reset the current selects offset
+     * 
+     * @return self
+     */
+    public function resetOffset()
+    {
+        $this->offset = null; return $this;
+    }
+
+    /**
      * Create a where statement
      *
      * where query: <$column> <$param1> <$param2> <$type>

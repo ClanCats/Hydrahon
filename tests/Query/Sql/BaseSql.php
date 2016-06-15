@@ -72,6 +72,14 @@ class Query_Sql_BaseSql_Test extends Query_QueryCase
 	}
 
 	/**
+	 * BaseSql::whereReset
+	 */
+	public function testWhereReset()
+	{
+		$this->assertAttributes($this->createQuery()->where('id', 42)->resetWheres(), array());
+	}
+
+	/**
 	 * BaseSql::orWhere
 	 */
 	public function testOrWhere()
@@ -212,6 +220,14 @@ class Query_Sql_BaseSql_Test extends Query_QueryCase
 	}
 
 	/**
+	 * BaseSql::limitReset
+	 */
+	public function testLimitReset()
+	{
+		$this->assertAttributes($this->createQuery()->limit(10)->resetLimit(), array());
+	}
+
+	/**
 	 * BaseSql::offset
 	 */
 	public function testOffset()
@@ -221,6 +237,14 @@ class Query_Sql_BaseSql_Test extends Query_QueryCase
 
 		// test change of offset
 		$this->assertAttributes($this->createQuery()->limit(2, 5)->offset(3), array('limit' => 5, 'offset' => 3));
+	}
+
+	/**
+	 * BaseSql::offsetReset
+	 */
+	public function testOffsetReset()
+	{
+		$this->assertAttributes($this->createQuery()->offset(10)->resetOffset(), array());
 	}
 
 	/**
