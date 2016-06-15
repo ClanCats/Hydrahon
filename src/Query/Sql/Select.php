@@ -93,7 +93,7 @@ class Select extends SelectBase
         // when a string is given
         if (is_string($fields)) 
         {
-        	$fields = $this->stringArgumentToArray($fields);
+            $fields = $this->stringArgumentToArray($fields);
         }
         // it also could be an object
         elseif (is_object($fields))
@@ -107,13 +107,13 @@ class Select extends SelectBase
         // add the fields
         foreach($fields as $key => $field)
         {
-        	// when we have a string as key we have an alias definition
-        	if (is_string($key))
-        	{
+            // when we have a string as key we have an alias definition
+            if (is_string($key))
+            {
                 $this->addField($key, $field);
-        	} else {
+            } else {
                 $this->addField($field);
-        	}
+            }
         }
 
         return $this;
@@ -124,13 +124,13 @@ class Select extends SelectBase
      * 
      *     ->addField('title')
      *
-     * @param string         		$field
-     * @param string 				$alias
+     * @param string                $field
+     * @param string                $alias
      * @return self
      */
     public function addField($field, $alias = null)
     {
-    	$this->fields[] = array($field, $alias); return $this;
+        $this->fields[] = array($field, $alias); return $this;
     }
 
     /**
@@ -222,23 +222,23 @@ class Select extends SelectBase
      * 
      *     ->orderBy('created_at')
      *     ->orderBy('modified_at', 'desc')
-     * 	   
+     *     
      *     // multiple order statements
      *     ->orderBy(['firstname', 'lastname'], 'desc')
      * 
      *     // muliple order statements with diffrent directions
      *     ->orderBy(['firstname' => 'asc', 'lastname' => 'desc'])
      *
-     * @param array|string     			$cols
-     * @param string    				$order
+     * @param array|string              $cols
+     * @param string                    $order
      * @return self
      */
     public function orderBy($columns, $direction = 'asc')
     {
-    	if (is_string($columns))
-    	{
-    		$columns = $this->stringArgumentToArray($columns);
-    	}
+        if (is_string($columns))
+        {
+            $columns = $this->stringArgumentToArray($columns);
+        }
 
         foreach ($columns as $key => $column) 
         {
@@ -259,15 +259,15 @@ class Select extends SelectBase
      *     ->groupBy('id')
      *     ->gorupBy(['id', 'category'])
      *
-     * @param array|string     			$keys
+     * @param array|string              $keys
      * @return self
      */
     public function groupBy($groupKeys)
     {
-    	if (is_string($groupKeys))
-    	{
-    		$groupKeys = $this->stringArgumentToArray($groupKeys);
-    	}
+        if (is_string($groupKeys))
+        {
+            $groupKeys = $this->stringArgumentToArray($groupKeys);
+        }
 
         foreach ($groupKeys as $groupKey) 
         {
@@ -282,21 +282,21 @@ class Select extends SelectBase
      * 
      *     ->join('avatars', 'users.id', '=', 'avatars.user_id')
      *
-     * @param array|string     			$table
-     * @param string 					$localKey
-     * @param string 					$operator
-     * @param string 					$referenceKey
-     * @param string 					$type
+     * @param array|string              $table
+     * @param string                    $localKey
+     * @param string                    $operator
+     * @param string                    $referenceKey
+     * @param string                    $type
      * 
      * @return self
      */
     public function join($table, $localKey, $operator = null, $referenceKey = null, $type = 'left')
     {
-    	// validate the join type
-    	if (!in_array($type, array('inner', 'left', 'right', 'outer')))
-    	{
-    		throw new Exception('Invalid join type "'.$type.'" given. Available type: inner, left, right, outer');
-    	}
+        // validate the join type
+        if (!in_array($type, array('inner', 'left', 'right', 'outer')))
+        {
+            throw new Exception('Invalid join type "'.$type.'" given. Available type: inner, left, right, outer');
+        }
 
         // to make nested joins possible you can pass an closure
         // wich will create a new query where you can add your nested wheres
@@ -312,67 +312,67 @@ class Select extends SelectBase
             $this->joins[] = array($type, $table, $subquery); return $this;
         }
 
-    	$this->joins[] = array($type, $table, $localKey, $operator, $referenceKey); return $this;
+        $this->joins[] = array($type, $table, $localKey, $operator, $referenceKey); return $this;
     }
 
     /**
      * Left join same as join with special type
      *
-     * @param array|string     			$table
-     * @param string 					$localKey
-     * @param string 					$operator
-     * @param string 					$referenceKey
+     * @param array|string              $table
+     * @param string                    $localKey
+     * @param string                    $operator
+     * @param string                    $referenceKey
      * 
      * @return self
      */
     public function leftJoin($table, $localKey, $operator = null, $referenceKey = null)
     {
-    	return $this->join($table, $localKey, $operator, $referenceKey, 'left');
+        return $this->join($table, $localKey, $operator, $referenceKey, 'left');
     }
 
     /**
      * Left join same as join with special type
      *
-     * @param array|string     			$table
-     * @param string 					$localKey
-     * @param string 					$operator
-     * @param string 					$referenceKey
+     * @param array|string              $table
+     * @param string                    $localKey
+     * @param string                    $operator
+     * @param string                    $referenceKey
      * 
      * @return self
      */
     public function rightJoin($table, $localKey, $operator = null, $referenceKey = null)
     {
-    	return $this->join($table, $localKey, $operator, $referenceKey, 'right');
+        return $this->join($table, $localKey, $operator, $referenceKey, 'right');
     }
 
     /**
      * Left join same as join with special type
      *
-     * @param array|string     			$table
-     * @param string 					$localKey
-     * @param string 					$operator
-     * @param string 					$referenceKey
+     * @param array|string              $table
+     * @param string                    $localKey
+     * @param string                    $operator
+     * @param string                    $referenceKey
      * 
      * @return self
      */
     public function innerJoin($table, $localKey, $operator = null, $referenceKey = null)
     {
-    	return $this->join($table, $localKey, $operator, $referenceKey, 'inner');
+        return $this->join($table, $localKey, $operator, $referenceKey, 'inner');
     }
 
     /**
      * Left join same as join with special type
      *
-     * @param array|string     			$table
-     * @param string 					$localKey
-     * @param string 					$operator
-     * @param string 					$referenceKey
+     * @param array|string              $table
+     * @param string                    $localKey
+     * @param string                    $operator
+     * @param string                    $referenceKey
      * 
      * @return self
      */
     public function outerJoin($table, $localKey, $operator = null, $referenceKey = null)
     {
-    	return $this->join($table, $localKey, $operator, $referenceKey, 'outer');
+        return $this->join($table, $localKey, $operator, $referenceKey, 'outer');
     }
 
     /**
@@ -433,14 +433,14 @@ class Select extends SelectBase
         $results = $this->executeResultFetcher();
 
         // we always exprect an array here!
-        if (!is_array($results))
+        if (!is_array($results) || empty($results))
         {
             $results = array();
         }
 
         // In case we should forward a key means using a value
         // from every result as array key.
-        if ($this->forwardKey !== false && is_string($this->forwardKey)) 
+        if ((!empty($results)) && $this->forwardKey !== false && is_string($this->forwardKey)) 
         {
             $rawResults = $results;
             $results = array();
@@ -459,7 +459,7 @@ class Select extends SelectBase
         }
 
         // Group the resuls by a items value
-        if ($this->groupResults !== false && is_string($this->groupResults)) 
+        if ((!empty($results)) && $this->groupResults !== false && is_string($this->groupResults)) 
         {
             $rawResults = $results;
             $results = array();
@@ -516,7 +516,7 @@ class Select extends SelectBase
     /**
      * Find something, means select one record by key
      *
-     * @param int           	$id
+     * @param int               $id
      * @param string            $key
      * @return mixed
      */
