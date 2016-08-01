@@ -13,7 +13,7 @@ $h = new Builder('arango', function( $query, $queryString, $queryParameters )
 $h->each('movie', 'movies')
 	->limit(10)
 	->filter('movie.year', '>', 2010)
-	->return('movie')
+	->get('movie')
 	->execute();
 
 

@@ -115,7 +115,7 @@ class Aql extends BaseQuery
      * @param string|object
      * @return self
      */
-    public function return($return)
+    public function get($return)
     {
         $this->return = $return; return $this;
     }
