@@ -53,7 +53,7 @@ class Select extends SelectBase
      *
      * @var false|string
      */
-    protected $groupResult = false;
+    protected $groupResults = false;
 
     /**
      * Forward a value as key
@@ -93,7 +93,7 @@ class Select extends SelectBase
         // when a string is given
         if (is_string($fields)) 
         {
-        	$fields = $this->stringArgumentToArray($fields);
+            $fields = $this->stringArgumentToArray($fields);
         }
         // it also could be an object
         elseif (is_object($fields))
@@ -107,13 +107,13 @@ class Select extends SelectBase
         // add the fields
         foreach($fields as $key => $field)
         {
-        	// when we have a string as key we have an alias definition
-        	if (is_string($key))
-        	{
+            // when we have a string as key we have an alias definition
+            if (is_string($key))
+            {
                 $this->addField($key, $field);
-        	} else {
+            } else {
                 $this->addField($field);
-        	}
+            }
         }
 
         return $this;
@@ -124,13 +124,13 @@ class Select extends SelectBase
      * 
      *     ->addField('title')
      *
-     * @param string         		$field
-     * @param string 				$alias
+     * @param string                $field
+     * @param string                $alias
      * @return self
      */
     public function addField($field, $alias = null)
     {
-    	$this->fields[] = array($field, $alias); return $this;
+        $this->fields[] = array($field, $alias); return $this;
     }
 
     /**
@@ -222,23 +222,23 @@ class Select extends SelectBase
      * 
      *     ->orderBy('created_at')
      *     ->orderBy('modified_at', 'desc')
-     * 	   
+     *     
      *     // multiple order statements
      *     ->orderBy(['firstname', 'lastname'], 'desc')
      * 
      *     // muliple order statements with diffrent directions
      *     ->orderBy(['firstname' => 'asc', 'lastname' => 'desc'])
      *
-     * @param array|string     			$cols
-     * @param string    				$order
+     * @param array|string              $cols
+     * @param string                    $order
      * @return self
      */
     public function orderBy($columns, $direction = 'asc')
     {
-    	if (is_string($columns))
-    	{
-    		$columns = $this->stringArgumentToArray($columns);
-    	}
+        if (is_string($columns))
+        {
+            $columns = $this->stringArgumentToArray($columns);
+        }
 
         foreach ($columns as $key => $column) 
         {
@@ -259,15 +259,15 @@ class Select extends SelectBase
      *     ->groupBy('id')
      *     ->gorupBy(['id', 'category'])
      *
-     * @param array|string     			$keys
+     * @param array|string              $keys
      * @return self
      */
     public function groupBy($groupKeys)
     {
-    	if (is_string($groupKeys))
-    	{
-    		$groupKeys = $this->stringArgumentToArray($groupKeys);
-    	}
+        if (is_string($groupKeys))
+        {
+            $groupKeys = $this->stringArgumentToArray($groupKeys);
+        }
 
         foreach ($groupKeys as $groupKey) 
         {
@@ -282,83 +282,97 @@ class Select extends SelectBase
      * 
      *     ->join('avatars', 'users.id', '=', 'avatars.user_id')
      *
-     * @param array|string     			$table
-     * @param string 					$localKey
-     * @param string 					$operator
-     * @param string 					$referenceKey
-     * @param string 					$type
+     * @param array|string              $table
+     * @param string                    $localKey
+     * @param string                    $operator
+     * @param string                    $referenceKey
+     * @param string                    $type
      * 
      * @return self
      */
-    public function join($table, $localKey, $operator, $referenceKey, $type = 'left')
+    public function join($table, $localKey, $operator = null, $referenceKey = null, $type = 'left')
     {
-    	// validate the join type
-    	if (!in_array($type, array('inner', 'left', 'right', 'outer')))
-    	{
-    		throw new Exception('Invalid join type "'.$type.'" given. Available type: inner, left, right, outer');
-    	}
+        // validate the join type
+        if (!in_array($type, array('inner', 'left', 'right', 'outer')))
+        {
+            throw new Exception('Invalid join type "'.$type.'" given. Available type: inner, left, right, outer');
+        }
 
-    	$this->joins[] = array($type, $table, $localKey, $operator, $referenceKey); return $this;
+        // to make nested joins possible you can pass an closure
+        // wich will create a new query where you can add your nested wheres
+        if (is_object($localKey) && ($localKey instanceof \Closure)) 
+        {
+            // create new query object
+            $subquery = new SelectJoin;
+
+            // run the closure callback on the sub query
+            call_user_func_array($localKey, array(&$subquery));
+    
+            // add the join
+            $this->joins[] = array($type, $table, $subquery); return $this;
+        }
+
+        $this->joins[] = array($type, $table, $localKey, $operator, $referenceKey); return $this;
     }
 
     /**
      * Left join same as join with special type
      *
-     * @param array|string     			$table
-     * @param string 					$localKey
-     * @param string 					$operator
-     * @param string 					$referenceKey
+     * @param array|string              $table
+     * @param string                    $localKey
+     * @param string                    $operator
+     * @param string                    $referenceKey
      * 
      * @return self
      */
-    public function leftJoin($table, $localKey, $operator, $referenceKey)
+    public function leftJoin($table, $localKey, $operator = null, $referenceKey = null)
     {
-    	return $this->join($table, $localKey, $operator, $referenceKey, 'left');
+        return $this->join($table, $localKey, $operator, $referenceKey, 'left');
     }
 
     /**
      * Left join same as join with special type
      *
-     * @param array|string     			$table
-     * @param string 					$localKey
-     * @param string 					$operator
-     * @param string 					$referenceKey
+     * @param array|string              $table
+     * @param string                    $localKey
+     * @param string                    $operator
+     * @param string                    $referenceKey
      * 
      * @return self
      */
-    public function rightJoin($table, $localKey, $operator, $referenceKey)
+    public function rightJoin($table, $localKey, $operator = null, $referenceKey = null)
     {
-    	return $this->join($table, $localKey, $operator, $referenceKey, 'right');
+        return $this->join($table, $localKey, $operator, $referenceKey, 'right');
     }
 
     /**
      * Left join same as join with special type
      *
-     * @param array|string     			$table
-     * @param string 					$localKey
-     * @param string 					$operator
-     * @param string 					$referenceKey
+     * @param array|string              $table
+     * @param string                    $localKey
+     * @param string                    $operator
+     * @param string                    $referenceKey
      * 
      * @return self
      */
-    public function innerJoin($table, $localKey, $operator, $referenceKey)
+    public function innerJoin($table, $localKey, $operator = null, $referenceKey = null)
     {
-    	return $this->join($table, $localKey, $operator, $referenceKey, 'inner');
+        return $this->join($table, $localKey, $operator, $referenceKey, 'inner');
     }
 
     /**
      * Left join same as join with special type
      *
-     * @param array|string     			$table
-     * @param string 					$localKey
-     * @param string 					$operator
-     * @param string 					$referenceKey
+     * @param array|string              $table
+     * @param string                    $localKey
+     * @param string                    $operator
+     * @param string                    $referenceKey
      * 
      * @return self
      */
-    public function outerJoin($table, $localKey, $operator, $referenceKey)
+    public function outerJoin($table, $localKey, $operator = null, $referenceKey = null)
     {
-    	return $this->join($table, $localKey, $operator, $referenceKey, 'outer');
+        return $this->join($table, $localKey, $operator, $referenceKey, 'outer');
     }
 
     /**
@@ -367,14 +381,14 @@ class Select extends SelectBase
      * @param string|bool        $key
      * @return self
      */
-    public function forward_key($key = true)
+    public function forwardKey($key = true)
     {
         if ($key === false) {
-            $this->forward_key = false;
+            $this->forwardKey = false;
         } elseif ($key === true) {
-            $this->forward_key = \ClanCats::$config->get('database.default_primary_key', 'id');
+            $this->forwardKey = \ClanCats::$config->get('database.default_primary_key', 'id');
         } else {
-            $this->forward_key = $key;
+            $this->forwardKey = $key;
         }
 
         return $this;
@@ -399,12 +413,12 @@ class Select extends SelectBase
      * @param string|bool        $key
      * @return self
      */
-    public function group_result($key)
+    public function groupResults($key)
     {
         if ($key === false) {
-            $this->group_result = false;
+            $this->groupResults = false;
         } else {
-            $this->group_result = $key;
+            $this->groupResults = $key;
         }
 
         return $this;
@@ -412,53 +426,56 @@ class Select extends SelectBase
 
     /**
      * Executes the 'executeResultFetcher' callback and handles the results
-     *
-     * @param string         $handler
-     * @return mixed
      */
-    public function run()
+    public function get()
     {
-        // run the callbacks to retirve the results
+         // run the callbacks to retirve the results
         $results = $this->executeResultFetcher();
 
         // we always exprect an array here!
-        if (!is_array($results))
+        if (!is_array($results) || empty($results))
         {
-        	$results = array();
+            $results = array();
         }
 
         // In case we should forward a key means using a value
         // from every result as array key.
-        // if ($this->forward_key !== false) {
-        //     $raw_results = $results;
-        //     $results = array();
+        if ((!empty($results)) && $this->forwardKey !== false && is_string($this->forwardKey)) 
+        {
+            $rawResults = $results;
+            $results = array();
 
-        //     if (in_array('assoc', $this->fetch_arguments)) {
-        //         foreach ($raw_results as $result) {
-        //             $results[$result[$this->forward_key]] = $result;
-        //         }
-        //     } else {
-        //         foreach ($raw_results as $result) {
-        //             $results[$result->{$this->forward_key}] = $result;
-        //         }
-        //     }
-        // }
+            // check if the collection is beeing fetched 
+            // as an associated array 
+            if (!is_array(reset($rawResults)))
+            {
+                throw new Exception('Cannot forward key, the result is no associated array.');
+            }
 
-        // // Group the results by a value
-        // if ($this->group_result !== false) {
-        //     $raw_results = $results;
-        //     $results = array();
+            foreach ($rawResults as $result) 
+            {
+                $results[$result[$this->forwardKey]] = $result;
+            }
+        }
 
-        //     if (in_array('assoc', $this->fetch_arguments)) {
-        //         foreach ($raw_results as $key => $result) {
-        //             $results[$result[$this->group_result]][$key] = $result;
-        //         }
-        //     } else {
-        //         foreach ($raw_results as $key => $result) {
-        //             $results[$result->{$this->group_result}][$key] = $result;
-        //         }
-        //     }
-        // }
+        // Group the resuls by a items value
+        if ((!empty($results)) && $this->groupResults !== false && is_string($this->groupResults)) 
+        {
+            $rawResults = $results;
+            $results = array();
+
+            // check if the collection is beeing fetched 
+            // as an associated array 
+            if (!is_array(reset($rawResults)))
+            {
+                throw new Exception('Cannot forward key, the result is no associated array.');
+            }
+
+            foreach ($rawResults as $key => $result) 
+            {
+                $results[$result[$this->groupResults]][$key] = $result;
+            }
+        }
 
         // when the limit is specified to exactly one result we
         // return directly that one result instead of the entire array
@@ -471,19 +488,35 @@ class Select extends SelectBase
     }
 
     /**
+     * Executes the 'executeResultFetcher' callback and handles the results
+     *
+     * @param string         $handler
+     * @return mixed
+     */
+    public function run()
+    {
+        // run is basically ported from CCF, laravels `get` just feels 
+        // much better so lets move on...
+        trigger_error('The `run` method is deprecated, `get` method instead.', E_USER_DEPRECATED);
+
+        // run the get method
+        return $this->get();
+    }
+
+    /**
      * Get one result sets limit to 1 and executes
      *
      * @return mixed
      */
     public function one()
     {
-        return $this->limit(0, 1)->run();
+        return $this->limit(0, 1)->get();
     }
 
     /**
      * Find something, means select one record by key
      *
-     * @param int           	$id
+     * @param int               $id
      * @param string            $key
      * @return mixed
      */

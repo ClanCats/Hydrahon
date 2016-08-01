@@ -415,6 +415,68 @@ class MysqlTest extends \ClanCats\Hydrahon\Test\TranslatorCase
 	/**
 	 * mysql grammar tests
 	 */
+	public function testSelectJoinMulticonditions()
+	{
+		// simple
+		$this->assertQueryTranslation('select * from `users` left join `avatars` on `avatars`.`user_id` = `users`.`id`', array(), function($q) 
+		{
+			return $q->table('users')->select()
+				->join('avatars', function($q) 
+				{
+					$q->on('avatars.user_id', '=', 'users.id');
+				});
+		});
+
+		// multiple
+		$this->assertQueryTranslation('select * from `users` left join `avatars` on `avatars`.`user_id` = `users`.`id` or `avatars`.`other_user_id` = `users`.`id`', array(), function($q) 
+		{
+			return $q->table('users')->select()
+				->join('avatars', function($q) 
+				{
+					$q->on('avatars.user_id', '=', 'users.id');
+					$q->orOn('avatars.other_user_id', '=', 'users.id');
+				});
+		});
+
+		// and
+		$this->assertQueryTranslation('select * from `users` left join `avatars` on `avatars`.`user_id` = `users`.`id` and `avatars`.`other_user_id` = `users`.`id`', array(), function($q) 
+		{
+			return $q->table('users')->select()
+				->join('avatars', function($q) 
+				{
+					$q->on('avatars.user_id', '=', 'users.id');
+					$q->on('avatars.other_user_id', '=', 'users.id');
+				});
+		});
+
+		// with wheres
+		$this->assertQueryTranslation('select * from `users` left join `avatars` on `avatars`.`user_id` = `users`.`id` and `avatars`.`other_user_id` = `users`.`id` and `avatars`.`active` = ?', array(1), function($q) 
+		{
+			return $q->table('users')->select()
+				->join('avatars', function($q) 
+				{
+					$q->on('avatars.user_id', '=', 'users.id');
+					$q->on('avatars.other_user_id', '=', 'users.id');
+					$q->where('avatars.active', 1);
+				});
+		});
+
+		// with or wheres
+		$this->assertQueryTranslation('select * from `users` left join `avatars` on `avatars`.`user_id` = `users`.`id` and `avatars`.`active` = ? or `avatar`.`public` = ?', array(1, 1), function($q) 
+		{
+			return $q->table('users')->select()
+				->join('avatars', function($q) 
+				{
+					$q->on('avatars.user_id', '=', 'users.id');
+					$q->where('avatars.active', 1);
+					$q->orWhere('avatar.public', 1);
+				});
+		});
+	}
+
+	/**
+	 * mysql grammar tests
+	 */
 	public function testInsertSimple()
 	{
 		// simple
@@ -515,6 +577,18 @@ class MysqlTest extends \ClanCats\Hydrahon\Test\TranslatorCase
 		$this->assertQueryTranslation('delete from `test` where `id` = ? limit 1', array(1), function($q) 
 		{
 			return $q->table('test')->delete()->where('id', 1)->limit(1);
+		});
+
+		// simple with db
+		$this->assertQueryTranslation('delete from `db`.`test` where `id` = ? limit 1', array(1), function($q) 
+		{
+			return $q->table('db.test')->delete()->where('id', 1)->limit(1);
+		});
+
+		// simple with alias which is invalid and should not be set
+		$this->assertQueryTranslation('delete from `db`.`test` where `id` = ? limit 1', array(1), function($q) 
+		{
+			return $q->table('db.test as test')->delete()->where('id', 1)->limit(1);
 		});
 	}
 
