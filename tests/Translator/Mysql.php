@@ -362,6 +362,12 @@ class Translator_Mysql_Test extends TranslatorCase
 		{
 			return $q->table('phpunit')->select()->orderBy(array('u.firstname' => 'asc', 'u.lastname' => 'desc'));
 		});
+
+		// raw sorting
+		$this->assertQueryTranslation('select * from `phpunit` order by firstname <> nick asc', array(), function($q) 
+		{
+			return $q->table('phpunit')->select()->orderBy(new Expression("firstname <> nick"));
+		});
 	}
 
 	/**
