@@ -127,7 +127,7 @@ class Query_Sql_Select_Test extends Query_QueryCase
 		$raw = new Expression('language <> de');
 
 		// simple 
-		$this->assertAttributes($this->createQuery()->orderBy($raw), array('orders' => array([$raw, 'asc'])));
+		$this->assertAttributes($this->createQuery()->orderBy($raw), array('orders' => array(array($raw, 'asc'))));
 	}
 
 	/**
