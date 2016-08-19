@@ -615,6 +615,14 @@ class Mysql implements TranslatorInterface
 
         foreach ($this->attr('orders') as $column => $direction) 
         {
+            // in case a raw value is given we had to 
+            // put the column / raw value an direction inside another
+            // array because we cannot make objects to array keys.
+            if (is_array($direction))
+            {
+                list($column, $direction) = $direction;
+            }
+
             $build .= $this->escape($column) . ' ' . $direction . ', ';
         }
 

@@ -239,6 +239,10 @@ class Select extends SelectBase
         {
             $columns = $this->stringArgumentToArray($columns);
         }
+        elseif ($columns instanceof Expression)
+        {
+            $this->orders[] = [$columns, $direction]; return $this;
+        }
 
         foreach ($columns as $key => $column) 
         {
