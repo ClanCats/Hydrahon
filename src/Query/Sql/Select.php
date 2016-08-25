@@ -630,4 +630,27 @@ class Select extends SelectBase
     {
         return $this->column(new Func('avg', $field));
     }
+
+    /** 
+     * Do any results of this query exist?
+     * 
+     * @return bool
+     */
+    public function exists()
+    {
+        $existsQuery = new Exists($this);
+
+        // set the current select for the exists query
+        $existsQuery->setSelect($this);
+
+        // run the callbacks to retirve the results
+        $result = $existsQuery->executeResultFetcher();
+
+        if (isset($result[0]['exists']))
+        {
+            return (bool) $result[0]['exists'];
+        }
+        
+        return false;
+    }
 }

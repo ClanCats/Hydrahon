@@ -679,4 +679,34 @@ class Translator_Mysql_Test extends TranslatorCase
 			return $q->table('test')->select()->avg('views');
 		});
 	}
+
+	/**
+	 * mysql grammar tests
+	 */
+	public function testExists()
+	{
+		$this->assertQueryExecution(array(array('exists' => 1)), true, 'select exists(select * from `test`) as `exists`', array(), function($q)
+		{
+			return $q->table('test')->select()->exists();
+		});
+
+		// no results
+		$this->assertQueryExecution(array(array('exists' => 0)), false, 'select exists(select * from `test`) as `exists`', array(), function($q)
+		{
+			return $q->table('test')->select()->exists();
+		});
+
+		// with some statements
+		$this->assertQueryExecution(array(array('exists' => 0)), false, 'select exists(select * from `test` where ( `a` = ? or `c` = ? )) as `exists`', array('b', 'd'), function($q)
+		{
+			return $q->table('test')
+				->select()
+				->where(function( $q )
+				{
+					$q->where('a', 'b');
+					$q->orWhere('c', 'd');
+				})
+				->exists();
+		});
+	}
 }
