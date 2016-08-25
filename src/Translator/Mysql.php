@@ -19,6 +19,7 @@ use ClanCats\Hydrahon\Query\Sql\Delete;
 use ClanCats\Hydrahon\Query\Sql\Drop;
 use ClanCats\Hydrahon\Query\Sql\Truncate;
 use ClanCats\Hydrahon\Query\Sql\Func;
+use ClanCats\Hydrahon\Query\Sql\Exists;
 
 class Mysql implements TranslatorInterface
 {
@@ -85,6 +86,10 @@ class Mysql implements TranslatorInterface
         elseif ($query instanceof Truncate)
         {
             $queryString = $this->translateTruncate();
+        }
+        elseif ($query instanceof Exists)
+        {
+            $queryString = $this->translateExists();
         }
         // everything else is wrong
         else
@@ -682,5 +687,26 @@ class Mysql implements TranslatorInterface
     protected function translateTruncate()
     {
         return 'truncate table ' . $this->escapeTable() .';';
+    }
+
+    /**
+     * Translate the exists querry
+     *
+     * @return string
+     */
+    protected function translateExists()
+    {
+        $translator = new static;
+
+        // translate the subselect
+        list($subQuery, $subQueryParameters) = $translator->translate($this->attr('select'));
+
+        // merge the parameters
+        foreach($subQueryParameters as $parameter)
+        {
+            $this->addParameter($parameter);
+        }
+
+        return 'select exists(' . $subQuery .') as `exists`';
     }
 }
