@@ -11,7 +11,7 @@ namespace ClanCats\Hydrahon\Query\Sql;
 
 use ClanCats\Hydrahon\Query\Expression;
 
-class Select extends SelectBase
+class Select extends SelectBase implements FetchableInterface
 {
     /**
      * fields to be selected

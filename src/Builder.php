@@ -27,12 +27,6 @@ class Builder
             'ClanCats\\Hydrahon\\Query\\Sql',
             'ClanCats\\Hydrahon\\Translator\\Sqlite',
         ),
-
-        // MongoDB
-        'mongo' => array(
-            'ClanCats\\Hydrahon\\Query\\MongoDB',
-            'ClanCats\\Hydrahon\\Translator\\MongoDB',
-        ),
     );
 
     /**

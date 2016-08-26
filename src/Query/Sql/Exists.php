@@ -1,4 +1,6 @@
-<?php namespace ClanCats\Hydrahon\Query\Sql;
+<?php 
+
+namespace ClanCats\Hydrahon\Query\Sql;
 
 /**
  * Exists query 
@@ -11,7 +13,7 @@
 
 use ClanCats\Hydrahon\BaseQuery;
 
-class Exists extends BaseQuery
+class Exists extends BaseQuery implements FetchableInterface
 {
 	/**
 	 * The select query we want to check if 
