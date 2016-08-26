@@ -41,8 +41,6 @@ $hydrahon = new \ClanCats\Hydrahon\Builder('mysql', function($query, $queryStrin
 
 ### Structure 
 
-> Note: Please note that in the following examples the variable `$h` contains a Hydrahon query builder instance.
-
  * [Basics](#basics)
  * [Select](#select)
    * [Runners](#runners)
@@ -52,11 +50,17 @@ $hydrahon = new \ClanCats\Hydrahon\Builder('mysql', function($query, $queryStrin
    * [Join](#joins)
    * [Limit and Offset](#limit-offset-and-page)
 
+---
+
+> Note: Please note that in the following examples the variable `$h` contains a Hydrahon query builder instance.
+
+---
+
 ### Basics
 
 Lets start with a super basic example:
 
-**Inserting:**
+#### Inserting:
 
 ```php
 $h->table('people')->insert(
@@ -76,25 +80,27 @@ $h->table('people')->insert(
 ])->execute();
 ```
 
-**Updating**
+#### Updating:
 
 ```php
 $h->table('people')->update()->set('age', 26)->where('name', 'Ray')->execute();
 ```
 
-**Deleting**
+#### Deleting:
 
 ```php
 $h->table('people')->delete()->where('name', 'John')->execute();
 ```
 
-**Selecting**
+#### Selecting:
 
 ```php
 $h->table('people')->select()->get();
 ```
 
-### Select 
+---
+
+### SQL Select 
 
 In our example we are going to execute multiple operations on the same table, so instead of loading the table over and over again we store it in a variable.
 
@@ -104,17 +110,32 @@ $users = $h->table('users');
 
 #### Runners 
 
-Also, the examples do not show the `run` method, which has to be executed to (obviously) run the query.
+The runner methods execute your query and return a result. There are many diffrent runner methods and each one acts like an helper. This means a runner method can modifiy your query and the result.
+
+##### "Execute" method
+
+The `execute` method is an alias of `executeResultFetcher`, this means the method just forwards the plain data that you return inside your `ClanCats\Hydrahon\Builder` instance callback.
 
 ```php
-$users->select('name')->where('age', '>', 18)->run();
+$users->select()->limit(10)->execute();
 ```
 
-There are also other runners to cover common use cases.
+#### "Get" method
 
-**single result**
+The default runner method is the `get` method which can do some operations on your data.
 
-Instead of retrieving an array of results you can direclty access a single one.
+```php
+$users->select(['name'])->where('age', '>', 22)->get();
+```
+
+For example by setting the limit of your query to _one_, you will also receive just that one single result. (Not an array of results). 
+
+```php
+$users->select()->get(); // returns: array(array(name: joe))
+$users->select()->limit(1)->get(); // returns: array(name: joe)
+```
+
+#### "One" method
 
 ```php
 $users->select()->where('name', 'jeffry')->one();
