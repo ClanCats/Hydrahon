@@ -9,18 +9,6 @@ Hydrahon is a query builder, and only a query builder. It does not contain a PDO
 [![Packagist](https://img.shields.io/packagist/l/clancats/hydrahon.svg)]()
 [![GitHub release](https://img.shields.io/github/release/clancats/hydrahon.svg)](https://github.com/ClanCats/Hydrahon/releases)
 
-## Status
-
-**This library is still in work.**
-
- - [x] SQL query structure
- - [x] SQL select query builder
- - [x] Mysql select query translator
- - [x] SQL insert query builder and translator
- - [x] SQL update query builder and translator
- - [x] SQL delete query builder and translator
- - [ ] Port more selection result helpers
- - [ ] Clean up translation unit tests. 
 
 ## Installation
 
@@ -30,9 +18,9 @@ Hydrahon follows `PSR-4` autoloading and can be installed using composer:
 $ composer require 'clancats/hydrahon:dev-master'
 ```
 
-## Usage
+## Usage MySQL
 
-### Creating hydrahon builder
+### Create a builder
 
 Again Hydrahon is **not** built as a database library, it's just a query builder. In this example, I'm going to present you an easy example of a PDO mysql implementation.
 
@@ -51,10 +39,11 @@ $hydrahon = new \ClanCats\Hydrahon\Builder('mysql', function($query, $queryStrin
 });
 ```
 
-### SQL query builder
+### Structure 
 
-Please note that in the following examples the variable `$h` contains a Hydrahon query builder instance.
+> Note: Please note that in the following examples the variable `$h` contains a Hydrahon query builder instance.
 
+ * [Basics](#basics)
  * [Select](#select)
    * [Runners](#runners)
    * [Basics](#basics)
@@ -63,7 +52,49 @@ Please note that in the following examples the variable `$h` contains a Hydrahon
    * [Join](#joins)
    * [Limit and Offset](#limit-offset-and-page)
 
-#### Select 
+### Basics
+
+Lets start with a super basic example:
+
+**Inserting:**
+
+```php
+$h->table('people')->insert(
+[
+    [
+        'name' => 'Ray',
+        'age' => 25,
+    ],
+    [
+        'name' => 'John',
+        'age' => 30,
+    ],
+    [
+        'name' => 'Ali',
+        'age' => 22,
+    ],
+])->execute();
+```
+
+**Updating**
+
+```php
+$h->table('people')->update()->set('age', 26)->where('name', 'Ray')->execute();
+```
+
+**Deleting**
+
+```php
+$h->table('people')->delete()->where('name', 'John')->execute();
+```
+
+**Selecting**
+
+```php
+$h->table('people')->select()->get();
+```
+
+### Select 
 
 In our example we are going to execute multiple operations on the same table, so instead of loading the table over and over again we store it in a variable.
 
@@ -71,7 +102,8 @@ In our example we are going to execute multiple operations on the same table, so
 $users = $h->table('users');
 ```
 
-##### Runners 
+#### Runners 
+
 Also, the examples do not show the `run` method, which has to be executed to (obviously) run the query.
 
 ```php
@@ -120,7 +152,7 @@ Sometimes you just need one value, for that we have the column function
 $users->select()->where('name', 'johanna')->column('age');
 ```
 
-##### Basics 
+#### Basics 
 
 Selecting everything
 
@@ -162,7 +194,7 @@ $users->select([$users->raw("max('age')")])
 select max('age') from `users`
 ```
 
-##### Where
+#### Where
 The `where` statement does not only apply to the `select` query, but also to update and `delete`.
 
 ```php
@@ -219,7 +251,7 @@ $users->select()->where('id', 'in', [213, 32, 53, 43]);
 select * from `users` where `id` in (?, ?, ?, ?)
 ```	
 
-##### Ordering
+#### Ordering
 
 ```php
 $users->select()->orderBy('name');
@@ -261,7 +293,7 @@ $users->select()->orderBy(['name', 'created_at' => 'desc']);
 select * from `users` order by `name` asc, `created_at` desc
 ```	
 
-##### Joins
+#### Joins
 
 The automatic escaping becomes really handy when working with multiple tables.
 
@@ -285,7 +317,7 @@ The default join type is `left`, for every join type there is its own method.
  * `innerJoin`
  * `outterJoin`
 
-##### Limit, Offset and Page
+#### Limit, Offset and Page
 
 When setting the limit to just one entry, you will receive it as a single result and not as result collection.
 
