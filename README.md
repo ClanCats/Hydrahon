@@ -39,6 +39,8 @@ $hydrahon = new \ClanCats\Hydrahon\Builder('mysql', function($query, $queryStrin
 });
 ```
 
+---
+
 ### Structure 
 
  * [Basics](#basics)
