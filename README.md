@@ -44,7 +44,7 @@ $hydrahon = new \ClanCats\Hydrahon\Builder('mysql', function($query, $queryStrin
     $statement = $connection->prepare($queryString);
     $statement->execute($queryParameters);
 
-    if ($query instanceof \ClanCats\Hydrahon\Query\Sql\Select)
+    if ($query instanceof \ClanCats\Hydrahon\Query\Sql\FetchableInterface)
     {
         return $statement->fetchAll(\PDO::FETCH_ASSOC);
     }
