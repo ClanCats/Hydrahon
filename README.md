@@ -2,7 +2,7 @@
 
 ![Hydrahon banner](https://cloud.githubusercontent.com/assets/956212/7947360/e36d75ea-097c-11e5-89c0-be7b56bbf5ca.png)
 
-Hydrahon is a query builder, and only a query builder. It does not contain a PDO wrapper or anything. It's built to add query building into existing systems without implementing an entire new Database layer.
+Hydrahon is a standalone query builder component. It was built to enhance existing frameworks and applications that handle the database connection on their own. It doesn't come with a PDO or mysqli wrapper. The naming is heavily inspired by Eloquent and Kohana Framework Database component.
 
 [![Build Status](https://travis-ci.org/ClanCats/Hydrahon.svg?branch=master)](https://travis-ci.org/ClanCats/Hydrahon)
 [![Packagist](https://img.shields.io/packagist/dt/clancats/hydrahon.svg)](https://packagist.org/packages/clancats/hydrahon)
