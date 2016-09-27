@@ -2,13 +2,18 @@
 
 ![Hydrahon banner](https://cloud.githubusercontent.com/assets/956212/7947360/e36d75ea-097c-11e5-89c0-be7b56bbf5ca.png)
 
-Hydrahon is a standalone query builder component. It was built to enhance existing frameworks and applications that handle the database connection on their own. It doesn't come with a PDO or mysqli wrapper. The naming is heavily inspired by Eloquent and Kohana Framework Database component.
+Hydrahon is a **standalone** query builder component. It was built to enhance existing frameworks and applications that handle the database connection on their own. It **doesn't** come with a **PDO** or **mysqli** wrapper. The naming is heavily inspired by **Eloquent** and **Kohana** Framework Database component.
 
 [![Build Status](https://travis-ci.org/ClanCats/Hydrahon.svg?branch=master)](https://travis-ci.org/ClanCats/Hydrahon)
 [![Packagist](https://img.shields.io/packagist/dt/clancats/hydrahon.svg)](https://packagist.org/packages/clancats/hydrahon)
 [![Packagist](https://img.shields.io/packagist/l/clancats/hydrahon.svg)]()
 [![GitHub release](https://img.shields.io/github/release/clancats/hydrahon.svg)](https://github.com/ClanCats/Hydrahon/releases)
 
+## Status
+
+* The Hydrahon **MySQL** query builder is stable and used in production.
+* The Hydrahon **AQL** (Arango Query Langauge) query builder is currently in development.
+* A builder for Elasticsearch is on my mind but not in development._
 
 ## Installation
 
@@ -67,18 +72,9 @@ Lets start with a super basic example:
 ```php
 $h->table('people')->insert(
 [
-    [
-        'name' => 'Ray',
-        'age' => 25,
-    ],
-    [
-        'name' => 'John',
-        'age' => 30,
-    ],
-    [
-        'name' => 'Ali',
-        'age' => 22,
-    ],
+    ['name' => 'Ray', 'age' => 25],
+    ['name' => 'John',  'age' => 30],
+    ['name' => 'Ali', 'age' => 22],
 ])->execute();
 ```
 
