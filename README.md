@@ -67,37 +67,34 @@ Lets start with a super basic example:
 ```php
 $h->table('people')->insert(
 [
-    [
-        'name' => 'Ray',
-        'age' => 25,
-    ],
-    [
-        'name' => 'John',
-        'age' => 30,
-    ],
-    [
-        'name' => 'Ali',
-        'age' => 22,
-    ],
+    ['name' => 'Ray', 'age' => 25],
+    ['name' => 'John', 'age' => 30],
+    ['name' => 'Ali', 'age' => 22],
 ])->execute();
 ```
 
 #### Updating:
 
 ```php
-$h->table('people')->update()->set('age', 26)->where('name', 'Ray')->execute();
+$h->table('people')->update()
+    ->set('age', 26)
+    ->where('name', 'Ray')
+    ->execute();
 ```
 
 #### Deleting:
 
 ```php
-$h->table('people')->delete()->where('name', 'John')->execute();
+$h->table('people')->delete()
+    ->where('name', 'John')
+    ->execute();
 ```
 
 #### Selecting:
 
 ```php
-$h->table('people')->select()->get();
+$h->table('people')->select()
+    ->get();
 ```
 
 ---
