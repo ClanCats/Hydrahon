@@ -120,6 +120,17 @@ class Query_Sql_Select_Test extends \ClanCats\Hydrahon\Test\QueryCase
 	}
 
 	/**
+	 * Select::orderBy
+	 */
+	public function testOrderByRaw()
+	{
+		$raw = new Expression('language <> de');
+
+		// simple 
+		$this->assertAttributes($this->createQuery()->orderBy($raw), array('orders' => array(array($raw, 'asc'))));
+	}
+
+	/**
 	 * Select::groupBy
 	 */
 	public function testGroupBy()

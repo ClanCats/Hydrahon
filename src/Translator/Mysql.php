@@ -19,6 +19,7 @@ use ClanCats\Hydrahon\Query\Sql\Delete;
 use ClanCats\Hydrahon\Query\Sql\Drop;
 use ClanCats\Hydrahon\Query\Sql\Truncate;
 use ClanCats\Hydrahon\Query\Sql\Func;
+use ClanCats\Hydrahon\Query\Sql\Exists;
 
 class Mysql implements TranslatorInterface
 {
@@ -85,6 +86,10 @@ class Mysql implements TranslatorInterface
         elseif ($query instanceof Truncate)
         {
             $queryString = $this->translateTruncate();
+        }
+        elseif ($query instanceof Exists)
+        {
+            $queryString = $this->translateExists();
         }
         // everything else is wrong
         else
@@ -615,6 +620,17 @@ class Mysql implements TranslatorInterface
 
         foreach ($this->attr('orders') as $column => $direction) 
         {
+            // in case a raw value is given we had to 
+            // put the column / raw value an direction inside another
+            // array because we cannot make objects to array keys.
+            if (is_array($direction))
+            {
+                // This only works in php 7 the php 5 fix is below 
+                //list($column, $direction) = $direction;
+                $column = $direction[0];
+                $direction = $direction[1];
+            }
+
             $build .= $this->escape($column) . ' ' . $direction . ', ';
         }
 
@@ -671,5 +687,26 @@ class Mysql implements TranslatorInterface
     protected function translateTruncate()
     {
         return 'truncate table ' . $this->escapeTable() .';';
+    }
+
+    /**
+     * Translate the exists querry
+     *
+     * @return string
+     */
+    protected function translateExists()
+    {
+        $translator = new static;
+
+        // translate the subselect
+        list($subQuery, $subQueryParameters) = $translator->translate($this->attr('select'));
+
+        // merge the parameters
+        foreach($subQueryParameters as $parameter)
+        {
+            $this->addParameter($parameter);
+        }
+
+        return 'select exists(' . $subQuery .') as `exists`';
     }
 }

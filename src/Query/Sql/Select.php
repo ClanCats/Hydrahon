@@ -11,7 +11,7 @@ namespace ClanCats\Hydrahon\Query\Sql;
 
 use ClanCats\Hydrahon\Query\Expression;
 
-class Select extends SelectBase
+class Select extends SelectBase implements FetchableInterface
 {
     /**
      * fields to be selected
@@ -238,6 +238,10 @@ class Select extends SelectBase
         if (is_string($columns))
         {
             $columns = $this->stringArgumentToArray($columns);
+        }
+        elseif ($columns instanceof Expression)
+        {
+            $this->orders[] = array($columns, $direction); return $this;
         }
 
         foreach ($columns as $key => $column) 
@@ -625,5 +629,28 @@ class Select extends SelectBase
     public function avg($field)
     {
         return $this->column(new Func('avg', $field));
+    }
+
+    /** 
+     * Do any results of this query exist?
+     * 
+     * @return bool
+     */
+    public function exists()
+    {
+        $existsQuery = new Exists($this);
+
+        // set the current select for the exists query
+        $existsQuery->setSelect($this);
+
+        // run the callbacks to retirve the results
+        $result = $existsQuery->executeResultFetcher();
+
+        if (isset($result[0]['exists']))
+        {
+            return (bool) $result[0]['exists'];
+        }
+        
+        return false;
     }
 }

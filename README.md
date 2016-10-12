@@ -2,7 +2,7 @@
 
 ![Hydrahon banner](https://cloud.githubusercontent.com/assets/956212/7947360/e36d75ea-097c-11e5-89c0-be7b56bbf5ca.png)
 
-Hydrahon is a query builder, and only a query builder. It does not contain a PDO wrapper or anything. It's built to add query building into existing systems without implementing an entire new Database layer.
+Hydrahon is a **standalone** query builder component. It was built to enhance existing frameworks and applications that handle the database connection on their own. It **doesn't** come with a **PDO** or **mysqli** wrapper. The naming is heavily inspired by **Eloquent** and **Kohana** Framework Database component.
 
 [![Build Status](https://travis-ci.org/ClanCats/Hydrahon.svg?branch=master)](https://travis-ci.org/ClanCats/Hydrahon)
 [![Packagist](https://img.shields.io/packagist/dt/clancats/hydrahon.svg)](https://packagist.org/packages/clancats/hydrahon)
@@ -11,16 +11,9 @@ Hydrahon is a query builder, and only a query builder. It does not contain a PDO
 
 ## Status
 
-**This library is still in work.**
-
- - [x] SQL query structure
- - [x] SQL select query builder
- - [x] Mysql select query translator
- - [x] SQL insert query builder and translator
- - [x] SQL update query builder and translator
- - [x] SQL delete query builder and translator
- - [ ] Port more selection result helpers
- - [ ] Clean up translation unit tests. 
+* The Hydrahon **MySQL** query builder is stable and used in production.
+* The Hydrahon **AQL** (Arango Query Langauge) query builder is currently in development.
+* A builder for Elasticsearch is on my mind but not in development._
 
 ## Installation
 
@@ -30,9 +23,9 @@ Hydrahon follows `PSR-4` autoloading and can be installed using composer:
 $ composer require 'clancats/hydrahon:dev-master'
 ```
 
-## Usage
+## Usage MySQL
 
-### Creating hydrahon builder
+### Create a builder
 
 Again Hydrahon is **not** built as a database library, it's just a query builder. In this example, I'm going to present you an easy example of a PDO mysql implementation.
 
@@ -44,17 +37,18 @@ $hydrahon = new \ClanCats\Hydrahon\Builder('mysql', function($query, $queryStrin
     $statement = $connection->prepare($queryString);
     $statement->execute($queryParameters);
 
-    if ($query instanceof \ClanCats\Hydrahon\Query\Sql\Select)
+    if ($query instanceof \ClanCats\Hydrahon\Query\Sql\FetchableInterface)
     {
         return $statement->fetchAll(\PDO::FETCH_ASSOC);
     }
 });
 ```
 
-### SQL query builder
+---
 
-Please note that in the following examples the variable `$h` contains a Hydrahon query builder instance.
+### Structure 
 
+ * [Basics](#basics)
  * [Select](#select)
    * [Runners](#runners)
    * [Basics](#basics)
@@ -63,7 +57,48 @@ Please note that in the following examples the variable `$h` contains a Hydrahon
    * [Join](#joins)
    * [Limit and Offset](#limit-offset-and-page)
 
-#### Select 
+---
+
+> Note: Please note that in the following examples the variable `$h` contains a Hydrahon query builder instance.
+
+---
+
+### Basics
+
+Lets start with a super basic example:
+
+#### Inserting:
+
+```php
+$h->table('people')->insert(
+[
+    ['name' => 'Ray', 'age' => 25],
+    ['name' => 'John',  'age' => 30],
+    ['name' => 'Ali', 'age' => 22],
+])->execute();
+```
+
+#### Updating:
+
+```php
+$h->table('people')->update()->set('age', 26)->where('name', 'Ray')->execute();
+```
+
+#### Deleting:
+
+```php
+$h->table('people')->delete()->where('name', 'John')->execute();
+```
+
+#### Selecting:
+
+```php
+$h->table('people')->select()->get();
+```
+
+---
+
+### SQL Select 
 
 In our example we are going to execute multiple operations on the same table, so instead of loading the table over and over again we store it in a variable.
 
@@ -71,18 +106,34 @@ In our example we are going to execute multiple operations on the same table, so
 $users = $h->table('users');
 ```
 
-##### Runners 
-Also, the examples do not show the `run` method, which has to be executed to (obviously) run the query.
+#### Runners 
+
+The runner methods execute your query and return a result. There are many diffrent runner methods and each one acts like an helper. This means a runner method can modifiy your query and the result.
+
+##### "Execute" method
+
+The `execute` method is an alias of `executeResultFetcher`, this means the method just forwards the plain data that you return inside your `ClanCats\Hydrahon\Builder` instance callback.
 
 ```php
-$users->select('name')->where('age', '>', 18)->run();
+$users->select()->limit(10)->execute();
 ```
 
-There are also other runners to cover common use cases.
+#### "Get" method
 
-**single result**
+The default runner method is the `get` method which can do some operations on your data.
 
-Instead of retrieving an array of results you can direclty access a single one.
+```php
+$users->select(['name'])->where('age', '>', 22)->get();
+```
+
+For example by setting the limit of your query to _one_, you will also receive just that one single result. (Not an array of results). 
+
+```php
+$users->select()->get(); // returns: array(array(name: joe))
+$users->select()->limit(1)->get(); // returns: array(name: joe)
+```
+
+#### "One" method
 
 ```php
 $users->select()->where('name', 'jeffry')->one();
@@ -120,7 +171,7 @@ Sometimes you just need one value, for that we have the column function
 $users->select()->where('name', 'johanna')->column('age');
 ```
 
-##### Basics 
+#### Basics 
 
 Selecting everything
 
@@ -162,7 +213,7 @@ $users->select([$users->raw("max('age')")])
 select max('age') from `users`
 ```
 
-##### Where
+#### Where
 The `where` statement does not only apply to the `select` query, but also to update and `delete`.
 
 ```php
@@ -219,7 +270,7 @@ $users->select()->where('id', 'in', [213, 32, 53, 43]);
 select * from `users` where `id` in (?, ?, ?, ?)
 ```	
 
-##### Ordering
+#### Ordering
 
 ```php
 $users->select()->orderBy('name');
@@ -261,7 +312,7 @@ $users->select()->orderBy(['name', 'created_at' => 'desc']);
 select * from `users` order by `name` asc, `created_at` desc
 ```	
 
-##### Joins
+#### Joins
 
 The automatic escaping becomes really handy when working with multiple tables.
 
@@ -285,7 +336,7 @@ The default join type is `left`, for every join type there is its own method.
  * `innerJoin`
  * `outterJoin`
 
-##### Limit, Offset and Page
+#### Limit, Offset and Page
 
 When setting the limit to just one entry, you will receive it as a single result and not as result collection.
 

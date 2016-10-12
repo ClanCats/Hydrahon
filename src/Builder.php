@@ -21,11 +21,15 @@ class Builder
             'ClanCats\\Hydrahon\\Query\\Sql',
             'ClanCats\\Hydrahon\\Translator\\Mysql',
         ),
-
         // ArangoDB
         'arango' => array(
             'ClanCats\\Hydrahon\\Query\\Aql',
             'ClanCats\\Hydrahon\\Translator\\Arangodb',
+        ),
+        // SQLite
+        'sqlite' => array(
+            'ClanCats\\Hydrahon\\Query\\Sql',
+            'ClanCats\\Hydrahon\\Translator\\Sqlite',
         ),
     );
 

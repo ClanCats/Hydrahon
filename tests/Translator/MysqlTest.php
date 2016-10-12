@@ -365,6 +365,12 @@ class MysqlTest extends \ClanCats\Hydrahon\Test\TranslatorCase
 		{
 			return $q->table('phpunit')->select()->orderBy(array('u.firstname' => 'asc', 'u.lastname' => 'desc'));
 		});
+
+		// raw sorting
+		$this->assertQueryTranslation('select * from `phpunit` order by firstname <> nick asc', array(), function($q) 
+		{
+			return $q->table('phpunit')->select()->orderBy(new Expression("firstname <> nick"));
+		});
 	}
 
 	/**
@@ -674,6 +680,36 @@ class MysqlTest extends \ClanCats\Hydrahon\Test\TranslatorCase
 		$this->assertQueryExecution(array(array('avg(`views`)' => 2342.324)), 2342.324, 'select avg(`views`) from `test` limit 0, 1', array(), function($q)
 		{
 			return $q->table('test')->select()->avg('views');
+		});
+	}
+
+	/**
+	 * mysql grammar tests
+	 */
+	public function testExists()
+	{
+		$this->assertQueryExecution(array(array('exists' => 1)), true, 'select exists(select * from `test`) as `exists`', array(), function($q)
+		{
+			return $q->table('test')->select()->exists();
+		});
+
+		// no results
+		$this->assertQueryExecution(array(array('exists' => 0)), false, 'select exists(select * from `test`) as `exists`', array(), function($q)
+		{
+			return $q->table('test')->select()->exists();
+		});
+
+		// with some statements
+		$this->assertQueryExecution(array(array('exists' => 0)), false, 'select exists(select * from `test` where ( `a` = ? or `c` = ? )) as `exists`', array('b', 'd'), function($q)
+		{
+			return $q->table('test')
+				->select()
+				->where(function( $q )
+				{
+					$q->where('a', 'b');
+					$q->orWhere('c', 'd');
+				})
+				->exists();
 		});
 	}
 }

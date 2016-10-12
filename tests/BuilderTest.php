@@ -98,4 +98,39 @@ class BuilderTest extends \PHPUnit_Framework_TestCase
 		// but now it should fail
 		$hydrahon = new Builder('invalidtranslator', function() {});
 	}
+
+	/**
+	 * Check query classes
+	 */
+	public function testQueryClassesAsExpected()
+	{
+		// simple select
+		$hydrahon = new Builder('mysql', function($query, $queryString, $queryParameters) 
+		{
+			$this->assertInstanceOf('ClanCats\\Hydrahon\\Query\\Sql\\Select', $query);
+			$this->assertInstanceOf('ClanCats\\Hydrahon\\Query\\Sql\\FetchableInterface', $query);
+		});
+
+		$hydrahon->table('test')->select()->get();
+
+		// exists select
+		$hydrahon = new Builder('mysql', function($query, $queryString, $queryParameters) 
+		{
+			$this->assertNotInstanceOf('ClanCats\\Hydrahon\\Query\\Sql\\Select', $query);
+			$this->assertInstanceOf('ClanCats\\Hydrahon\\Query\\Sql\\Exists', $query);
+			$this->assertInstanceOf('ClanCats\\Hydrahon\\Query\\Sql\\FetchableInterface', $query);
+		});
+
+		$hydrahon->table('test')->select()->exists();
+
+		// non select
+		$hydrahon = new Builder('mysql', function($query, $queryString, $queryParameters) 
+		{
+			$this->assertNotInstanceOf('ClanCats\\Hydrahon\\Query\\Sql\\Select', $query);
+			$this->assertNotInstanceOf('ClanCats\\Hydrahon\\Query\\Sql\\FetchableInterface', $query);
+			$this->assertInstanceOf('ClanCats\\Hydrahon\\Query\\Sql\\Insert', $query);
+		});
+
+		$hydrahon->table('test')->insert(['foo' => 'bar'])->execute();
+	}
 }
