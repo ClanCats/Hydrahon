@@ -109,7 +109,14 @@ $users = $h->table('users');
 
 #### Runners 
 
-The runner methods execute your query and return a result. There are many diffrent runner methods and each one acts like an helper. This means a runner method can modifiy your query and the result.
+All runner methods are used as a final command to execute your query and retrieve a result. Most of them act like little helpers to cover common tasks.
+
+Hydrahon implements the following runner methods:
+
+ * `get`
+ * `one`
+ * `find`
+ * `first` & `last`
 
 ##### "Execute" method
 
