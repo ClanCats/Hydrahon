@@ -9,7 +9,7 @@
 
 use ClanCats\Hydrahon\Builder;
 
-abstract class TranslatorCase extends \PHPUnit\Framework\TestCase
+abstract class TranslatorCase extends \PHPUnit_Framework_TestCase
 {
 	protected $grammar = null;
 
