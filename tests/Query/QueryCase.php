@@ -9,7 +9,7 @@
 
 use ClanCats\Hydrahon\BaseQuery;
 
-abstract class Query_QueryCase extends \PHPUnit_Framework_TestCase
+abstract class Query_QueryCase extends \PHPUnit\Framework\TestCase
 {
 	protected $queryClass;
 

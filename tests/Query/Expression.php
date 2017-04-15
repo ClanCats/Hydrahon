@@ -13,7 +13,7 @@
 
 use ClanCats\Hydrahon\Query\Expression;
 
-class Expression_Test extends \PHPUnit_Framework_TestCase
+class Expression_Test extends \PHPUnit\Framework\TestCase
 {
 	/**
 	 * Expression::construct test
