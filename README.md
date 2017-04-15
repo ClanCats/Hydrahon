@@ -15,7 +15,7 @@ Hydrahon is a **standalone** query builder component. It was built to enhance ex
 * The Hydrahon **AQL** (Arango Query Langauge) query builder is currently in development.
 * A builder for Elasticsearch is on my mind but not in development._
 
-## Installation
+## Installation
 
 Hydrahon follows `PSR-4` autoloading and can be installed using composer:
 
@@ -100,7 +100,7 @@ $h->table('people')->select()->get();
 
 ### SQL Select 
 
-In our example we are going to execute multiple operations on the same table, so instead of loading the table over and over again we store it in a variable.
+In our example we are going to execute multiple operations on the same table, so instead of loading the table over and over again, we store it in a variable.
 
 ```php
 $users = $h->table('users');
@@ -108,7 +108,7 @@ $users = $h->table('users');
 
 #### Runners 
 
-The runner methods execute your query and return a result. There are many diffrent runner methods and each one acts like an helper. This means a runner method can modifiy your query and the result.
+The runner methods execute your query and return a result. There are many different runner methods and each one acts like a helper. This means a runner method can modify your query and the result.
 
 ##### "Execute" method
 
@@ -126,7 +126,7 @@ The default runner method is the `get` method which can do some operations on yo
 $users->select(['name'])->where('age', '>', 22)->get();
 ```
 
-For example by setting the limit of your query to _one_, you will also receive just that one single result. (Not an array of results). 
+For example, by setting the limit of your query to _one_, you will also receive just that one single result. (Not an array of results). 
 
 ```php
 $users->select()->get(); // returns: array(array(name: joe))
@@ -141,7 +141,7 @@ $users->select()->where('name', 'jeffry')->one();
 
 **first and last result**
 
-Returns the first result of table orderd by the default key `id`.
+Returns the first result of table ordered by the default key `id`.
 
 ```php
 $users->select()->first();
@@ -165,7 +165,7 @@ $users->select()->where('age', '>', 18)->count();
 
 **single column result**
 
-Sometimes you just need one value, for that we have the column function
+Sometimes you just need one value, for that, we have the column function
 
 ```php
 $users->select()->where('name', 'johanna')->column('age');
@@ -193,7 +193,7 @@ $users->select('name, age')
 select `name`, `age` from `users`
 ```
 
-Of course you can alias fields, you can define them as array keys or with the as token.
+Of course, you can alias fields, you can define them as array keys or with the as a token.
 
 ```php
 $users->select(['name', 'age', 'created_at' => 'c'])
@@ -214,7 +214,7 @@ select max('age') from `users`
 ```
 
 #### Where
-The `where` statement does not only apply to the `select` query, but also to update and `delete`.
+The `where` statement does not only apply to the `select` query but also to update and `delete`.
 
 ```php
 $users->select()->where('active', 1)
@@ -231,18 +231,18 @@ $users->select()->where('active', 1)->where('age', '>', 18)
 ```
 ```sql
 select * from `users` where `active` = ? and `age` > ?
-```	
+```    
 
 **or?**
 
-Of course there is also an or where statement.
+Of course, there is also an or where statement.
 
 ```php
 $users->select()->where('active', 1)->orWhere('admin', 1)
 ```
 ```sql
 select * from `users` where `active` = ? or `admin` = ?
-```	
+```    
 
 **Scopes**
 
@@ -250,14 +250,14 @@ You can scope wheres by using callbacks.
 
 ```php
 $users->select()
-	->where('age', '>', 18)
-	->where(function($q) {
-		$q->where('active', 1)->orWhere('admin', 1);
-	});
+    ->where('age', '>', 18)
+    ->where(function($q) {
+        $q->where('active', 1)->orWhere('admin', 1);
+    });
 ```
 ```sql
 select * from `users` where `age` > ? and ( `active` = ? or `admin` = ? )
-```	
+```    
 
 **in array**
 
@@ -268,7 +268,7 @@ $users->select()->where('id', 'in', [213, 32, 53, 43]);
 ```
 ```sql
 select * from `users` where `id` in (?, ?, ?, ?)
-```	
+```    
 
 #### Ordering
 
@@ -277,7 +277,7 @@ $users->select()->orderBy('name');
 ```
 ```sql
 select * from `users` order by `name` asc
-```	
+```    
 
 Setting the order direction.
 
@@ -286,7 +286,7 @@ $users->select()->orderBy('name', 'desc');
 ```
 ```sql
 select * from `users` order by `name` desc
-```	
+```    
 
 **Ordering with multiple keys**
 
@@ -301,7 +301,7 @@ $users->select()->orderBy('name')->orderBy('created_at');
 ```
 ```sql
 select * from `users` order by `name` desc, `created_at` asc
-```	
+```    
 
 When passing an array, you can also define the direction as array value.
 
@@ -310,7 +310,7 @@ $users->select()->orderBy(['name', 'created_at' => 'desc']);
 ```
 ```sql
 select * from `users` order by `name` asc, `created_at` desc
-```	
+```    
 
 #### Joins
 
@@ -318,18 +318,18 @@ The automatic escaping becomes really handy when working with multiple tables.
 
 ```php
 $users->select(['users.name', 'img.url'])
-	->join('user_images as img', 'users.id', '=', 'img.user_id')
-	->where('img.active', 1)
+    ->join('user_images as img', 'users.id', '=', 'img.user_id')
+    ->where('img.active', 1)
 ```
 
 ```sql
 select `users`.`name`, `img`.`url` 
-	from `users` 
-	left join `user_images` as `img` on `users`.`id` = `img`.`user_id` 
-	where `img`.`active` = ?
+    from `users` 
+    left join `user_images` as `img` on `users`.`id` = `img`.`user_id` 
+    where `img`.`active` = ?
 ```
 
-The default join type is `left`, for every join type there is its own method.
+The default join type is `left`, for every join type, there is its own method.
 
  * `leftJoin`
  * `rightJoin`
