@@ -6,7 +6,7 @@ Hydrahon is a **standalone** query builder component. It was built to enhance ex
 
 [![Build Status](https://travis-ci.org/ClanCats/Hydrahon.svg?branch=master)](https://travis-ci.org/ClanCats/Hydrahon)
 [![Packagist](https://img.shields.io/packagist/dt/clancats/hydrahon.svg)](https://packagist.org/packages/clancats/hydrahon)
-[![Packagist](https://img.shields.io/packagist/l/clancats/hydrahon.svg)]()
+[![Packagist](https://img.shields.io/packagist/l/clancats/hydrahon.svg)](https://github.com/ClanCats/Hydrahon/blob/master/LICENSE)
 [![GitHub release](https://img.shields.io/github/release/clancats/hydrahon.svg)](https://github.com/ClanCats/Hydrahon/releases)
 
 ## Status
