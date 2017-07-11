@@ -8,7 +8,7 @@ Hydrahon is a **standalone** database query builder written in PHP. It was built
 
 **What does that mean "Standalone query builder"?**
 
-Basically Hydrahon only generates query **strings** and an array of parameters for prepared statements. On its own it is not able to actually execute a query.
+Basically Hydrahon only generated a query **string** and an array of parameters. On its own it is not able to actually execute a query.
 
 [![Build Status](https://travis-ci.org/ClanCats/Hydrahon.svg?branch=master)](https://travis-ci.org/ClanCats/Hydrahon)
 [![Packagist](https://img.shields.io/packagist/dt/clancats/hydrahon.svg)](https://packagist.org/packages/clancats/hydrahon)
@@ -34,20 +34,24 @@ The full documentation can be found on [clancats.io](http://clancats.io/hydrahon
 
 ## Quick Start (MySQL) ⚡️
 
-Hydrahon is designed to be a pretty generic query builder. For this quick start we stick with SQL.
+Hydrahon is designed to be a pretty generic query builder. So for this quick start we stick with SQL.
 
 ### Create a builder
 
-Again this library is **not** built as a full database abstraction or ORM, it is only and will always be only a query builder. 
+Again this library is **not** built as a full database abstraction or ORM, it is only and will always be only a query builder. This means we need to implement the database connection and fetching by ourselves.
+
+In this example we are going to use [PDO](http://php.net/manual/en/book.pdo.php)
 
 ```php 
 $connection = new PDO('mysql:host=localhost;dbname=my_database', 'username', 'password');
 
-$hydrahon = new \ClanCats\Hydrahon\Builder('mysql', function($query, $queryString, $queryParameters) use($connection)
+// create a new mysql query builder
+$h = new \ClanCats\Hydrahon\Builder('mysql', function($query, $queryString, $queryParameters) use($connection)
 {
     $statement = $connection->prepare($queryString);
     $statement->execute($queryParameters);
 
+    // when the query is fetchable return all results and let hydrahon do the rest
     if ($query instanceof \ClanCats\Hydrahon\Query\Sql\FetchableInterface)
     {
         return $statement->fetchAll(\PDO::FETCH_ASSOC);
@@ -55,6 +59,119 @@ $hydrahon = new \ClanCats\Hydrahon\Builder('mysql', function($query, $queryStrin
 });
 ```
 
+And we are ready and set. The variable `$h` contains now a MySQL query builder.
+
+### Setup a simple table:
+
+To continue with our examples we need to create a simple mysql table.
+
+```sql
+CREATE TABLE `people` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) DEFAULT '',
+  `age` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+```
+
+### Inserting:
+
+Currently we dont have any data, to fix this lets go and insert some.
+
+```php
+// define a variable with the mysql table because 
+// we do all future operations in this example on it.
+$people = $h->table('people');
+
+$people->insert(
+[
+    ['name' => 'Ray', 'age' => 25],
+    ['name' => 'John',  'age' => 30],
+    ['name' => 'Ali', 'age' => 22],
+])->execute();
+```
+
+Will execute the following query:
+
+```sql
+insert into `people` (`age`, `name`) values (?, ?), (?, ?), (?, ?)
+```
+
+As you can see the Hydrahon automatically escapes parameters. 
+
+But because we are humans that get confuesd when there are hunderts of thousends of questions marks, I will continue to always show the runnable query:
+
+```sql
+insert into `people` (`age`, `name`) values (25, Ray), (30, John), (22, Ali)
+```
+
+### Updating:
+
+Ah snap, time runs so fast, "Ray" is actually already 26.
+
+```php
+$people->update()
+    ->set('age', 26)
+    ->where('name', 'Ray')
+->execute();
+```
+
+Generating:
+
+```sql
+update `people` set `age` = 26 where `name` = Ray
+```
+
+Currently you might think: "Well isnt it much simpler to just write the SQL query? I mean the PHP code is even longer...". 
+
+You have to understand that these are some very very basic examples the Hydrahon query builder starts to shine when thinks get more complex. But a "Quick Start" is in my view is just the wrong place for complex stuff, so throw an eye on the [full documentation](http://clancats.io/hydrahon/master/introduction/getting-started).
+
+### Deleting 
+
+Damit john, I hate you...
+
+```php
+$people->delete()
+    ->where('name', 'John')
+->execute();
+```
+
+Generating:
+
+```sql
+delete from `people` where `name` = John
+```
+
+### Selecting
+
+And finally fetch the data.
+
+```php
+$people->select()->get();
+```
+
+Generating:
+
+```sql
+select * from `people`
+```
+
+Result:
+
+```json
+[
+  {
+    "id": "1",
+    "name": "Ray",
+    "age": "26"
+  },
+  {
+    "id": "3",
+    "name": "Ali",
+    "age": "22"
+  }
+]
+```
 
 ## Credits
 
@@ -64,363 +181,3 @@ $hydrahon = new \ClanCats\Hydrahon\Builder('mysql', function($query, $queryStrin
 ## License
 
 The MIT License (MIT). Please see [License File](https://github.com/ClanCats/Hydrahon/blob/master/LICENSE) for more information.
-
-## Usage MySQL
-
-### Create a builder
-
-Again Hydrahon is **not** built as a database library, it's just a query builder. In this example, I'm going to present you an easy example of a PDO mysql implementation.
-
-```php 
-$connection = new PDO('mysql:host=localhost;dbname=my_database', 'username', 'password');
-
-$hydrahon = new \ClanCats\Hydrahon\Builder('mysql', function($query, $queryString, $queryParameters) use($connection)
-{
-    $statement = $connection->prepare($queryString);
-    $statement->execute($queryParameters);
-
-    if ($query instanceof \ClanCats\Hydrahon\Query\Sql\FetchableInterface)
-    {
-        return $statement->fetchAll(\PDO::FETCH_ASSOC);
-    }
-});
-```
-
-
-
----
-
-### Structure 
-
- * [Basics](#basics)
- * [Select](#select)
-   * [Runners](#runners)
-   * [Basics](#basics)
-   * [Where](#where)
-   * [Order By](#ordering)
-   * [Join](#joins)
-   * [Limit and Offset](#limit-offset-and-page)
-
----
-
-> Note: Please note that in the following examples the variable `$h` contains a Hydrahon query builder instance.
-
----
-
-### Basics
-
-Lets start with a super basic example:
-
-#### Inserting:
-
-```php
-$h->table('people')->insert(
-[
-    ['name' => 'Ray', 'age' => 25],
-    ['name' => 'John',  'age' => 30],
-    ['name' => 'Ali', 'age' => 22],
-])->execute();
-```
-
-#### Updating:
-
-```php
-$h->table('people')->update()->set('age', 26)->where('name', 'Ray')->execute();
-```
-
-#### Deleting:
-
-```php
-$h->table('people')->delete()->where('name', 'John')->execute();
-```
-
-#### Selecting:
-
-```php
-$h->table('people')->select()->get();
-```
-
----
-
-### SQL Select 
-
-In our example we are going to execute multiple operations on the same table, so instead of loading the table over and over again, we store it in a variable.
-
-```php
-$users = $h->table('users');
-```
-
-#### Runners 
-
-The runner methods execute your query and return a result. There are many different runner methods and each one acts like a helper. This means a runner method can modify your query and the result.
-
-##### "Execute" method
-
-The `execute` method is an alias of `executeResultFetcher`, this means the method just forwards the plain data that you return inside your `ClanCats\Hydrahon\Builder` instance callback.
-
-```php
-$users->select()->limit(10)->execute();
-```
-
-#### "Get" method
-
-The default runner method is the `get` method which can do some operations on your data.
-
-```php
-$users->select(['name'])->where('age', '>', 22)->get();
-```
-
-For example, by setting the limit of your query to _one_, you will also receive just that one single result. (Not an array of results). 
-
-```php
-$users->select()->get(); // returns: array(array(name: joe))
-$users->select()->limit(1)->get(); // returns: array(name: joe)
-```
-
-#### "One" method
-
-```php
-$users->select()->where('name', 'jeffry')->one();
-```
-
-**first and last result**
-
-Returns the first result of table ordered by the default key `id`.
-
-```php
-$users->select()->first();
-// or 
-$users->select()->last();
-```
-
-You can also pass a different key.
-
-```php
-$users->select()->first('created_at');
-```
-
-**count results**
-
-This special guy returns you the count of the current query:
-
-```php
-$users->select()->where('age', '>', 18)->count();
-```
-
-**single column result**
-
-Sometimes you just need one value, for that, we have the column function
-
-```php
-$users->select()->where('name', 'johanna')->column('age');
-```
-
-#### Basics 
-
-Selecting everything
-
-```php
-$users->select()
-```
-```sql
-select * from `users`
-```
-
-Select some special fields. Hydrahon parses your input, that allows you to use the query builder the way you are comfortable with.
-
-```php
-$users->select(['name', 'age'])
-// or
-$users->select('name, age')
-```
-```sql
-select `name`, `age` from `users`
-```
-
-Of course, you can alias fields, you can define them as array keys or with the as a token.
-
-```php
-$users->select(['name', 'age', 'created_at' => 'c'])
-// or
-$users->select(['name', 'age', 'created_at as c'])
-```
-```sql
-select `name`, `age`, `created_at` as `c` from `users`
-```
-
-Sometimes you might have a special case that hydrahon does not cover natively. For such cases you can make use of raw expressions, those will not get parsed or escaped.
-
-```php
-$users->select([$users->raw("max('age')")])
-```
-```sql
-select max('age') from `users`
-```
-
-#### Where
-The `where` statement does not only apply to the `select` query but also to update and `delete`.
-
-```php
-$users->select()->where('active', 1)
-```
-```sql
-select * from `users` where `active` = ?
-```
-You might wonder why there is an `?` in the query. The given `1` gets automatically passed as prepared parameter to avoid sql injection.
-
-Setting multiple where statements will result in an `and` statement.
-
-```php
-$users->select()->where('active', 1)->where('age', '>', 18)
-```
-```sql
-select * from `users` where `active` = ? and `age` > ?
-```    
-
-**or?**
-
-Of course, there is also an or where statement.
-
-```php
-$users->select()->where('active', 1)->orWhere('admin', 1)
-```
-```sql
-select * from `users` where `active` = ? or `admin` = ?
-```    
-
-**Scopes**
-
-You can scope wheres by using callbacks.
-
-```php
-$users->select()
-    ->where('age', '>', 18)
-    ->where(function($q) {
-        $q->where('active', 1)->orWhere('admin', 1);
-    });
-```
-```sql
-select * from `users` where `age` > ? and ( `active` = ? or `admin` = ? )
-```    
-
-**in array**
-
-Arrays can also be passed as where parameters.
-
-```php
-$users->select()->where('id', 'in', [213, 32, 53, 43]);
-```
-```sql
-select * from `users` where `id` in (?, ?, ?, ?)
-```    
-
-#### Ordering
-
-```php
-$users->select()->orderBy('name');
-```
-```sql
-select * from `users` order by `name` asc
-```    
-
-Setting the order direction.
-
-```php
-$users->select()->orderBy('name', 'desc');
-```
-```sql
-select * from `users` order by `name` desc
-```    
-
-**Ordering with multiple keys**
-
-Again, there are several ways you can do this, my philosophy is to give you as much freedom as possible.
-
-```php
-$users->select()->orderBy('name, created_at');
-// or 
-$users->select()->orderBy(['name', 'created_at']);
-// or 
-$users->select()->orderBy('name')->orderBy('created_at');
-```
-```sql
-select * from `users` order by `name` desc, `created_at` asc
-```    
-
-When passing an array, you can also define the direction as array value.
-
-```php
-$users->select()->orderBy(['name', 'created_at' => 'desc']);
-```
-```sql
-select * from `users` order by `name` asc, `created_at` desc
-```    
-
-#### Joins
-
-The automatic escaping becomes really handy when working with multiple tables.
-
-```php
-$users->select(['users.name', 'img.url'])
-    ->join('user_images as img', 'users.id', '=', 'img.user_id')
-    ->where('img.active', 1)
-```
-
-```sql
-select `users`.`name`, `img`.`url` 
-    from `users` 
-    left join `user_images` as `img` on `users`.`id` = `img`.`user_id` 
-    where `img`.`active` = ?
-```
-
-The default join type is `left`, for every join type, there is its own method.
-
- * `leftJoin`
- * `rightJoin`
- * `innerJoin`
- * `outterJoin`
-
-#### Limit, Offset and Page
-
-When setting the limit to just one entry, you will receive it as a single result and not as result collection.
-
-```php
-$users->select()->limit(1); // returns single result
-```
-```sql
-select * from `users` limit 0, 1
-```
-
-```php
-$users->select()->limit(2); // returns an array of results.
-```
-```sql
-select * from `users` limit 0, 2
-```
-
-with offset:
-
-```php
-$users->select()->limit( 25, 10 );
-```
-```sql
-select * from `users` limit 25, 10
-```
-
-simple paging:
-
-```php
-users->select()->page(0);
-```
-```sql
-select * from `users` limit 0, 25
-```
-
-The default page size is 25 entries.
-
-```php
-users->select()->page(3, 15);
-```
-```sql
-select * from `users` limit 45, 15
-```
