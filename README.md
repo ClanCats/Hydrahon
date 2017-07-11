@@ -2,7 +2,11 @@
 
 ![Hydrahon banner](https://cloud.githubusercontent.com/assets/956212/7947360/e36d75ea-097c-11e5-89c0-be7b56bbf5ca.png)
 
-Hydrahon is a **standalone** query builder component. It was built to enhance existing frameworks and applications that handle the database connection on their own. It **doesn't** come with a **PDO** or **mysqli** wrapper. The naming is heavily inspired by **Eloquent** and **Kohana** Framework Database component.
+Hydrahon is a **standalone** query builder PHP component. It was built to enhance existing frameworks and applications that handle the database connection on their own. It **does not** come with a **PDO** or **mysqli** wrapper. The naming is heavily inspired by Eloquent and the Kohana Framework Database component.
+
+**What does that mean "Standalone query builder"?**
+
+Basically Hydrahon only generates query **strings** and an array of parameters for prepared statements. It is on its own not able to actually execute a query.
 
 [![Build Status](https://travis-ci.org/ClanCats/Hydrahon.svg?branch=master)](https://travis-ci.org/ClanCats/Hydrahon)
 [![Packagist](https://img.shields.io/packagist/dt/clancats/hydrahon.svg)](https://packagist.org/packages/clancats/hydrahon)
@@ -13,15 +17,51 @@ Hydrahon is a **standalone** query builder component. It was built to enhance ex
 
 * The Hydrahon **MySQL** query builder is stable and used in production.
 * The Hydrahon **AQL** (Arango Query Langauge) query builder is currently in development.
-* A builder for Elasticsearch is on my mind but not in development._
+* A builder for Elasticsearch is on my mind but not in development.
 
 ## Installation
 
 Hydrahon follows `PSR-4` autoloading and can be installed using composer:
 
 ```
-$ composer require 'clancats/hydrahon:dev-master'
+$ composer require 'clancats/hydrahon'
 ```
+## Documentation 💡
+
+The full documentation can be found on [clancats.io](http://clancats.io/hydrahon/master/introduction/getting-started)
+
+## Quick Start (MySQL) ⚡️
+
+Hydrahon is designed to be a pretty generic query builder. For this quick start we stick with SQL.
+
+### Create a builder
+
+Again this library is **not** built as a full database abstraction or ORM, it is only and will always be only a query builder. 
+
+```php 
+$connection = new PDO('mysql:host=localhost;dbname=my_database', 'username', 'password');
+
+$hydrahon = new \ClanCats\Hydrahon\Builder('mysql', function($query, $queryString, $queryParameters) use($connection)
+{
+    $statement = $connection->prepare($queryString);
+    $statement->execute($queryParameters);
+
+    if ($query instanceof \ClanCats\Hydrahon\Query\Sql\FetchableInterface)
+    {
+        return $statement->fetchAll(\PDO::FETCH_ASSOC);
+    }
+});
+```
+
+
+## Credits
+
+- [Mario Döring](https://github.com/mario-deluna)
+- [All Contributors](https://github.com/ClanCats/Hydrahon/contributors)
+
+## License
+
+The MIT License (MIT). Please see [License File](https://github.com/ClanCats/Hydrahon/blob/master/LICENSE) for more information.
 
 ## Usage MySQL
 
@@ -43,6 +83,8 @@ $hydrahon = new \ClanCats\Hydrahon\Builder('mysql', function($query, $queryStrin
     }
 });
 ```
+
+
 
 ---
 
