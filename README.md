@@ -1,12 +1,14 @@
+<p align="center"><a href="http://clancats.io/hydrahon/master/" target="_blank">
+    <img width="100px" src="https://user-images.githubusercontent.com/956212/28079683-a2d93bf8-6669-11e7-920e-5779b665a909.png">
+</a></p>
+
 # Hydrahon
 
-![Hydrahon banner](https://cloud.githubusercontent.com/assets/956212/7947360/e36d75ea-097c-11e5-89c0-be7b56bbf5ca.png)
-
-Hydrahon is a **standalone** query builder PHP component. It was built to enhance existing frameworks and applications that handle the database connection on their own. It **does not** come with a **PDO** or **mysqli** wrapper. The naming is heavily inspired by Eloquent and the Kohana Framework Database component.
+Hydrahon is a **standalone** database query builder written in PHP. It was built to enhance existing frameworks, libraries and applications that handle the database connection on their own. It **does not** come with a **PDO** or **mysqli** wrapper. The naming is heavily inspired by Eloquent and the Kohana Framework Database component.
 
 **What does that mean "Standalone query builder"?**
 
-Basically Hydrahon only generates query **strings** and an array of parameters for prepared statements. It is on its own not able to actually execute a query.
+Basically Hydrahon only generates query **strings** and an array of parameters for prepared statements. On its own it is not able to actually execute a query.
 
 [![Build Status](https://travis-ci.org/ClanCats/Hydrahon.svg?branch=master)](https://travis-ci.org/ClanCats/Hydrahon)
 [![Packagist](https://img.shields.io/packagist/dt/clancats/hydrahon.svg)](https://packagist.org/packages/clancats/hydrahon)
