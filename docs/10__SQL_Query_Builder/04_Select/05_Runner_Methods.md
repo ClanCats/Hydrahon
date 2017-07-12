@@ -114,3 +114,58 @@ $deletedCount = $people->select()->count('deleted_at');
 ```
 
 [~ PHPDoc](/src/Query/Sql/Select.php#count)
+
+### Sum 
+
+Selects using the mysql `sum` function and returns the result.
+
+```php
+// SQL: select sum(`number_of_visits`) from `people` limit 0, 1
+$totalVisits = $people->select()->sum('number_of_visits');
+```
+
+[~ PHPDoc](/src/Query/Sql/Select.php#sum)
+
+### Min 
+
+Selects using the mysql `min` function and returns the result.
+
+```php
+// SQL: select min(`score`) from `game`.`ranking` limit 0, 1
+$lowestScore = $h->table('game.ranking')->select()->min('score');
+```
+
+[~ PHPDoc](/src/Query/Sql/Select.php#min)
+
+### Max 
+
+Selects using the mysql `max` function and returns the result.
+
+```php
+// SQL: select max(`score`) from `game`.`ranking` limit 0, 1
+$highestScore = $h->table('game.ranking')->select()->max('score');
+```
+
+[~ PHPDoc](/src/Query/Sql/Select.php#max)
+
+### Avarage 
+
+Selects using the mysql `avg` function and returns the result.
+
+```php
+// SQL: select avg(`age`) from `people` limit 0, 1
+$avarageAge = $people->select()->avg('age');
+```
+
+[~ PHPDoc](/src/Query/Sql/Select.php#avg)
+
+### Exists 
+
+Returns a bool value if anything under the queries conditions exists.
+
+```php
+// SQL: select exists(select * from `people` where `age` > 89) as `exists
+$hasOldPeople = $people->select()->where('age', '>', '89')->exists();
+```
+
+[~ PHPDoc](/src/Query/Sql/Select.php#exists)

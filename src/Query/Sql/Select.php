@@ -590,7 +590,7 @@ class Select extends SelectBase implements FetchableInterface
     }
 
     /**
-     * Helper the get the sum of a column
+     * Helper for the SQL sum aggregation.
      *
      * @param string            $field
      * @return int
@@ -601,7 +601,7 @@ class Select extends SelectBase implements FetchableInterface
     }
 
     /**
-     * Helper the get the max of a column
+     * Helper for the SQL max aggregation.
      *
      * @param string            $field
      * @return int
@@ -612,7 +612,7 @@ class Select extends SelectBase implements FetchableInterface
     }
 
     /**
-     * Helper the get the min of a column
+     * Helper for the SQL min aggregation.
      *
      * @param string            $field
      * @return int
@@ -623,7 +623,7 @@ class Select extends SelectBase implements FetchableInterface
     }
 
     /**
-     * Helper the get the avarage of a column
+     * Helper for the SQL avarage aggregation.
      *
      * @param string            $field
      * @return int
