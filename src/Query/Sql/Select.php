@@ -429,7 +429,9 @@ class Select extends SelectBase implements FetchableInterface
     }
 
     /**
-     * Executes the 'executeResultFetcher' callback and handles the results
+     * Executes the `executeResultFetcher` callback and handles the results.
+     * 
+     * @return mixed The fetched result.
      */
     public function get()
     {
@@ -508,9 +510,9 @@ class Select extends SelectBase implements FetchableInterface
     }
 
     /**
-     * Get one result sets limit to 1 and executes
+     * Sets the limit to 1, executes and returns the first result using get.
      *
-     * @return mixed
+     * @return mixed The single result.
      */
     public function one()
     {
@@ -518,7 +520,7 @@ class Select extends SelectBase implements FetchableInterface
     }
 
     /**
-     * Find something, means select one record by key
+     * Find something, means select one item by key
      *
      * @param int               $id
      * @param string            $key
@@ -530,10 +532,10 @@ class Select extends SelectBase implements FetchableInterface
     }
 
     /**
-     * Get the first result by key
+     * Get the first result orderd by the given key.
      *
-     * @param string            $key
-     * @return mixed
+     * @param string            $key By what should the first item be selected? Default is: 'id'
+     * @return mixed The first result.
      */
     public function first($key = 'id')
     {
@@ -545,7 +547,7 @@ class Select extends SelectBase implements FetchableInterface
      *
      * @param string            $key
      * @param string            $name
-     * @return mixed
+     * @return mixed the last result.
      */
     public function last($key = 'id')
     {
@@ -553,10 +555,10 @@ class Select extends SelectBase implements FetchableInterface
     }
 
     /**
-     * Just get a single value from the db
+     * Just get a single value from the result
      *
-     * @param string            $column
-     * @return mixed
+     * @param string            $column The name of the column.
+     * @return mixed The columns value
      */
     public function column($column)
     {

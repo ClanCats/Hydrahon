@@ -79,8 +79,8 @@ CREATE TABLE `people` (
 Currently we dont have any data, to fix this lets go and insert some.
 
 ```php
-// define a variable with the mysql table because 
-// we do all future operations in this example on it.
+// In our example we are going to execute multiple operations on the same table, 
+// so instead of loading the table over and over again, we store it in a variable.
 $people = $h->table('people');
 
 $people->insert(
