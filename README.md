@@ -8,7 +8,7 @@ Hydrahon is a **standalone** database query builder written in PHP. It was built
 
 **What does that mean "Standalone query builder"?**
 
-Basically Hydrahon only generated a query **string** and an array of parameters. On its own it is not able to actually execute a query.
+Basically, Hydrahon only generated a query **string** and an array of parameters. On its own, it is not able to actually execute a query.
 
 [![Build Status](https://travis-ci.org/ClanCats/Hydrahon.svg?branch=master)](https://travis-ci.org/ClanCats/Hydrahon)
 [![Packagist](https://img.shields.io/packagist/dt/clancats/hydrahon.svg)](https://packagist.org/packages/clancats/hydrahon)
@@ -34,13 +34,13 @@ The full documentation can be found on [clancats.io](http://clancats.io/hydrahon
 
 ## Quick Start (MySQL) ⚡️
 
-Hydrahon is designed to be a pretty generic query builder. So for this quick start we stick with SQL.
+Hydrahon is designed to be a pretty generic query builder. So for this quick start, we stick with SQL.
 
 ### Create a builder
 
 Again this library is **not** built as a full database abstraction or ORM, it is only and will always be only a query builder. This means we need to implement the database connection and fetching by ourselves.
 
-In this example we are going to use [PDO](http://php.net/manual/en/book.pdo.php)
+In this example, we are going to use [PDO](http://php.net/manual/en/book.pdo.php)
 
 ```php 
 $connection = new PDO('mysql:host=localhost;dbname=my_database', 'username', 'password');
@@ -76,7 +76,7 @@ CREATE TABLE `people` (
 
 ### Inserting:
 
-Currently we dont have any data, to fix this lets go and insert some.
+Currently, we don't have any data, to fix this lets go and insert some.
 
 ```php
 // In our example we are going to execute multiple operations on the same table, 
@@ -99,7 +99,7 @@ insert into `people` (`age`, `name`) values (?, ?), (?, ?), (?, ?)
 
 As you can see the Hydrahon automatically escapes parameters. 
 
-But because we are humans that get confuesd when there are hunderts of thousends of questions marks, I will continue to always show the runnable query:
+But because we are humans that get confused when there are hundreds of thousands of questions marks, I will continue to always show the runnable query:
 
 ```sql
 insert into `people` (`age`, `name`) values (25, Ray), (30, John), (22, Ali)
@@ -122,13 +122,13 @@ Generating:
 update `people` set `age` = 26 where `name` = Ray
 ```
 
-Currently you might think: "Well isnt it much simpler to just write the SQL query? I mean the PHP code is even longer...". 
+Currently, you might think: "Well isn't it much simpler to just write the SQL query? I mean the PHP code is even longer...". 
 
 You have to understand that these are some very very basic examples the Hydrahon query builder starts to shine when thinks get more complex. But a "Quick Start" is in my view is just the wrong place for complex stuff, so throw an eye on the [full documentation](http://clancats.io/hydrahon/master/introduction/getting-started).
 
 ### Deleting 
 
-Damit john, I hate you...
+Dammit John, I hate you...
 
 ```php
 $people->delete()
@@ -144,7 +144,7 @@ delete from `people` where `name` = John
 
 ### Selecting
 
-And finally fetch the data.
+And finally, fetch the data.
 
 ```php
 $people->select()->get();

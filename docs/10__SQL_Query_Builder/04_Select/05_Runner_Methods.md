@@ -1,12 +1,12 @@
 # SQL Select Runner Methods
 
-One important thing to know here is that there are multiple so called "runner methods". Think of them as helpers for common queries. These methods can modifiy your query, execute it and can do special operations with the returned result.
+One important thing to know here is that there are multiple so-called "runner methods". Think of them as helpers for common queries. These methods can modify your query, execute it and can do special operations with the returned result.
 
 ## Fetching 
 
 ### Execute 
 
-The absolute base runner method is `execute`. Its what all other runner methods are based on. 
+The absolute base runner method is `execute`. It's what all other runner methods are based on. 
 
 It's an alias of `executeResultFetcher`, this means the method just forwards the plain data that you return inside your `ClanCats\Hydrahon\Builder` instance callback.
 
@@ -16,7 +16,7 @@ $h->table('people')->select()->execute();
 
 ### Get 
 
-The default runner method is the `get` method, it handles most of the built in result modifications.
+The default runner method is the `get` method, it handles most of the built-in result modifications.
 
 As an example the handling of an expected single result vs. collections.
 
@@ -40,7 +40,7 @@ $people->select()->where('name', 'Trevor')->limit(1)->get(); // [id: 1, name: 'T
 
 ### One
 
-The method one hopfully speaks like a lot of methods for itself. It will add `limit 1` to your query and return a single result.
+The method one hopefully speaks like a lot of methods for itself. It will add `limit 1` to your query and return a single result.
 
 ```php
 $jeffry = $people->select()->where('name', 'jeffry')->one(); // [id: 2, name: 'jeffry']
@@ -50,7 +50,7 @@ $jeffry = $people->select()->where('name', 'jeffry')->one(); // [id: 2, name: 'j
 
 ### First & Last
 
-Selects the first / last result ordered by the the given key (default is `id`).
+Selects the first / last result ordered by the given key (default is `id`).
 
 ```php
 $firstPerson = $people->select()->first(); 
@@ -99,7 +99,7 @@ $age = $people->select()->where('name', 'Ray')->column('age'); // returns 26
 
 ### Count 
 
-Selects using the mysql `count` function and returns the number of results.
+Selects using the MySQL `count` function and returns the number of results.
 
 ```php
 // SQL: select count(*) from `people` limit 0, 1
@@ -117,7 +117,7 @@ $deletedCount = $people->select()->count('deleted_at');
 
 ### Sum 
 
-Selects using the mysql `sum` function and returns the result.
+Selects using the MySQL `sum` function and returns the result.
 
 ```php
 // SQL: select sum(`number_of_visits`) from `people` limit 0, 1
@@ -128,7 +128,7 @@ $totalVisits = $people->select()->sum('number_of_visits');
 
 ### Min 
 
-Selects using the mysql `min` function and returns the result.
+Selects using the MySQL `min` function and returns the result.
 
 ```php
 // SQL: select min(`score`) from `game`.`ranking` limit 0, 1
@@ -139,7 +139,7 @@ $lowestScore = $h->table('game.ranking')->select()->min('score');
 
 ### Max 
 
-Selects using the mysql `max` function and returns the result.
+Selects using the MySQL `max` function and returns the result.
 
 ```php
 // SQL: select max(`score`) from `game`.`ranking` limit 0, 1
@@ -150,7 +150,7 @@ $highestScore = $h->table('game.ranking')->select()->max('score');
 
 ### Avarage 
 
-Selects using the mysql `avg` function and returns the result.
+Selects using the MySQL `avg` function and returns the result.
 
 ```php
 // SQL: select avg(`age`) from `people` limit 0, 1
