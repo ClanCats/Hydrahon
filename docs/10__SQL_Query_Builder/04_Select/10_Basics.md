@@ -10,6 +10,83 @@ $people = $h->table('people');
 
 > Note: The displayed SQL query in the examples has no prepared statements. In other words the "?" have been replaced with the actual parameter.
 
+## Columns / fields
+
+By default hydrahon will simply select all fields using the `*` astericks.
+
+```php
+// SQL: select * from `people`
+$people->select()->get();
+```
+
+You can pass an array of column / field names as argument to the `select`.
+
+```php
+// SQL: select `name`, `age` from `people`
+$people->select(['name', 'age'])->get();
+```
+
+Aliasing a field works by writing `as`.
+
+```php
+// SQL: select `name`, `some_way_to_long_column_name` as `col` from `people`
+$people->select(['name', 'some_way_to_long_column_name as col'])->get();
+```
+
+> Note: that the colum names are escaped for more infos about that read: [parameter parsing and escaping](docs://introduction/parameter-parsing-escaping).
+
+You can overwrite the inital fields / columns any time using the `field` method.
+
+```php
+// SQL: select `name`, `group` from `people`
+$people->select()->fields(['name', 'group'])->get();
+```
+
+### Adding fields
+
+Also using the `addField` method you can add additional fields any time.
+
+```php
+$query = $people->select('name');
+
+if ($iNeedTheAge) {
+    $query->addField('age');
+}
+```
+
+### Conditions / Aggregations / Raw
+
+Because by default the columns will be quoted, you need to specify when you want to make some kind of raw operation or call a aggregation function.
+
+```php
+// SQL: select `name`, deleted_at is not null as is_deleted from `people`
+use ClanCats\Hydrahon\Query\Expression as Ex;
+
+$people->select([
+    'name',
+    new Ex('deleted_at is not null as is_deleted')
+])->get();
+```
+
+This also works using the `addField` method. There you can pass the alias name a second argument.
+
+```php
+// SQL: select `name`, deleted_at is not null as `is_deleted` from `people`
+use ClanCats\Hydrahon\Query\Expression as Ex;
+
+$people->select('name')
+    ->addField(new Ex('deleted_at is not null'), 'is_deleted')
+    ->get();
+```
+
+Using the `Func` object you can still make use of Hydrahons escaping functionality.
+
+```php
+// SQL: select count(`people`.`group_id`) from `people`
+use ClanCats\Hydrahon\Query\Sql\Func as F;
+
+$people->select(new F('count', 'people.group_id'))->get();
+```
 
 ## Where condition
 
@@ -143,4 +220,12 @@ $people->select()
         });
     })
     ->get();
+```
+
+### Reset Where
+
+If you find yourself in a situation where you just need a clean start you can reset all `where` conditions any time:
+
+```php
+$mySelectQuery->resetWheres();
 ```
