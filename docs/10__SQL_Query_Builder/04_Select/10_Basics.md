@@ -86,16 +86,61 @@ $people->select()->whereNotNull('deleted_at')->get();
 And of course this also works with a or operator between the conditions.
 
 ```php
-// SQL: select * from `people` 
-//      where `last_login` > 1502276478 
-//      and `deleted_at` is NULL 
-//      or `is_admin_since` is not NULL
+// SQL: 
+//   select * from `people` 
+//   where `last_login` > 1502276478 
+//   and `deleted_at` is NULL 
+//   or `is_admin_since` is not NULL
 $people->select()
-	->where('last_login', '>', time() - 86400)
-	->whereNull('deleted_at')
-	->orWhereNotNull('is_admin_since')
-	->get();
+    ->where('last_login', '>', time() - 86400)
+    ->whereNull('deleted_at')
+    ->orWhereNotNull('is_admin_since')
+    ->get();
 ```
 
+### Grouped Where
 
+Sometimes things get more complicated and you need to group some conditions together, we can do that by passing a function to the `where` method.
 
+```php
+// SQL: 
+//   select * from `people` 
+//   where `is_admin` = 1 
+//   or ( 
+//      `is_active` = 1 
+//      and `deleted_at` is NULL 
+//      and `email_confirmed_at` is not NULL 
+//   )
+$people->select()
+    ->where('is_admin', 1)
+    ->orWhere(function($q) 
+    {
+        $q->where('is_active', 1);
+        $q->whereNull('deleted_at');
+        $q->whereNotNull('email_confirmed_at');
+    })
+    ->get();
+```
+
+There is no layer limit so you can but Closure into Closure.
+
+```php
+// SQL: select * from `people` where `is_admin` = 1 or ( ( `is_active` = 1 and `is_moderator` = 1 ) or ( `is_active` = 1 and `deleted_at` is NULL and `email_confirmed_at` is not NULL ) )
+$people->select()
+    ->where('is_admin', 1)
+    ->orWhere(function($q) 
+    {
+        $q->where(function($q) 
+        {
+            $q->where('is_active', 1);
+            $q->where('is_moderator', 1);
+        });
+        $q->orWhere(function($q)
+        {
+            $q->where('is_active', 1);
+            $q->whereNull('deleted_at');
+            $q->whereNotNull('email_confirmed_at');
+        });
+    })
+    ->get();
+```
