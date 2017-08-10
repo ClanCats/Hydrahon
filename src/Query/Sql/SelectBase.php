@@ -84,17 +84,14 @@ class SelectBase extends Base
     /**
      * Create a where statement
      *
-     * where query: <$column> <$param1> <$param2> <$type>
-     *
-     * example:
      *     ->where('name', 'ladina')
      *     ->where('age', '>', 18)
-     *     ->where('name', 'in', array('johanna', 'jennifer'))
+     *     ->where('name', 'in', array('charles', 'john', 'jeffry'))
      *
-     * @param string      		$column            	The SQL column
-     * @param mixed       		$param1
-     * @param mixed        		$param2
-     * @param string        	$type            	The where type ( and, or )
+     * @param string      		$column The SQL column
+     * @param mixed       		$param1 Operator or value depending if $param2 isset.
+     * @param mixed        		$param2 The value if $param1 is an opartor.
+     * @param string        	$type the where type ( and, or )
      *
      * @return self
      */

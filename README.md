@@ -76,7 +76,7 @@ CREATE TABLE `people` (
 
 ### Inserting:
 
-Currently, we don't have any data, to fix this lets go and insert some.
+Currently, we don't have any data, to fix this let's go and insert some.
 
 ```php
 // In our example we are going to execute multiple operations on the same table, 
@@ -124,7 +124,7 @@ update `people` set `age` = 26 where `name` = Ray
 
 Currently, you might think: "Well isn't it much simpler to just write the SQL query? I mean the PHP code is even longer...". 
 
-You have to understand that these are some very very basic examples the Hydrahon query builder starts to shine when thinks get more complex. But a "Quick Start" is in my view is just the wrong place for complex stuff, so throw an eye on the [full documentation](http://clancats.io/hydrahon/master/introduction/getting-started).
+You have to understand that these are some very very basic examples the Hydrahon query builder starts to shine when things get more complex. But a "Quick Start" is in my view is just the wrong place for complex stuff, so throw an eye on the [full documentation](http://clancats.io/hydrahon/master/introduction/getting-started).
 
 ### Deleting 
 

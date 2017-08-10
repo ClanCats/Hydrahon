@@ -2,6 +2,8 @@
 
 One important thing to know here is that there are multiple so-called "runner methods". Think of them as helpers for common queries. These methods can modify your query, execute it and can do special operations with the returned result.
 
+> Note: The displayed SQL query in the examples has no prepared statements. In other words the "?" have been replaced with the actual parameter.
+
 ## Fetching 
 
 ### Execute 
