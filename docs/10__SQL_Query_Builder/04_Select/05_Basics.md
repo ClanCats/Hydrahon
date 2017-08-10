@@ -2,7 +2,7 @@
 
 The basics are `where`, `order`, `group` and `limit` conditions. For joins check out [Joining data](docs://sql-query-builder/select/joining-data).
 
-Keep in mind that im also aliasing the `people` table inside the `$people` variable for the following examples.
+Keep in mind that i'm also aliasing the `people` table inside the `$people` variable for the following examples.
 
 ```php
 $people = $h->table('people');
@@ -12,7 +12,7 @@ $people = $h->table('people');
 
 ## Columns / fields
 
-By default hydrahon will simply select all fields using the `*` astericks.
+By default Hydrahon will simply select all fields using the `*` asterisks.
 
 ```php
 // SQL: select * from `people`
@@ -33,9 +33,9 @@ Aliasing a field works by writing `as`.
 $people->select(['name', 'some_way_to_long_column_name as col'])->get();
 ```
 
-> Note: that the colum names are escaped for more infos about that read: [parameter parsing and escaping](docs://introduction/parameter-parsing-escaping).
+> Note: that the column names are escaped for more infos about that read: [parameter parsing and escaping](docs://introduction/parameter-parsing-escaping).
 
-You can overwrite the inital fields / columns any time using the `field` method.
+You can overwrite the initial fields / columns any time using the `field` method.
 
 ```php
 // SQL: select `name`, `group` from `people`
@@ -229,3 +229,5 @@ If you find yourself in a situation where you just need a clean start you can re
 ```php
 $mySelectQuery->resetWheres();
 ```
+
+
