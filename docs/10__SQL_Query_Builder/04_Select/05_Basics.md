@@ -275,7 +275,7 @@ Sort on multiple fields:
 $people->select()->orderBy(['created', 'firstname'])->get();
 ```
 
-Sort on multiple fields with diffrent directions:
+Sort on multiple fields with different directions:
 
 
 ```php
@@ -341,3 +341,5 @@ $people->select()->page(5, 50)->get();
 > Note: Pages always start at **0**!
 
 [~ PHPDoc](/src/Query/Sql/SelectBase.php#page)
+
+

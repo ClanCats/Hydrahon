@@ -1,4 +1,4 @@
-# SQL Select Runner Methods
+# SQL Select Runner Methods
 
 One important thing to know here is that there are multiple so-called "runner methods". Think of them as helpers for common queries. These methods can modify your query, execute it and can do special operations with the returned result.
 

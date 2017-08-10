@@ -1,2 +1,2 @@
-# SQL Select Joins
+# SQL Select Joins
 
