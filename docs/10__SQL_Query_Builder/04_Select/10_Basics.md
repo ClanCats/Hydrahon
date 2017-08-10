@@ -2,7 +2,7 @@
 
 The basics are `where`, `order`, `group` and `limit` conditions. For joins check out [Joining data](docs://sql-query-builder/select/joining-data).
 
-Keep in mind that im also aliasing the `people` table inside the `$people` variable for the follwoing examples.
+Keep in mind that im also aliasing the `people` table inside the `$people` variable for the following examples.
 
 ```php
 $people = $h->table('people');
@@ -20,14 +20,14 @@ A where equals condition is build like this:
 $people->select()->where('name', 'James')->get(); 
 ```
 
-If you need to use a diffrent operator just pass it as the second arumgnet.
+If you need to use a different operator just pass it as the second argument.
 
 ```php
 // SQL: select * from `people` where `age` > 18
 $people->select()->where('age', '>', '18')->get(); 
 ```
 
-Passing an array as value will comma seperate the values:
+Passing an array as value will comma separate the values:
 
 ```php
 // SQL: select * from `people` where `city` in (Zürich, Bern, Basel)
@@ -83,7 +83,7 @@ Or reverse where it is not nothing.
 $people->select()->whereNotNull('deleted_at')->get();
 ```
 
-And ofcourse this also works with a or operator between the conditions.
+And of course this also works with a or operator between the conditions.
 
 ```php
 // SQL: select * from `people` 
@@ -96,3 +96,6 @@ $people->select()
 	->orWhereNotNull('is_admin_since')
 	->get();
 ```
+
+
+
