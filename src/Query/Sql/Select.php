@@ -260,8 +260,8 @@ class Select extends SelectBase implements FetchableInterface
     /**
      * Add a group by statement to the current query
      * 
-     *     ->groupBy('id')
-     *     ->gorupBy(['id', 'category'])
+     *     ->groupBy('category')
+     *     ->gorupBy(['category', 'price'])
      *
      * @param array|string              $keys
      * @return self

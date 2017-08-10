@@ -1,6 +1,6 @@
 # SQL Select Basics
 
-The basics are `where`, `order`, `group` and `limit` conditions. For joins check out [Joining data](docs://sql-query-builder/select/joining-data).
+The basics are `where`, `group`, `order` and `limit` conditions. For joins check out [Joining data](docs://sql-query-builder/select/joining-data).
 
 Keep in mind that i'm also aliasing the `people` table inside the `$people` variable for the following examples.
 
@@ -230,4 +230,114 @@ If you find yourself in a situation where you just need a clean start you can re
 $mySelectQuery->resetWheres();
 ```
 
+## Grouping / Group By
 
+Adding a group by statements is fairly simple.
+
+```php
+// SQL: select * from `people` group by `age`
+$people->select()->groupBy('age')->get();
+```
+
+Or with multiple groups:
+
+```php
+// SQL: select * from `people` group by `age`, `is_active`
+$people->select()->groupBy(['age', 'is_active'])->get();
+```
+
+[~ PHPDoc](/src/Query/Sql/Select.php#groupBy)
+
+## Ordering / Order By
+
+Also nothing overwhelming here. By default the order direction is `asc`.
+
+Order by single column:
+
+```php
+// SQL: select * from `people` order by `created` asc
+$people->select()->orderBy('created')->get();
+```
+
+Change the direction:
+
+```php
+// SQL: select * from `people` order by `created` desc
+$people->select()->orderBy('created', 'desc')->get();
+```
+
+### Multiple columns
+
+Sort on multiple fields:
+
+```php
+// SQL: select * from `people` order by `created` asc, `firstname` asc
+$people->select()->orderBy(['created', 'firstname'])->get();
+```
+
+Sort on multiple fields with diffrent directions:
+
+
+```php
+// SQL: select * from `people` order by `lastname` asc, `firstname` asc, `score` desc
+$people->select()->orderBy([
+    'lastname' => 'asc',
+    'firstname' => 'asc',
+    'score' => 'desc',
+])->get();
+```
+
+[~ PHPDoc](/src/Query/Sql/Select.php#orderBy)
+
+## Limit / Offset
+
+Because fetching trillions of records from the database makes your app probably crash we need to be able to limit queries.
+
+### Limit
+
+To set the limit use the method with that exact name:
+
+```php
+// SQL: select * from `people` limit 0, 10
+$people->select()->limit(10)->get();
+```
+
+Using the exact same method you can also set the offset. So when two arguments are given the second one acts as limit and the first one as offset. This might seem confusing but I wanted to stay as close as possible to sql.
+
+```php
+// with offset 100
+// SQL: select * from `people` limit 100, 10
+$people->select()->limit(100, 10)->get();
+```
+
+[~ PHPDoc](/src/Query/Sql/SelectBase.php#limit)
+
+### Offset
+
+If you like things a little bit more expressive you can also use the offset method.
+
+```php
+// SQL: select * from `people` limit 100, 10
+$people->select()->limit(10)->offset(100)->get();
+```
+
+[~ PHPDoc](/src/Query/Sql/SelectBase.php#offset)
+
+### Page
+
+The `page` method is just a helper that also sets a limit and offset. **The default page size is 25.**
+
+```php
+// SQL: select * from `people` limit 0, 25
+$people->select()->page(0)->get();
+
+// SQL: select * from `people` limit 125, 25
+$people->select()->page(5)->get();
+
+// SQL: select * from `people` limit 250, 50
+$people->select()->page(5, 50)->get();
+```
+
+> Note: Pages always start at **0**!
+
+[~ PHPDoc](/src/Query/Sql/SelectBase.php#page)
