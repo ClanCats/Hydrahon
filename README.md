@@ -119,7 +119,7 @@ $people->update()
 Generating:
 
 ```sql
-update `people` set `age` = 26 where `name` = Ray
+update `people` set `age` = 26 where `name` = 'Ray'
 ```
 
 Currently, you might think: "Well isn't it much simpler to just write the SQL query? I mean the PHP code is even longer...". 
@@ -139,7 +139,7 @@ $people->delete()
 Generating:
 
 ```sql
-delete from `people` where `name` = John
+delete from `people` where `name` = 'John'
 ```
 
 ### Selecting
@@ -173,6 +173,103 @@ Result:
 ]
 ```
 
+### Where conditions
+
+For the next few examples, I simply assume a bigger dataset so that the queries make sense.
+
+Chaining where conditions:
+
+```php
+// select * from `people` where `name` like 'J%' and `age` > 21
+$people->select()
+    ->where('name', 'like', 'J%')
+    ->where('age', '>', 21)
+    ->get();
+```
+
+By default all where conditions are defined with the `and` operator.
+
+Different where operators:
+
+```php
+// select * from `people` where `name` like 'J%' or `name` like 'I%'
+$people->select()
+    ->where('name', 'like', 'J%')
+    ->orWhere('name', 'like', 'I%')
+    ->get();
+```
+
+#### Where scopes
+
+Allowing you to group conditions:
+
+```php
+// select * from `people` where ( `age` > 21 and `age` < 99 ) or `group` = admin
+$people->select()
+    ->where(function($q) 
+    {
+        $q->where('age', '>', 21);
+        $q->where('age', '<', 99);
+    })
+    ->orWhere('group', 'admin')
+    ->get();
+```
+
+### Joins
+
+Joining tables:
+
+```php
+// select 
+//     `people`.`name`, `groups`.`name` as `group_name` 
+// from `people` 
+// left join `groups` on `groups`.`id` = `people`.`group_id`
+$people->select('people.name, groups.name as group_name')
+    ->join('groups', 'groups.id', '=', 'people.group_id')
+    ->get();
+```
+
+### Grouping
+
+Grouping data:
+
+```php
+// select * from `people` group by `age`
+$people->select()->groupBy('age')->get();
+```
+
+### Ordering
+
+Ordering data:
+
+```php
+// select * from `people` order by `age` desc
+$people->select()->orderBy('age', 'desc')->get();
+
+// select * from `people` order by `age` desc, `name` asc
+$people->select()->orderBy(['age' => 'desc', 'name' => 'asc'])->get();
+```
+
+### Limiting data
+
+Limit and offset:
+
+```php
+// select * from `people` limit 0, 10
+$people->select()->limit(10)->get();
+
+// select * from `people` limit 100, 10
+$people->select()->limit(100, 10)->get();
+
+// select * from `people` limit 100, 10
+$people->select()->limit(10)->offset(100)->get();
+
+// select * from `people` limit 150, 30
+$people->select()->page(5, 30)->get();
+```
+
+**Small reminder this is the quick start, check out the full docs.**
+
 ## Credits
 
 - [Mario Döring](https://github.com/mario-deluna)
@@ -181,4 +278,3 @@ Result:
 ## License
 
 The MIT License (MIT). Please see [License File](https://github.com/ClanCats/Hydrahon/blob/master/LICENSE) for more information.
-

@@ -274,6 +274,15 @@ Change the direction:
 $people->select()->orderBy('created', 'desc')->get();
 ```
 
+Order by will also accept custom expressions.
+
+```php
+// SQL: select * from `cars` order by brand <> bmw desc
+use ClanCats\Hydrahon\Query\Expression as Ex;
+
+$cars->select()->orderBy(new Ex('brand <> bmw'), 'desc')->get();
+```
+
 ### Multiple columns
 
 Sort on multiple fields:
