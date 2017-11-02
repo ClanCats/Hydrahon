@@ -1,4 +1,6 @@
-# PDO query builder implementation
+# MySQL PDO query builder implementation
+
+This is copy pasta from the README.
 
 ```php 
 $connection = new PDO('mysql:host=localhost;dbname=my_database', 'username', 'password');
@@ -16,3 +18,5 @@ $h = new \ClanCats\Hydrahon\Builder('mysql', function($query, $queryString, $que
     }
 });
 ```
+
+

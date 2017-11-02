@@ -8,7 +8,7 @@ Hydrahon is a **standalone** database query builder written in PHP. It was built
 
 **What does that mean "Standalone query builder"?**
 
-Basically, Hydrahon only generated a query **string** and an array of parameters. On its own, it is not able to actually execute a query.
+Basically, Hydrahon only generates a query **string** and an array of parameters. On its own, it is not able to actually execute a query.
 
 [![Build Status](https://travis-ci.org/ClanCats/Hydrahon.svg?branch=master)](https://travis-ci.org/ClanCats/Hydrahon)
 [![Packagist](https://img.shields.io/packagist/dt/clancats/hydrahon.svg)](https://packagist.org/packages/clancats/hydrahon)
