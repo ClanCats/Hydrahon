@@ -1,14 +1,14 @@
 # SQL Select Basics
 
-The basics are `where`, `group`, `order` and `limit` conditions. For joins check out [Joining data](docs://sql-query-builder/select/joining-data).
+The basics are `where`, `group`, `order` and `limit`. For joins check out [Joining data](docs://sql-query-builder/select/joining-data).
 
-Keep in mind that i'm also aliasing the `people` table inside the `$people` variable for the following examples.
+Keep in mind that i'm also aliasing the `people` table inside the `$people` variable for all examples in this document.
 
 ```php
 $people = $h->table('people');
 ```
 
-> Note: The displayed SQL query in the examples has no prepared statements. In other words the "?" have been replaced with the actual parameter.
+> Note: The displayed SQL query in the examples has no prepared statements. In other words the "?" placeholders have been replaced with the actual parameter.
 
 ## Columns / fields
 
@@ -19,14 +19,14 @@ By default Hydrahon will simply select all fields using the `*` asterisks.
 $people->select()->get();
 ```
 
-You can pass an array of column / field names as argument to the `select`.
+You can pass an array of column / field names as an argument to the `select` method.
 
 ```php
 // SQL: select `name`, `age` from `people`
 $people->select(['name', 'age'])->get();
 ```
 
-Aliasing a field works by writing `as`.
+Aliasing a field works by writing `as` just as you are used to from SQL.
 
 ```php
 // SQL: select `name`, `some_way_to_long_column_name` as `col` from `people`
@@ -35,18 +35,26 @@ $people->select(['name', 'some_way_to_long_column_name as col'])->get();
 
 > Note: that the column names are escaped for more infos about that read: [parameter parsing and escaping](docs://introduction/parameter-parsing-escaping).
 
-You can overwrite the initial fields / columns any time using the `field` method.
+The query builder will also accept key value data and will convert them to an alias.
+
+```php
+// SQL: select `name`, `some_way_to_long_column_name` as `col` from `people`
+$people->select(['name', 'some_way_to_long_column_name' => 'col'])->get();
+```
+
+You can overwrite the initial (all) fields / columns any time using the `fields` method.
 
 ```php
 // SQL: select `name`, `group` from `people`
-$people->select()->fields(['name', 'group'])->get();
+$people->select('id')->fields(['name', 'group'])->get();
 ```
 
 ### Adding fields
 
-Also using the `addField` method you can add additional fields any time.
+If you don't wont to overwrite the selected fields you can make use of the `addField` method which will append the new field.
 
 ```php
+// SQL: select `name`, `age` from `people`
 $query = $people->select('name');
 
 if ($iNeedTheAge) {
@@ -90,7 +98,7 @@ $people->select(new F('count', 'people.group_id'))->get();
 
 ## Where condition
 
-A where equals condition is build like this:
+A where **equals** condition is build like this:
 
 ```php
 // SQL: select * from `people` where `name` = James
@@ -342,4 +350,13 @@ $people->select()->page(5, 50)->get();
 
 [~ PHPDoc](/src/Query/Sql/SelectBase.php#page)
 
+## Distinct select
 
+To make your select distinct simply call the method coresponding method.
+
+```php
+// SQL: select distinct * from `people`
+$people->select()->distinct();
+```
+
+[~ PHPDoc](/src/Query/Sql/Select.php#distinct)

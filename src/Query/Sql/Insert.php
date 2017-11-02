@@ -31,7 +31,7 @@ class Insert extends Base
      *     ->ignore(true)
      * 
      * @param bool                  $ignore
-     * @return void
+     * @return self The current query builder.
      */
     public function ignore($ignore = true)
     {
@@ -49,8 +49,8 @@ class Insert extends Base
      *          ['name' => 'Valentin', 'age' => 21]
      *     ])
      * 
-     * @param array                     $values
-     * @return void
+     * @param array                     $values The data you want to insert.
+     * @return self The current query builder.
      */
     public function values(array $values = array())
     {
@@ -64,7 +64,7 @@ class Insert extends Base
         // because we want to be able to insert bulk values.
         if (!is_array(reset( $values )))
         {
-            $values = array( $values );
+            $values = array($values);
         }
         
         // because we could recive the arrays in diffrent order 
@@ -79,5 +79,15 @@ class Insert extends Base
         
         // return self so we can continue running the next function
         return $this;
+    }
+
+    /**
+     * Resets the current insert values of the query.
+     *
+     * @return self The current query builder.
+     */
+    public function resetValues()
+    {
+        $this->values = array(); return $this;
     }
 }

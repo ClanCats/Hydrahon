@@ -63,4 +63,19 @@ class Query_Sql_Insert_Test extends Query_QueryCase
 		// empty insert
 		$this->assertAttributes($this->createQuery()->values(array()));
 	}
+
+	/**
+	 * Insert::resetValues
+	 */
+	public function testResetValues()
+	{
+		$values = array('foo' => 'bar');
+		$query = $this->createQuery()->values($values);
+		$this->assertAttributes($query, array('values' => array($values)));
+
+		$query->resetValues();
+
+		// empty insert
+		$this->assertAttributes($query);
+	}
 }
