@@ -39,7 +39,7 @@ $insert->execute();
 
 [~ PHPDoc](/src/Query/Sql/Insert.php#values)
 
-## Ignore
+## Ignore
 
 You can toggle insert ignore.
 
@@ -56,7 +56,7 @@ $h->table('people')
 
 ## Reset values
 
-Because values are always appendend you need to be able to reset them at some point. For that we have the `resetValues` method.
+Because values are always appended you need to be able to reset them at some point. For that, we have the `resetValues` method.
 
 ```php
 // SQL: insert into `people` (`firstname`, `lastname`) values (Hila, Klein)

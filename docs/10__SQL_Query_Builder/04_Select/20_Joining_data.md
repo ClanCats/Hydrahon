@@ -4,7 +4,7 @@ Do you like to join things? We too!
 
 ## Basic Join
 
-Lets asume we have two tables, a users table and a comments table. Every comment has a column containing a user id. Now we want to fetch all comment bodies including the name of their creators.
+Let's assume we have two tables, a users table and a comments table. Every comment has a column containing a user id. Now we want to fetch all comment bodies including the name of their creators.
 
 ```php
 // SQL: 
@@ -36,7 +36,7 @@ the default method `join` will generate a **left** join.
 
 ## Complex Join
 
-Sometimes you need to join data on more then one condition. Therefor you can pass a callback to the all `join` methods allowing you to specify more conditions.
+Sometimes you need to join data on more than one condition. Therefor you can pass a callback to the all `join` methods allowing you to specify more conditions.
 
 ```php
 // SQL:
@@ -58,5 +58,3 @@ $h->table('comments as c')
     })
     ->get();
 ```
-
-

@@ -18,7 +18,7 @@ Basically, Hydrahon only generated a query **string** and an array of parameters
 ## Status
 
 * The Hydrahon **MySQL** query builder is stable and used in production.
-* The Hydrahon **AQL** (Arango Query Langauge) query builder is currently in development.
+* The Hydrahon **AQL** (Arango Query Language) query builder is currently in development.
 * A builder for Elasticsearch is on my mind but not in development.
 
 ## Installation
@@ -63,7 +63,7 @@ And we are ready and set. The variable `$h` contains now a MySQL query builder.
 
 ### Setup a simple table:
 
-To continue with our examples we need to create a simple mysql table.
+To continue with our examples we need to create a simple MySQL table.
 
 ```sql
 CREATE TABLE `people` (
@@ -181,3 +181,4 @@ Result:
 ## License
 
 The MIT License (MIT). Please see [License File](https://github.com/ClanCats/Hydrahon/blob/master/LICENSE) for more information.
+

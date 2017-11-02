@@ -2,7 +2,7 @@
 
 The basics are `where`, `group`, `order` and `limit`. For joins check out [Joining data](docs://sql-query-builder/select/joining-data).
 
-Keep in mind that i'm also aliasing the `people` table inside the `$people` variable for all examples in this document.
+Keep in mind that I'm also aliasing the `people` table inside the `$people` variable for all examples in this document.
 
 ```php
 $people = $h->table('people');
@@ -12,14 +12,14 @@ $people = $h->table('people');
 
 ## Columns / fields
 
-By default Hydrahon will simply select all fields using the `*` asterisks.
+By default, Hydrahon will simply select all fields using the `*` asterisks.
 
 ```php
 // SQL: select * from `people`
 $people->select()->get();
 ```
 
-You can pass an array of column / field names as an argument to the `select` method.
+You can pass an array of column/field names as an argument to the `select` method.
 
 ```php
 // SQL: select `name`, `age` from `people`
@@ -33,7 +33,7 @@ Aliasing a field works by writing `as` just as you are used to from SQL.
 $people->select(['name', 'some_way_to_long_column_name as col'])->get();
 ```
 
-> Note: that the column names are escaped for more infos about that read: [parameter parsing and escaping](docs://introduction/parameter-parsing-escaping).
+> Note: that the column names are escaped for more info about that read: [parameter parsing and escaping](docs://introduction/parameter-parsing-escaping).
 
 The query builder will also accept key value data and will convert them to an alias.
 
@@ -42,7 +42,7 @@ The query builder will also accept key value data and will convert them to an al
 $people->select(['name', 'some_way_to_long_column_name' => 'col'])->get();
 ```
 
-You can overwrite the initial (all) fields / columns any time using the `fields` method.
+You can overwrite the initial (all) fields/columns any time using the `fields` method.
 
 ```php
 // SQL: select `name`, `group` from `people`
@@ -51,7 +51,7 @@ $people->select('id')->fields(['name', 'group'])->get();
 
 ### Adding fields
 
-If you don't wont to overwrite the selected fields you can make use of the `addField` method which will append the new field.
+If you don't want to overwrite the selected fields you can make use of the `addField` method which will append the new field.
 
 ```php
 // SQL: select `name`, `age` from `people`
@@ -64,7 +64,7 @@ if ($iNeedTheAge) {
 
 ### Conditions / Aggregations / Raw
 
-Because by default the columns will be quoted, you need to specify when you want to make some kind of raw operation or call a aggregation function.
+Because by default the columns will be quoted, you need to specify when you want to make some kind of raw operation or call an aggregation function.
 
 ```php
 // SQL: select `name`, deleted_at is not null as is_deleted from `people`
@@ -168,7 +168,7 @@ Or reverse where it is not nothing.
 $people->select()->whereNotNull('deleted_at')->get();
 ```
 
-And of course this also works with a or operator between the conditions.
+And of course, this also works with a or operator between the conditions.
 
 ```php
 // SQL: 
@@ -258,7 +258,7 @@ $people->select()->groupBy(['age', 'is_active'])->get();
 
 ## Ordering / Order By
 
-Also nothing overwhelming here. By default the order direction is `asc`.
+Also nothing overwhelming here. By default, the order direction is `asc`.
 
 Order by single column:
 
@@ -310,7 +310,7 @@ To set the limit use the method with that exact name:
 $people->select()->limit(10)->get();
 ```
 
-Using the exact same method you can also set the offset. So when two arguments are given the second one acts as limit and the first one as offset. This might seem confusing but I wanted to stay as close as possible to sql.
+Using the exact same method you can also set the offset. So when two arguments are given the second one acts as limit and the first one as the offset. This might seem confusing but I wanted to stay as close as possible to SQL.
 
 ```php
 // with offset 100
@@ -352,7 +352,7 @@ $people->select()->page(5, 50)->get();
 
 ## Distinct select
 
-To make your select distinct simply call the method coresponding method.
+To make your select distinct simply call the method corresponding method.
 
 ```php
 // SQL: select distinct * from `people`
