@@ -38,23 +38,23 @@ class SelectBase extends Base
     /**
      * Returns an string argument as parsed array if possible
      * 
-     * @param string 				$argument
+     * @param string                $argument
      * @return array
      */
     protected function stringArgumentToArray($argument)
     {
-    	if ( strpos($argument, ',') !== false )
-    	{
-    		return array_map('trim', explode(',', $argument));
-    	}
+        if ( strpos($argument, ',') !== false )
+        {
+            return array_map('trim', explode(',', $argument));
+        }
 
-    	return array($argument);
+        return array($argument);
     }
 
     /**
      * Will reset the current selects where conditions
      * 
-     * @return self
+     * @return self The current query builder.
      */
     public function resetWheres()
     {
@@ -64,7 +64,7 @@ class SelectBase extends Base
     /**
      * Will reset the current selects limit
      * 
-     * @return self
+     * @return self The current query builder.
      */
     public function resetLimit()
     {
@@ -74,7 +74,7 @@ class SelectBase extends Base
     /**
      * Will reset the current selects offset
      * 
-     * @return self
+     * @return self The current query builder.
      */
     public function resetOffset()
     {
@@ -84,27 +84,24 @@ class SelectBase extends Base
     /**
      * Create a where statement
      *
-     * where query: <$column> <$param1> <$param2> <$type>
-     *
-     * example:
      *     ->where('name', 'ladina')
      *     ->where('age', '>', 18)
-     *     ->where('name', 'in', array('johanna', 'jennifer'))
+     *     ->where('name', 'in', array('charles', 'john', 'jeffry'))
      *
-     * @param string      		$column            	The SQL column
-     * @param mixed       		$param1
-     * @param mixed        		$param2
-     * @param string        	$type            	The where type ( and, or )
+     * @param string            $column The SQL column
+     * @param mixed             $param1 Operator or value depending if $param2 isset.
+     * @param mixed             $param2 The value if $param1 is an opartor.
+     * @param string            $type the where type ( and, or )
      *
-     * @return self
+     * @return self The current query builder.
      */
     public function where($column, $param1 = null, $param2 = null, $type = 'and')
     {
-    	// check if the where type is valid
-    	if ($type !== 'and' && $type !== 'or' && $type !== 'where' )
-    	{
-    		throw new Exception('Invalid where type "'.$type.'"');
-    	}
+        // check if the where type is valid
+        if ($type !== 'and' && $type !== 'or' && $type !== 'where' )
+        {
+            throw new Exception('Invalid where type "'.$type.'"');
+        }
 
         // if this is the first where element we are going to change
         // the where type to 'where'
@@ -114,13 +111,13 @@ class SelectBase extends Base
         }
         elseif($type === 'where')
         {
-        	 $type = 'and';
+             $type = 'and';
         }
 
         // when column is an array we assume to make a bulk and where.
         if (is_array($column)) 
         {
-        	$subquery = new SelectBase;
+            $subquery = new SelectBase;
             foreach ($column as $key => $val) 
             {
                 $subquery->where($key, $val, null, $type);
@@ -133,11 +130,11 @@ class SelectBase extends Base
         // wich will create a new query where you can add your nested wheres
         if (is_object($column) && ($column instanceof \Closure)) 
         {
-        	// create new query object
-        	$subquery = new SelectBase;
+            // create new query object
+            $subquery = new SelectBase;
 
-        	// run the closure callback on the sub query
-        	call_user_func_array($column, array( &$subquery ));
+            // run the closure callback on the sub query
+            call_user_func_array($column, array( &$subquery ));
  
             $this->wheres[] = array($type, $subquery); return $this;
         }
@@ -172,7 +169,7 @@ class SelectBase extends Base
      * @param mixed        $param1
      * @param mixed        $param2
      *
-     * @return self
+     * @return self The current query builder.
      */
     public function orWhere($column, $param1 = null, $param2 = null)
     {
@@ -188,7 +185,7 @@ class SelectBase extends Base
      * @param mixed        $param1
      * @param mixed        $param2
      *
-     * @return self
+     * @return self The current query builder.
      */
     public function andWhere($column, $param1 = null, $param2 = null)
     {
@@ -200,19 +197,19 @@ class SelectBase extends Base
      * 
      *     ->whereIn('id', [42, 38, 12])
      * 
-     * @param string 					$column
-     * @param array 					$options
-     * @return self
+     * @param string                    $column
+     * @param array                     $options
+     * @return self The current query builder.
      */
     public function whereIn($column, array $options = array())
     {
-    	// when the options are empty we skip
-    	if ( empty( $options ) )
-    	{
-    		return $this;
-    	}
+        // when the options are empty we skip
+        if ( empty( $options ) )
+        {
+            return $this;
+        }
 
-    	return $this->where($column, 'in', $options);
+        return $this->where($column, 'in', $options);
     }
 
     /**
@@ -220,12 +217,12 @@ class SelectBase extends Base
      * 
      *     ->whereNull('modified_at')
      * 
-     * @param string 					$column
-     * @return self
+     * @param string                    $column
+     * @return self The current query builder.
      */
     public function whereNull($column)
     {
-    	return $this->where($column, 'is', $this->raw('NULL'));
+        return $this->where($column, 'is', $this->raw('NULL'));
     }
 
      /**
@@ -234,7 +231,7 @@ class SelectBase extends Base
      *     ->whereNotNull('created_at')
      * 
      * @param string                    $column
-     * @return self
+     * @return self The current query builder.
      */
     public function whereNotNull($column)
     {
@@ -247,7 +244,7 @@ class SelectBase extends Base
      *     ->orWhereNull('modified_at')
      * 
      * @param string                    $column
-     * @return self
+     * @return self The current query builder.
      */
     public function orWhereNull($column)
     {
@@ -260,7 +257,7 @@ class SelectBase extends Base
      *     ->orWhereNotNull('modified_at')
      * 
      * @param string                    $column
-     * @return self
+     * @return self The current query builder.
      */
     public function orWhereNotNull($column)
     {
@@ -270,15 +267,15 @@ class SelectBase extends Base
     /**
      * Set the query limit
      * 
-     * 	   // limit( <limit> )
-     *     ->limit( 20 )
+     *     // limit(<limit>)
+     *     ->limit(20)
      * 
-     *     // limit( <offset>, <limit> )
-     *     ->limit( 60, 20 )
+     *     // limit(<offset>, <limit>)
+     *     ->limit(60, 20)
      *
-     * @param int        	$limit
-     * @param int         	$limit2
-     * @return self
+     * @param int           $limit
+     * @param int           $limit2
+     * @return self The current query builder.
      */
     public function limit($limit, $limit2 = null)
     {
@@ -296,12 +293,12 @@ class SelectBase extends Base
     /**
      * Set the queries current offset
      * 
-     * @param int 				$offset
-     * @return self
+     * @param int               $offset
+     * @return self The current query builder.
      */
     public function offset($offset)
     {
-    	$this->offset = (int) $offset; return $this;
+        $this->offset = (int) $offset; return $this;
     }
 
     /**
@@ -309,7 +306,7 @@ class SelectBase extends Base
      *
      * @param int        $page
      * @param int         $size
-     * @return self
+     * @return self The current query builder.
      */
     public function page($page, $size = 25)
     {

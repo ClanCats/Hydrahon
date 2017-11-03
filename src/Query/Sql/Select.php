@@ -65,8 +65,8 @@ class Select extends SelectBase implements FetchableInterface
     /**
      * Distinct select setter
      *
-     * @param bool        $ignore
-     * @return self
+     * @param bool        $distinct
+     * @return self The current query builder.
      */
     public function distinct($distinct = true)
     {
@@ -83,7 +83,7 @@ class Select extends SelectBase implements FetchableInterface
      *     ->fields('id, name, created_at as created')
      *
      * @param array         $values
-     * @return self
+     * @return self The current query builder.
      */
     public function fields($fields)
     {
@@ -126,7 +126,7 @@ class Select extends SelectBase implements FetchableInterface
      *
      * @param string                $field
      * @param string                $alias
-     * @return self
+     * @return self The current query builder.
      */
     public function addField($field, $alias = null)
     {
@@ -140,7 +140,7 @@ class Select extends SelectBase implements FetchableInterface
      *
      * @param string                $field
      * @param string                $alias
-     * @return self
+     * @return self The current query builder.
      */
     public function addFieldCount($field, $alias = null)
     {
@@ -154,7 +154,7 @@ class Select extends SelectBase implements FetchableInterface
      *
      * @param string                $field
      * @param string                $alias
-     * @return self
+     * @return self The current query builder.
      */
     public function addFieldMax($field, $alias = null)
     {
@@ -168,7 +168,7 @@ class Select extends SelectBase implements FetchableInterface
      *
      * @param string                $field
      * @param string                $alias
-     * @return self
+     * @return self The current query builder.
      */
     public function addFieldMin($field, $alias = null)
     {
@@ -182,7 +182,7 @@ class Select extends SelectBase implements FetchableInterface
      *
      * @param string                $field
      * @param string                $alias
-     * @return self
+     * @return self The current query builder.
      */
     public function addFieldSum($field, $alias = null)
     {
@@ -196,7 +196,7 @@ class Select extends SelectBase implements FetchableInterface
      *
      * @param string                $field
      * @param string                $alias
-     * @return self
+     * @return self The current query builder.
      */
     public function addFieldAvg($field, $alias = null)
     {
@@ -210,7 +210,7 @@ class Select extends SelectBase implements FetchableInterface
      *
      * @param string                $field
      * @param string                $alias
-     * @return self
+     * @return self The current query builder.
      */
     public function addFieldRound($field, $decimals = 0, $alias = null)
     {
@@ -231,7 +231,7 @@ class Select extends SelectBase implements FetchableInterface
      *
      * @param array|string              $cols
      * @param string                    $order
-     * @return self
+     * @return self The current query builder.
      */
     public function orderBy($columns, $direction = 'asc')
     {
@@ -260,11 +260,11 @@ class Select extends SelectBase implements FetchableInterface
     /**
      * Add a group by statement to the current query
      * 
-     *     ->groupBy('id')
-     *     ->gorupBy(['id', 'category'])
+     *     ->groupBy('category')
+     *     ->gorupBy(['category', 'price'])
      *
      * @param array|string              $keys
-     * @return self
+     * @return self The current query builder.
      */
     public function groupBy($groupKeys)
     {
@@ -286,13 +286,13 @@ class Select extends SelectBase implements FetchableInterface
      * 
      *     ->join('avatars', 'users.id', '=', 'avatars.user_id')
      *
-     * @param array|string              $table
-     * @param string                    $localKey
-     * @param string                    $operator
+     * @param array|string              $table The table to join. (can contain an alias definition.)
+     * @param string                    $localKey 
+     * @param string                    $operator The operator (=, !=, <, > etc.)
      * @param string                    $referenceKey
-     * @param string                    $type
+     * @param string                    $type The join type (inner, left, right, outer)
      * 
-     * @return self
+     * @return self The current query builder.
      */
     public function join($table, $localKey, $operator = null, $referenceKey = null, $type = 'left')
     {
@@ -322,12 +322,12 @@ class Select extends SelectBase implements FetchableInterface
     /**
      * Left join same as join with special type
      *
-     * @param array|string              $table
+     * @param array|string              $table The table to join. (can contain an alias definition.)
      * @param string                    $localKey
-     * @param string                    $operator
+     * @param string                    $operator The operator (=, !=, <, > etc.)
      * @param string                    $referenceKey
      * 
-     * @return self
+     * @return self The current query builder.
      */
     public function leftJoin($table, $localKey, $operator = null, $referenceKey = null)
     {
@@ -335,14 +335,14 @@ class Select extends SelectBase implements FetchableInterface
     }
 
     /**
-     * Left join same as join with special type
+     * Alias of the `join` method with join type right.
      *
-     * @param array|string              $table
+     * @param array|string              $table The table to join. (can contain an alias definition.)
      * @param string                    $localKey
-     * @param string                    $operator
+     * @param string                    $operator The operator (=, !=, <, > etc.)
      * @param string                    $referenceKey
      * 
-     * @return self
+     * @return self The current query builder.
      */
     public function rightJoin($table, $localKey, $operator = null, $referenceKey = null)
     {
@@ -350,14 +350,14 @@ class Select extends SelectBase implements FetchableInterface
     }
 
     /**
-     * Left join same as join with special type
+     * Alias of the `join` method with join type inner.
      *
-     * @param array|string              $table
+     * @param array|string              $table The table to join. (can contain an alias definition.)
      * @param string                    $localKey
-     * @param string                    $operator
+     * @param string                    $operator The operator (=, !=, <, > etc.)
      * @param string                    $referenceKey
      * 
-     * @return self
+     * @return self The current query builder.
      */
     public function innerJoin($table, $localKey, $operator = null, $referenceKey = null)
     {
@@ -365,14 +365,14 @@ class Select extends SelectBase implements FetchableInterface
     }
 
     /**
-     * Left join same as join with special type
+     * Alias of the `join` method with join type outer.
      *
-     * @param array|string              $table
+     * @param array|string              $table The table to join. (can contain an alias definition.)
      * @param string                    $localKey
-     * @param string                    $operator
+     * @param string                    $operator The operator (=, !=, <, > etc.)
      * @param string                    $referenceKey
      * 
-     * @return self
+     * @return self The current query builder.
      */
     public function outerJoin($table, $localKey, $operator = null, $referenceKey = null)
     {
@@ -383,7 +383,7 @@ class Select extends SelectBase implements FetchableInterface
      * Forward a result value as array key
      *
      * @param string|bool        $key
-     * @return self
+     * @return self The current query builder.
      */
     public function forwardKey($key = true)
     {
@@ -415,7 +415,7 @@ class Select extends SelectBase implements FetchableInterface
      *     ),
      *
      * @param string|bool        $key
-     * @return self
+     * @return self The current query builder.
      */
     public function groupResults($key)
     {
@@ -429,7 +429,9 @@ class Select extends SelectBase implements FetchableInterface
     }
 
     /**
-     * Executes the 'executeResultFetcher' callback and handles the results
+     * Executes the `executeResultFetcher` callback and handles the results.
+     * 
+     * @return mixed The fetched result.
      */
     public function get()
     {
@@ -508,9 +510,9 @@ class Select extends SelectBase implements FetchableInterface
     }
 
     /**
-     * Get one result sets limit to 1 and executes
+     * Sets the limit to 1, executes and returns the first result using get.
      *
-     * @return mixed
+     * @return mixed The single result.
      */
     public function one()
     {
@@ -518,7 +520,7 @@ class Select extends SelectBase implements FetchableInterface
     }
 
     /**
-     * Find something, means select one record by key
+     * Find something, means select one item by key
      *
      * @param int               $id
      * @param string            $key
@@ -530,10 +532,10 @@ class Select extends SelectBase implements FetchableInterface
     }
 
     /**
-     * Get the first result by key
+     * Get the first result orderd by the given key.
      *
-     * @param string            $key
-     * @return mixed
+     * @param string            $key By what should the first item be selected? Default is: 'id'
+     * @return mixed The first result.
      */
     public function first($key = 'id')
     {
@@ -545,7 +547,7 @@ class Select extends SelectBase implements FetchableInterface
      *
      * @param string            $key
      * @param string            $name
-     * @return mixed
+     * @return mixed the last result.
      */
     public function last($key = 'id')
     {
@@ -553,10 +555,10 @@ class Select extends SelectBase implements FetchableInterface
     }
 
     /**
-     * Just get a single value from the db
+     * Just get a single value from the result
      *
-     * @param string            $column
-     * @return mixed
+     * @param string            $column The name of the column.
+     * @return mixed The columns value
      */
     public function column($column)
     {
@@ -588,7 +590,7 @@ class Select extends SelectBase implements FetchableInterface
     }
 
     /**
-     * Helper the get the sum of a column
+     * Helper for the SQL sum aggregation.
      *
      * @param string            $field
      * @return int
@@ -599,7 +601,7 @@ class Select extends SelectBase implements FetchableInterface
     }
 
     /**
-     * Helper the get the max of a column
+     * Helper for the SQL max aggregation.
      *
      * @param string            $field
      * @return int
@@ -610,7 +612,7 @@ class Select extends SelectBase implements FetchableInterface
     }
 
     /**
-     * Helper the get the min of a column
+     * Helper for the SQL min aggregation.
      *
      * @param string            $field
      * @return int
@@ -621,7 +623,7 @@ class Select extends SelectBase implements FetchableInterface
     }
 
     /**
-     * Helper the get the avarage of a column
+     * Helper for the SQL avarage aggregation.
      *
      * @param string            $field
      * @return int

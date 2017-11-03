@@ -20,8 +20,6 @@ class Update extends SelectBase
      * Add set values to the update query
      *
      *     ->set('name', 'Luca')
-     *     
-     *     // pass an array to set mul
      * 
      * @param string|array          $param1
      * @param mixed                 $param2
