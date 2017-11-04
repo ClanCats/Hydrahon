@@ -4,7 +4,7 @@
 
 # Hydrahon
 
-Hydrahon is a **standalone** database query builder written in PHP. It was built to enhance existing frameworks, libraries and applications that handle the database connection on their own. It **does not** come with a **PDO** or **mysqli** wrapper. The naming is heavily inspired by Eloquent and the Kohana Framework Database component.
+Hydrahon is a **standalone** database / SQL query builder written in PHP. It was built to enhance existing frameworks, libraries and applications that handle the database connection on their own. It **does not** come with a **PDO** or **mysqli** wrapper. The naming is heavily inspired by Eloquent and the Kohana Framework Database component.
 
 **What does that mean "Standalone query builder"?**
 
