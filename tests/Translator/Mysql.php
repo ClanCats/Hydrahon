@@ -413,6 +413,12 @@ class Translator_Mysql_Test extends TranslatorCase
 				->rightJoin('db1.orders as o', 'u.id', '=', 'o.user_id')
 				->innerJoin('profiles as p', 'u.id', '=', 'p.user_id');
 		});
+
+		// with raw values
+		$this->assertQueryTranslation('select * from `db1`.`users` as `u` left join `db1`.`groups` as `g` on `u`.`id` = `g`.`user_id` AND `g`.active = 1', array(), function($q) 
+		{
+			return $q->table('db1.users as u')->select()->join('db1.groups as g', 'u.id', '=', new Expression('`g`.`user_id` AND `g`.active = 1'));
+		});
 	}
 
 	/**
