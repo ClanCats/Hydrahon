@@ -8,7 +8,7 @@ Hydrahon is a **standalone** database / SQL query builder written in PHP. It was
 
 **What does that mean "Standalone query builder"?**
 
-Basically, Hydrahon only generates a query **string** and an array of parameters. On its own, it is not able to actually execute a query.
+Hydrahon only generates a query **string** and an array of parameters. On its own, it is not able to execute a query.
 
 [![Build Status](https://travis-ci.org/ClanCats/Hydrahon.svg?branch=master)](https://travis-ci.org/ClanCats/Hydrahon)
 [![Packagist](https://img.shields.io/packagist/dt/clancats/hydrahon.svg)](https://packagist.org/packages/clancats/hydrahon)
@@ -63,7 +63,7 @@ And we are ready and set. The variable `$h` contains now a MySQL query builder.
 
 ### Setup a simple table:
 
-To continue with our examples we need to create a simple MySQL table.
+To continue with our examples, we need to create a simple MySQL table.
 
 ```sql
 CREATE TABLE `people` (
@@ -76,7 +76,7 @@ CREATE TABLE `people` (
 
 ### Inserting:
 
-Currently, we don't have any data, to fix this let's go and insert some.
+Currently, we do not have any data, to fix this let's go and insert some.
 
 ```php
 // In our example we are going to execute multiple operations on the same table, 
@@ -97,9 +97,9 @@ Will execute the following query:
 insert into `people` (`age`, `name`) values (?, ?), (?, ?), (?, ?)
 ```
 
-As you can see the Hydrahon automatically escapes parameters. 
+As you can see the Hydrahon automatically escapes the parameters. 
 
-But because we are humans that get confused when there are hundreds of thousands of questions marks, I will continue to always show the runnable query:
+However, because we are humans that get confused when there are hundreds of thousands of questions marks, I will continue to always display the runnable query:
 
 ```sql
 insert into `people` (`age`, `name`) values (25, Ray), (30, John), (22, Ali)
@@ -124,7 +124,7 @@ update `people` set `age` = 26 where `name` = 'Ray'
 
 Currently, you might think: "Well isn't it much simpler to just write the SQL query? I mean the PHP code is even longer...". 
 
-You have to understand that these are some very very basic examples the Hydrahon query builder starts to shine when things get more complex. But a "Quick Start" is in my view is just the wrong place for complex stuff, so throw an eye on the [full documentation](http://clancats.io/hydrahon/master/introduction/getting-started).
+You have to understand that these are some very very basic examples the Hydrahon query builder starts to shine when things get more complex. However, a "Quick Start" is just the wrong place for complicated stuff, so throw an eye on the [full documentation](http://clancats.io/hydrahon/master/introduction/getting-started).
 
 ### Deleting 
 
@@ -175,7 +175,7 @@ Result:
 
 ### Where conditions
 
-For the next few examples, I simply assume a bigger dataset so that the queries make sense.
+For the next few examples, I just assume a larger dataset so that the queries make sense.
 
 Chaining where conditions:
 
