@@ -19,6 +19,16 @@ class BaseQuery
     protected $macros = array();
 
     /**
+     * Query flags
+     * These allow you to store data inside the query object.
+     * This data has no influence on the generated query string or parameters directly.
+     * But allow you to use the query a state mashine.
+     *  
+     * @var array
+     */
+    protected $flags = array();
+
+    /**
      * The callback where we fetch the results from
      *
      * @var callable
@@ -48,6 +58,7 @@ class BaseQuery
     protected function inheritFromParent(BaseQuery $parent)
     {
         $this->macros = $parent->macros;
+        $this->flags = $parent->flags;
         $this->resultFetcher = $parent->resultFetcher;   
     }
 
@@ -60,6 +71,34 @@ class BaseQuery
     public function setResultFetcher($resultFetcher = null)
     {
         $this->resultFetcher = $resultFetcher;
+    }
+
+    /**
+     * Set a flag on the query object
+     *
+     * @param string            $key
+     * @param mixed             $value
+     * @return void
+     */
+    final public function setFlag($key, $value)
+    {
+        $this->flags[$key] = $value;
+    }
+
+    /**
+     * Gets a flag from the query object
+     *
+     * @param string            $key
+     * @param mixed             $default
+     * @return void
+     */
+    final public function getFlag($key, $default = null)
+    {
+        if (!isset($this->flags[$key])) {
+            return $default;
+        }
+
+        return $this->flags[$key];
     }
 
     /**

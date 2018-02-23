@@ -162,6 +162,14 @@ class Query_Sql_Select_Test extends Query_QueryCase
 
 		// outer
 		$this->assertAttributes($this->createQuery()->outerJoin('avatars', 'users.id', '=', 'avatars.user_id'), array('joins' => array(array('outer', 'avatars', 'users.id', '=', 'avatars.user_id'))));
+
+		// join with raw values
+		$expression = new Expression("`avatars`.`user_id` and `avatars`.`active` = 1");
+
+		$this->assertAttributes(
+			$this->createQuery()->join('avatars', 'users.id', '=', new Expression("`avatars`.`user_id` and `avatars`.`active` = 1")), 
+			array('joins' => array(array('left', 'avatars', 'users.id', '=', $expression)))
+		);
 	}
 
 	/**
