@@ -34,7 +34,7 @@ class BaseQueryTest extends \PHPUnit_Framework_TestCase
 		$query->setFlag('foo', 'bar');
 
 		$select = $query->select();
-		$this->assertInstanceOf(Select::class, $select);
+		$this->assertInstanceOf("ClanCats\\Hydrahon\\Query\\Sql\\Select", $select);
 
 		$this->assertEquals('bar', $select->getFlag('foo'));
 	}
