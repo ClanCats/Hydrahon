@@ -11,6 +11,8 @@ namespace ClanCats\Hydrahon\Query\Sql;
 
 use ClanCats\Hydrahon\Query\Expression;
 
+use ClanCats\Hydrahon\BaseQuery;
+
 class Select extends SelectBase implements FetchableInterface
 {
     /**
@@ -61,6 +63,37 @@ class Select extends SelectBase implements FetchableInterface
      * @var false|string
      */
     protected $forwardKey = false;
+
+    /**
+     * Inherit property values from parent query
+     * 
+     * @param BaseQuery             $parent
+     * @return void
+     */
+    protected function inheritFromParent(BaseQuery $parent)
+    {
+        parent::inheritFromParent($parent);
+
+        if ($parent instanceof Select) {
+            $parent->copyTo($this);
+        } 
+    }
+
+    /**
+     * Copy current queries select attributes to the given one 
+     *
+     * @param Select            $query
+     */
+    public function copyTo(Select $query)
+    {
+        $query->fields = $this->fields;
+        $query->distinct = $this->distinct;
+        $query->orders = $this->orders;
+        $query->groups = $this->groups;
+        $query->joins = $this->joins;
+        $query->groupResults = $this->groupResults;
+        $query->forwardKey = $this->forwardKey;
+    }
 
     /**
      * Distinct select setter
