@@ -14,7 +14,7 @@ use ClanCats\Hydrahon\BaseQuery;
 use ClanCats\Hydrahon\Query\Sql\Table;
 use ClanCats\Hydrahon\Query\Sql\Select;
 
-class BaseQueryTest extends \PHPUnit_Framework_TestCase
+class BaseQueryTest extends \PHPUnit\Framework\TestCase
 {
 	public function testFlags()
 	{

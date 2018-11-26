@@ -12,7 +12,7 @@
 
 use ClanCats\Hydrahon\Builder;
 
-class Builder_Test extends \PHPUnit_Framework_TestCase
+class Builder_Test extends \PHPUnit\Framework\TestCase
 {
 	/**
 	 * Builder::extend test
