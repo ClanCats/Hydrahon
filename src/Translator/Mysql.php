@@ -14,6 +14,7 @@ use ClanCats\Hydrahon\Exception;
 
 use ClanCats\Hydrahon\Query\Sql\Select;
 use ClanCats\Hydrahon\Query\Sql\Insert;
+use ClanCats\Hydrahon\Query\Sql\Replace;
 use ClanCats\Hydrahon\Query\Sql\Update;
 use ClanCats\Hydrahon\Query\Sql\Delete;
 use ClanCats\Hydrahon\Query\Sql\Drop;
@@ -63,9 +64,14 @@ class Mysql implements TranslatorInterface
             $queryString = $this->translateSelect();
         }
         // handle SQL INSERT queries
+        elseif ($query instanceof Replace)
+        {
+            $queryString = $this->translateInsert('replace');
+        }
+        // handle SQL INSERT queries
         elseif ($query instanceof Insert)
         {
-            $queryString = $this->translateInsert();
+            $queryString = $this->translateInsert('insert');
         }
         // handle SQL UPDATE queries
         elseif ($query instanceof Update)
@@ -356,9 +362,9 @@ class Mysql implements TranslatorInterface
      *
      * @return string
      */
-    protected function translateInsert()
+    protected function translateInsert($key)
     {
-        $build = ($this->attr('ignore') ? 'insert ignore' : 'insert');
+        $build = ($this->attr('ignore') ? $key . ' ignore' : $key);
 
         $build .= ' into ' . $this->escapeTable(false) . ' ';
 
@@ -568,6 +574,30 @@ class Mysql implements TranslatorInterface
         {
             // get the type and table
             $type = $join[0]; $table = $join[1];
+
+            // table 
+            if (is_array($table)) 
+            {
+                reset($table);
+
+                // the table might be a subselect so check that
+                // first and compile the select if it is one
+                if ($table[key($table)] instanceof Select)
+                {
+                    $translator = new static;
+
+                    // translate the subselect
+                    list($subQuery, $subQueryParameters) = $translator->translate($table[key($table)]);
+
+                    // merge the parameters
+                    foreach($subQueryParameters as $parameter)
+                    {
+                        $this->addParameter($parameter);
+                    }
+
+                    return '(' . $subQuery . ') as ' . $this->escape(key($table));
+                }
+            }
 
             // start the join
             $build .= ' ' . $type . ' join ' . $this->escape($table) . ' on ';

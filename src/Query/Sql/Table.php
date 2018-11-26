@@ -38,6 +38,19 @@ class Table extends Base
     }
 
     /**
+     * Create a new replace query builder
+     * 
+     *     $h->table('users')->replace(['name' => 'Lucas', 'age' => 21])
+     *
+     * @param array                                     $values
+     * @return Insert
+     */
+    public function replace(array $values = array())
+    {
+        $query = new Replace($this); return $query->values($values);
+    }
+
+    /**
      * Create a new update query builder
      *
      *     $h->table('users')->update(['age' => 25])->where('name', 'Johanna')
