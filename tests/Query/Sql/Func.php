@@ -14,7 +14,7 @@
 
 use ClanCats\Hydrahon\Query\Sql\Func;
 
-class Query_Sql_Func_Test extends \PHPUnit_Framework_TestCase
+class Query_Sql_Func_Test extends \PHPUnit\Framework\TestCase
 {
 	/**
 	 * Func::construct test
