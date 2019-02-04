@@ -276,12 +276,17 @@ class Select extends SelectBase implements FetchableInterface
         {
             $this->orders[] = array($columns, $direction); return $this;
         }
-
+        
         foreach ($columns as $key => $column) 
         {
             if (is_numeric($key)) 
             {
-                $this->orders[$column] = $direction;
+                if ($column instanceof Expression)
+                {
+                    $this->orders[] = array($column, $direction);
+                } else {
+                    $this->orders[$column] = $direction;
+                }
             } else {
                 $this->orders[$key] = $column;
             }
