@@ -16,14 +16,6 @@ class Builder_Test extends \PHPUnit\Framework\TestCase
 {
 	/**
 	 * Builder::extend test
-	 */
-	public function testExtend()
-	{
-		Builder::extend('phpunit', '\\This\\Should\\Work', '\\Without\\The\\Class\\Existing');
-	}
-
-	/**
-	 * Builder::extend test
 	 * 
 	 * @expectedException ClanCats\Hydrahon\Exception
 	 */

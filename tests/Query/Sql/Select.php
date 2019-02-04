@@ -128,6 +128,15 @@ class Query_Sql_Select_Test extends Query_QueryCase
 
 		// simple 
 		$this->assertAttributes($this->createQuery()->orderBy($raw), array('orders' => array(array($raw, 'asc'))));
+
+		// in array 
+		$this->assertAttributes($this->createQuery()->orderBy([$raw, $raw]), array('orders' => array(array($raw, 'asc'), array($raw, 'asc'))));
+
+		// in array order
+		$this->assertAttributes($this->createQuery()->orderBy([$raw, $raw], 'desc'), array('orders' => array(array($raw, 'desc'), array($raw, 'desc'))));
+
+		// in array mixing
+		$this->assertAttributes($this->createQuery()->orderBy([$raw, 'foo' => 'asc'], 'desc'), array('orders' => array(array($raw, 'desc'), 'foo' => 'asc')));
 	}
 
 	/**
