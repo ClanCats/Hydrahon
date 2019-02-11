@@ -41,9 +41,9 @@ class Sql extends BaseQuery
      * @param string|array                              $fields
      * @return Select
      */
-    public function select($table = null, $fields = null)
+    public function select($table = null, ...$fields): Select
     {
-        return $this->table($table)->select($fields);
+        return $this->table($table)->select(...$fields);
     }
 
     /**

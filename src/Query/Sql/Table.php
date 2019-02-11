@@ -19,9 +19,10 @@ class Table extends Base
      * @param string|array                              $fields
      * @return Select
      */
-    public function select($fields = null)
+    public function select(...$fields): Select
     {
-        $query = new Select($this); return $query->fields($fields);
+        $query = new Select($this);
+        return $query->fields(count($fields)==1 ? $fields[key($fields)] : $fields);
     }
 
     /**
