@@ -21,7 +21,7 @@ class Func
 	 * 
 	 * @param array
 	 */
-	protected $arguments = array();
+	protected $arguments = [];
 	
 	/**
 	 * The constructor that assigns our value

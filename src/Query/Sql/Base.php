@@ -71,8 +71,8 @@ class Base extends BaseQuery
                 throw new Exception('You must define an alias when working with subselects.');
             }
 
-            $table = array($alias => $table);
-        } 
+            $table = [$alias => $table];
+        }
 
         // Check if the $table is an array and the value is an closure
         // that we can pass a new query object as subquery 
@@ -91,8 +91,8 @@ class Base extends BaseQuery
             // IMPORTANT: Only if we have a closure as table
             // we set the alias as key. This might cause some confusion
             // but only this way we can keep the normal ['table' => 'alias'] syntax
-            $table = array($alias => $subquery);
-        } 
+            $table = [$alias => $subquery];
+        }
 
         // other wise normally try to split the table and database name
         elseif (is_string($table) && strpos($table, '.') !== false)
@@ -104,14 +104,14 @@ class Base extends BaseQuery
                 throw new Exception( 'Invalid argument given. You can only define one seperator.' );
             }
 
-            list($database, $table) = $selection;
+            [$database, $table] = $selection;
         }
 
-        // the table might include an alias we need to parse that one out 
+        // the table might include an alias we need to parse that one out
         if (is_string($table) && strpos($table, ' as ') !== false)
         {
             $tableParts = explode(' as ', $table);
-            $table = array($tableParts[0] => $tableParts[1]);
+            $table = [$tableParts[0] => $tableParts[1]];
         }
 
         // assing the result

@@ -16,7 +16,7 @@ class Insert extends Base
      *
      * @var array 
      */
-    protected $values = array();
+    protected $values = [];
     
     /**
      * make an ignore insert
@@ -52,7 +52,7 @@ class Insert extends Base
      * @param array                     $values The data you want to insert.
      * @return self The current query builder.
      */
-    public function values(array $values = array())
+    public function values(array $values = []): self
     {
         // do nothing if we get nothing
         if (empty($values))
@@ -64,7 +64,7 @@ class Insert extends Base
         // because we want to be able to insert bulk values.
         if (!is_array(reset( $values )))
         {
-            $values = array($values);
+            $values = [$values];
         }
         
         // because we could recive the arrays in diffrent order 
@@ -86,8 +86,9 @@ class Insert extends Base
      *
      * @return self The current query builder.
      */
-    public function resetValues()
+    public function resetValues(): self
     {
-        $this->values = array(); return $this;
+        $this->values = [];
+        return $this;
     }
 }

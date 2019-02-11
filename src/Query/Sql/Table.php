@@ -45,7 +45,7 @@ class Table extends Base
      * @param array                                     $values
      * @return Insert
      */
-    public function replace(array $values = array())
+    public function replace(array $values = [])
     {
         $query = new Replace($this); return $query->values($values);
     }
@@ -58,7 +58,7 @@ class Table extends Base
      * @param array                                  $values
      * @return Update
      */
-    public function update(array $values = array())
+    public function update(array $values = [])
     {
         $query = new Update($this); return $query->set($values);
     }

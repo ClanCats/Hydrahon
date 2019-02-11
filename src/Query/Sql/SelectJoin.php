@@ -18,14 +18,14 @@ class SelectJoin extends SelectBase
      *
      * @var array
      */
-    protected $ons = array();
+    protected $ons = [];
 
     /**
      * The query where statements
      *
      * @var array
      */
-    protected $wheres = array();
+    protected $wheres = [];
 
     /**
      * Add an on condition to the join object
@@ -38,7 +38,8 @@ class SelectJoin extends SelectBase
      */
     public function on($localKey, $operator, $referenceKey, $type = 'and')
     {
-        $this->ons[] = array($type, $localKey, $operator, $referenceKey); return $this;
+        $this->ons[] = [$type, $localKey, $operator, $referenceKey];
+        return $this;
     }
 
     /**

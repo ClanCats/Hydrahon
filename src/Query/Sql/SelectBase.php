@@ -19,7 +19,7 @@ class SelectBase extends Base
      *
      * @var array
      */
-    protected $wheres = array();
+    protected $wheres = [];
 
     /**
      * the query offset
@@ -48,7 +48,7 @@ class SelectBase extends Base
             return array_map('trim', explode(',', $argument));
         }
 
-        return array($argument);
+        return [$argument];
     }
 
     /**
@@ -58,7 +58,8 @@ class SelectBase extends Base
      */
     public function resetWheres()
     {
-        $this->wheres = array(); return $this;
+        $this->wheres = [];
+        return $this;
     }
 
     /**
@@ -123,7 +124,8 @@ class SelectBase extends Base
                 $subquery->where($key, $val, null, $type);
             }
 
-            $this->wheres[] = array($type, $subquery); return $this;
+            $this->wheres[] = [$type, $subquery];
+            return $this;
         }
 
         // to make nested wheres possible you can pass an closure
@@ -136,7 +138,8 @@ class SelectBase extends Base
             // run the closure callback on the sub query
             call_user_func_array($column, array( &$subquery ));
  
-            $this->wheres[] = array($type, $subquery); return $this;
+            $this->wheres[] = [$type, $subquery];
+            return $this;
         }
 
         // when param2 is null we replace param2 with param one as the
@@ -155,8 +158,7 @@ class SelectBase extends Base
             $param2 = array_unique($param2);
         }
 
-        $this->wheres[] = array($type, $column, $param1, $param2);
-
+        $this->wheres[] = [$type, $column, $param1, $param2];
         return $this;
     }
 
@@ -201,10 +203,10 @@ class SelectBase extends Base
      * @param array                     $options
      * @return self The current query builder.
      */
-    public function whereIn($column, array $options = array())
+    public function whereIn($column, array $options = []): self
     {
         // when the options are empty we skip
-        if ( empty( $options ) )
+        if (empty($options))
         {
             return $this;
         }

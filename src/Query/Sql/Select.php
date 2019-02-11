@@ -20,7 +20,7 @@ class Select extends SelectBase implements FetchableInterface
      *
      * @var array
      */
-    protected $fields = array();
+    protected $fields = [];
 
     /**
      * make a distinct selection
@@ -34,21 +34,21 @@ class Select extends SelectBase implements FetchableInterface
      *
      * @var array
      */
-    protected $orders = array();
+    protected $orders = [];
 
     /**
      * group by container
      *
      * @var array
      */
-    protected $groups = array();
+    protected $groups = [];
 
     /**
      * join container
      *
      * @var array
      */
-    protected $joins = array();
+    protected $joins = [];
 
     /**
      * group the results by a given key
@@ -121,7 +121,7 @@ class Select extends SelectBase implements FetchableInterface
     public function fields($fields)
     {
         // we always have to reset the fields
-        $this->fields = array();
+        $this->fields = [];
 
         // when a string is given
         if (is_string($fields)) 
@@ -135,7 +135,9 @@ class Select extends SelectBase implements FetchableInterface
         }
 
         // do nothing if we get nothing
-        if (empty($fields) || $fields === array('*') || $fields === array('')) { return $this; }
+        if (empty($fields) || $fields === ['*'] || $fields === ['']) {
+              return $this;
+        }
 
         // add the fields
         foreach($fields as $key => $field)
@@ -274,7 +276,8 @@ class Select extends SelectBase implements FetchableInterface
         }
         elseif ($columns instanceof Expression)
         {
-            $this->orders[] = array($columns, $direction); return $this;
+            $this->orders[] = [$columns, $direction];
+            return $this;
         }
         
         foreach ($columns as $key => $column) 
@@ -283,7 +286,7 @@ class Select extends SelectBase implements FetchableInterface
             {
                 if ($column instanceof Expression)
                 {
-                    $this->orders[] = array($column, $direction);
+                    $this->orders[] = [$column, $direction];
                 } else {
                     $this->orders[$column] = $direction;
                 }
@@ -351,10 +354,11 @@ class Select extends SelectBase implements FetchableInterface
             call_user_func_array($localKey, array(&$subquery));
     
             // add the join
-            $this->joins[] = array($type, $table, $subquery); return $this;
+            $this->joins[] = [$type, $table, $subquery]; return $this;
         }
 
-        $this->joins[] = array($type, $table, $localKey, $operator, $referenceKey); return $this;
+        $this->joins[] = [$type, $table, $localKey, $operator, $referenceKey];
+        return $this;
     }
 
     /**
@@ -479,7 +483,7 @@ class Select extends SelectBase implements FetchableInterface
         // we always exprect an array here!
         if (!is_array($results) || empty($results))
         {
-            $results = array();
+            $results = [];
         }
 
         // In case we should forward a key means using a value
@@ -487,7 +491,7 @@ class Select extends SelectBase implements FetchableInterface
         if ((!empty($results)) && $this->forwardKey !== false && is_string($this->forwardKey)) 
         {
             $rawResults = $results;
-            $results = array();
+            $results = [];
 
             // check if the collection is beeing fetched 
             // as an associated array 
@@ -506,7 +510,7 @@ class Select extends SelectBase implements FetchableInterface
         if ((!empty($results)) && $this->groupResults !== false && is_string($this->groupResults)) 
         {
             $rawResults = $results;
-            $results = array();
+            $results = [];
 
             // check if the collection is beeing fetched 
             // as an associated array 

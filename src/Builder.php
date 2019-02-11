@@ -46,7 +46,7 @@ class Builder
             throw new Exception('Cannot overwrite Hydrahon grammar.');
         }
 
-        static::$grammar[$grammarKey] = array($queryBuilder, $queryTranslator);
+        static::$grammar[$grammarKey] = [$queryBuilder, $queryTranslator];
     }
 
     /**
@@ -94,14 +94,14 @@ class Builder
         $this->executionCallback = $executionCallback;
 
         // prepare the current grammar
-        list($queryBuilderClass, $translatorClass) = static::$grammar[$grammarKey];
+        [$queryBuilderClass, $translatorClass] = static::$grammar[$grammarKey];
 
         // create the query builder specific instances
         $this->queryTranslator = new $translatorClass;
         $this->queryBuilder = new $queryBuilderClass;
 
         // assign the result fetcher
-        $this->queryBuilder->setResultFetcher(array($this, 'executeQuery'));
+        $this->queryBuilder->setResultFetcher([$this, 'executeQuery']);
 
         // check if the translator is valid
         if (!$this->queryTranslator instanceof TranslatorInterface)

@@ -10,23 +10,23 @@
 use ClanCats\Hydrahon\Query\Expression;
 
 class BaseQuery
-{   
+{
     /**
      * Query builder callback macros
-     * 
+     *
      * @var array
      */
-    protected $macros = array();
+    protected $macros = [];
 
     /**
      * Query flags
      * These allow you to store data inside the query object.
      * This data has no influence on the generated query string or parameters directly.
      * But allow you to use the query a state mashine.
-     *  
+     *
      * @var array
      */
-    protected $flags = array();
+    protected $flags = [];
 
     /**
      * The callback where we fetch the results from

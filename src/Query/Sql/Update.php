@@ -14,7 +14,7 @@ class Update extends SelectBase
      *
      * @var array 
      */
-    public $values = array();
+    public $values = [];
     
     /**
      * Add set values to the update query
@@ -35,13 +35,13 @@ class Update extends SelectBase
         
         // when param 2 is not null we assume that only one set is passed
         // like: set( 'name', 'Lu' ); instead of set( array( 'name' => 'Lu' ) );
-        if ( !is_null( $param2 ) )
+        if (!is_null($param2))
         {
-            $param1 = array( $param1 => $param2 );
+            $param1 = [$param1 => $param2];
         }
         
         // merge the new values with the existing ones.
-        $this->values = array_merge( $this->values, $param1 ); 
+        $this->values = array_merge($this->values, $param1); 
         
         // return self so we can continue running the next function
         return $this;

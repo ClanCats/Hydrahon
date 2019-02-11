@@ -29,14 +29,14 @@ class Mysql implements TranslatorInterface
      *
      * @var array
      */
-    protected $parameters = array();
+    protected $parameters = [];
 
     /**
      * The current query attributes
      * 
      * @param array
      */
-    protected $attributes = array();
+    protected $attributes = [];
 
     /**
      * The escape pattern escapes table column names etc.
@@ -106,7 +106,7 @@ class Mysql implements TranslatorInterface
         // get the query parameters and reset
         $queryParameters = $this->parameters; $this->clearParameters();
 
-        return array($queryString, $queryParameters);
+        return [$queryString, $queryParameters];
     }
 
     /**
@@ -149,7 +149,7 @@ class Mysql implements TranslatorInterface
      */
     protected function clearParameters()
     {
-        $this->parameters = array();
+        $this->parameters = [];
     }
 
     /**
@@ -461,7 +461,7 @@ class Mysql implements TranslatorInterface
         {
             foreach ($fields as $key => $field) 
             {
-                list($column, $alias) = $field;
+                [$column, $alias] = $field;
 
                 if (!is_null($alias)) 
                 {
@@ -631,7 +631,7 @@ class Mysql implements TranslatorInterface
             else
             {
                 // othewise default join
-                list($type, $table, $localKey, $operator, $referenceKey) = $join;
+                [$type, $table, $localKey, $operator, $referenceKey] = $join;
                 $build .= $this->escape($localKey) . ' ' . $operator . ' ' . $this->escape($referenceKey);
             }
         }
@@ -656,9 +656,9 @@ class Mysql implements TranslatorInterface
             if (is_array($direction))
             {
                 // This only works in php 7 the php 5 fix is below 
-                //list($column, $direction) = $direction;
-                $column = $direction[0];
-                $direction = $direction[1];
+                [$column, $direction] = $direction;
+                //$column = $direction[0];
+                //$direction = $direction[1];
             }
 
             $build .= $this->escape($column) . ' ' . $direction . ', ';
