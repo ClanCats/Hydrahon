@@ -33,7 +33,7 @@ class Mysql implements TranslatorInterface
 
     /**
      * The current query attributes
-     * 
+     *
      * @param array
      */
     protected $attributes = [];
@@ -202,7 +202,7 @@ class Mysql implements TranslatorInterface
     {
         if (is_object($string))
         {
-            if ($this->isExpression($string)) 
+            if ($this->isExpression($string))
             {
                 return $string->value();
             }
@@ -215,9 +215,9 @@ class Mysql implements TranslatorInterface
                 throw new Exception('Cannot translate object of class: ' . get_class($string));
             }
         }
-        
+
         // the string might contain an 'as' statement that we wil have to split.
-        if (strpos($string, ' as ') !== false) 
+        if (strpos($string, ' as ') !== false)
         {
             $string = explode(' as ', $string);
 
@@ -225,11 +225,11 @@ class Mysql implements TranslatorInterface
         }
 
         // it also might contain dott seperations we have to split
-        if (strpos($string, '.') !== false) 
+        if (strpos($string, '.') !== false)
         {
             $string = explode('.', $string);
 
-            foreach ($string as $key => $item) 
+            foreach ($string as $key => $item)
             {
                 $string[$key] = $this->escapeString($item);
             }
@@ -242,7 +242,7 @@ class Mysql implements TranslatorInterface
 
     /**
      * Escapes an sql function object
-     * 
+     *
      * @param Func              $function
      * @return string
      */
@@ -411,7 +411,7 @@ class Mysql implements TranslatorInterface
         {
             $build .= $this->translateWhere($wheres);
         }
-    
+
         // build offset and limit
         if ($this->attr('limit'))
         {
@@ -435,7 +435,7 @@ class Mysql implements TranslatorInterface
         {
             $build .= $this->translateWhere($wheres);
         }
-    
+
         // build offset and limit
         if ($this->attr('limit'))
         {
@@ -455,20 +455,21 @@ class Mysql implements TranslatorInterface
         // normal or distinct selection?
         $build = ($this->attr('distinct') ? 'select distinct' : 'select') . ' ';
 
-        // build the selected fields 
+        // build the selected fields
         $fields = $this->attr('fields');
 
-        if (!empty($fields)) 
+        if (!empty($fields))
         {
-            foreach ($fields as $key => $field) 
+
+            foreach ($fields as $key => $field)
             {
                 [$column, $alias] = $field;
 
-                if (!is_null($alias)) 
+                if (!is_null($alias))
                 {
                     $build .= $this->escape($column) . ' as ' . $this->escape($alias);
                 }
-                else 
+                else
                 {
                     $build .= $this->escape($column);
                 }
@@ -477,8 +478,8 @@ class Mysql implements TranslatorInterface
             }
 
             $build = substr($build, 0, -2);
-        } 
-        else 
+        }
+        else
         {
             $build .= '*';
         }
@@ -509,7 +510,7 @@ class Mysql implements TranslatorInterface
         {
             $build .= $this->translateOrderBy();
         }
-    
+
         // build offset and limit
         if ($this->attr('limit') || $this->attr('offset'))
         {
@@ -571,13 +572,14 @@ class Mysql implements TranslatorInterface
     {
         $build = '';
 
-        foreach ($this->attr('joins') as $join) 
+        foreach ($this->attr('joins') as $join)
         {
             // get the type and table
-            $type = $join[0]; $table = $join[1];
+            $type = $join[0];
+            $table = $join[1];
 
-            // table 
-            if (is_array($table)) 
+            // table
+            if (is_array($table))
             {
                 reset($table);
 
@@ -605,7 +607,7 @@ class Mysql implements TranslatorInterface
 
             // to make nested join conditions possible you can pass an closure
             // wich will create a new query where you can add your nested ons and wheres
-            if (!isset($join[3]) && isset($join[2]) && $join[2] instanceof BaseQuery) 
+            if (!isset($join[3]) && isset($join[2]) && $join[2] instanceof BaseQuery)
             {
                 $subAttributes = $join[2]->attributes();
 
@@ -647,11 +649,11 @@ class Mysql implements TranslatorInterface
      */
     protected function translateOrderBy(): string
     {
-        $build = " order by ";
+        $build = ' order by ';
 
-        foreach ($this->attr('orders') as $column => $direction) 
+        foreach ($this->attr('orders') as $column => $direction)
         {
-            // in case a raw value is given we had to 
+            // in case a raw value is given we had to
             // put the column / raw value an direction inside another
             // array because we cannot make objects to array keys.
             if (is_array($direction))

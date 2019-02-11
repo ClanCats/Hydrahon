@@ -160,30 +160,23 @@ class BaseQuery
     }
 
     /**
-     * Returns all avaialbe attribute data 
+     * Returns all available attribute data
      * The result fetcher callback is excluded
      *
      * @return array
      */
     final public function attributes(): array
     {
-        $excluded = array('resultFetcher', 'macros');
-        $attributes = get_object_vars($this);
-
-        foreach ($excluded as $key) 
-        {
-            if (isset($attributes[$key])) { unset($attributes[$key]); }
-        }
-
-        return $attributes;
+        $excluded = ['resultFetcher', 'macros'];
+        return array_diff_key(get_object_vars($this),array_flip($excluded));
     }
 
     /**
      * Overwrite the query attributes
-     * 
-     * Jesuz only use this if you really really know what your are doing 
+     *
+     * Jesuz only use this if you really really know what your are doing
      * otherwise you might break stuff add sql injection and all other bad stuff..
-     * 
+     *
      * @return array
      */
     final public function overwriteAttributes(array $attributes): array
@@ -192,7 +185,7 @@ class BaseQuery
         {
             if (isset($this->{$key}))
             {
-                $this->{$key} = $attribute;
+                $this->{$key} = $attribute;   
             }
         }
 

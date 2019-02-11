@@ -2,7 +2,7 @@
 
 /**
  * SQL query object
- ** 
+ **
  * @package         Hydrahon
  * @copyright       2015 Mario Döring
  */
@@ -21,7 +21,7 @@ class Sql extends BaseQuery
 {
     /**
      * Create a new table instance
-     * 
+     *
      *     $h->table('users')
      *
      * @param string|array                              $fields
@@ -29,12 +29,13 @@ class Sql extends BaseQuery
      */
     public function table($table = null, ?string $alias = null): Table
     {
-        $query = new Table($this); return $query->table($table, $alias);
+        $query = new Table($this);
+        return $query->table($table, $alias);
     }
 
     /**
      * Create a new select query builder
-     * 
+     *
      *     $h->select('users', ['name', 'age'])
      *
      * @param string|array                              $fields
@@ -47,7 +48,7 @@ class Sql extends BaseQuery
 
     /**
      * Create a new insert query builder
-     * 
+     *
      *     $h->insert('users', ['name' => 'Lucas', 'age' => 21])
      *
      * @param array                                     $values

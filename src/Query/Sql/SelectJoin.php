@@ -53,7 +53,8 @@ class SelectJoin extends SelectBase
      */
     public function orOn($localKey, $operator, $referenceKey)
     {
-        $this->on($localKey, $operator, $referenceKey, 'or'); return $this;
+        $this->on($localKey, $operator, $referenceKey, 'or');
+        return $this;
     }
 
      /**
@@ -67,6 +68,7 @@ class SelectJoin extends SelectBase
      */
     public function andOn($localKey, $operator, $referenceKey): self
     {
-        $this->on($localKey, $operator, $referenceKey, 'and'); return $this;
+        $this->on($localKey, $operator, $referenceKey, 'and');
+        return $this;
     }
 }

@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace ClanCats\Hydrahon\Query\Sql;
 
@@ -76,11 +76,11 @@ class Select extends SelectBase implements FetchableInterface
 
         if ($parent instanceof Select) {
             $parent->copyTo($this);
-        } 
+        }
     }
 
     /**
-     * Copy current queries select attributes to the given one 
+     * Copy current queries select attributes to the given one
      *
      * @param Select            $query
      */
@@ -109,11 +109,11 @@ class Select extends SelectBase implements FetchableInterface
 
     /**
      * Set the selected fields fields
-     * 
+     *
      *     ->fields('title')
-     * 
+     *
      *     ->fields(['id', 'name'])
-     *     
+     *
      *     ->fields('id, name, created_at as created')
      *
      * @param array         $values
@@ -137,7 +137,7 @@ class Select extends SelectBase implements FetchableInterface
 
         // do nothing if we get nothing
         if (empty($fields) || $fields === ['*'] || $fields === ['']) {
-              return $this;
+            return $this;
         }
 
         // add the fields
@@ -157,7 +157,7 @@ class Select extends SelectBase implements FetchableInterface
 
     /**
      * Add a single select field
-     * 
+     *
      *     ->addField('title')
      *
      * @param mixed                $field
@@ -172,7 +172,7 @@ class Select extends SelectBase implements FetchableInterface
 
     /**
      * Shortcut to add a count function
-     * 
+     *
      *     ->addFieldCount('id')
      *
      * @param string                $field
@@ -181,12 +181,13 @@ class Select extends SelectBase implements FetchableInterface
      */
     public function addFieldCount($field, ?string $alias = null): self
     {
-        $this->addField(new Func('count', $field), $alias); return $this;
+        $this->addField(new Func('count', $field), $alias);
+        return $this;
     }
 
     /**
      * Shortcut to add a max function
-     * 
+     *
      *     ->addFieldMax('views')
      *
      * @param string                $field
@@ -195,26 +196,28 @@ class Select extends SelectBase implements FetchableInterface
      */
     public function addFieldMax($field, ?string $alias = null): self
     {
-        $this->addField(new Func('max', $field), $alias); return $this;
+        $this->addField(new Func('max', $field), $alias);
+        return $this;
     }
 
     /**
      * Shortcut to add a min function
-     * 
+     *
      *     ->addFieldMin('views')
      *
      * @param string                $field
      * @param string                $alias
      * @return self The current query builder.
      */
-    public function addFieldMin($field, $alias = null)
+    public function addFieldMin($field, ?string $alias = null): self
     {
-        $this->addField(new Func('min', $field), $alias); return $this;
+        $this->addField(new Func('min', $field), $alias);
+        return $this;
     }
 
     /**
      * Shortcut to add a sum function
-     * 
+     *
      *     ->addFieldSum('views')
      *
      * @param string                $field
@@ -223,12 +226,13 @@ class Select extends SelectBase implements FetchableInterface
      */
     public function addFieldSum($field, ?string $alias = null): self
     {
-        $this->addField(new Func('sum', $field), $alias); return $this;
+        $this->addField(new Func('sum', $field), $alias);
+        return $this;
     }
 
     /**
      * Shortcut to add a avg function
-     * 
+     *
      *     ->addFieldAvg('views')
      *
      * @param string                $field
@@ -237,12 +241,13 @@ class Select extends SelectBase implements FetchableInterface
      */
     public function addFieldAvg($field, ?string $alias = null): self
     {
-        $this->addField(new Func('avg', $field), $alias); return $this;
+        $this->addField(new Func('avg', $field), $alias);
+        return $this;
     }
 
     /**
      * Shortcut to add a price function
-     * 
+     *
      *     ->addFieldRound('price')
      *
      * @param string                $field
@@ -257,13 +262,13 @@ class Select extends SelectBase implements FetchableInterface
 
     /**
      * Add an order by statement to the current query
-     * 
+     *
      *     ->orderBy('created_at')
      *     ->orderBy('modified_at', 'desc')
-     *     
+     *
      *     // multiple order statements
      *     ->orderBy(['firstname', 'lastname'], 'desc')
-     * 
+     *
      *     // muliple order statements with diffrent directions
      *     ->orderBy(['firstname' => 'asc', 'lastname' => 'desc'])
      *
@@ -282,10 +287,10 @@ class Select extends SelectBase implements FetchableInterface
             $this->orders[] = [$columns, $direction];
             return $this;
         }
-        
-        foreach ($columns as $key => $column) 
+
+        foreach ($columns as $key => $column)
         {
-            if (is_numeric($key)) 
+            if (is_numeric($key))
             {
                 if ($column instanceof Expression)
                 {
@@ -475,7 +480,7 @@ class Select extends SelectBase implements FetchableInterface
 
     /**
      * Executes the `executeResultFetcher` callback and handles the results.
-     * 
+     *
      * @return mixed The fetched result.
      */
     public function get()
@@ -483,7 +488,7 @@ class Select extends SelectBase implements FetchableInterface
          // run the callbacks to retirve the results
         $results = $this->executeResultFetcher();
 
-        // we always exprect an array here!
+        // we always expect an array here!
         if (!is_array($results) || empty($results))
         {
             $results = [];
@@ -491,38 +496,38 @@ class Select extends SelectBase implements FetchableInterface
 
         // In case we should forward a key means using a value
         // from every result as array key.
-        if ((!empty($results)) && $this->forwardKey !== false && is_string($this->forwardKey)) 
+        if ((!empty($results)) && $this->forwardKey !== false && is_string($this->forwardKey))
         {
             $rawResults = $results;
             $results = [];
 
-            // check if the collection is beeing fetched 
-            // as an associated array 
+            // check if the collection is beeing fetched
+            // as an associated array
             if (!is_array(reset($rawResults)))
             {
                 throw new Exception('Cannot forward key, the result is no associated array.');
             }
 
-            foreach ($rawResults as $result) 
+            foreach ($rawResults as $result)
             {
                 $results[$result[$this->forwardKey]] = $result;
             }
         }
 
         // Group the resuls by a items value
-        if ((!empty($results)) && $this->groupResults !== false && is_string($this->groupResults)) 
+        if ((!empty($results)) && $this->groupResults !== false && is_string($this->groupResults))
         {
             $rawResults = $results;
             $results = [];
 
-            // check if the collection is beeing fetched 
-            // as an associated array 
+            // check if the collection is beeing fetched
+            // as an associated array
             if (!is_array(reset($rawResults)))
             {
                 throw new Exception('Cannot forward key, the result is no associated array.');
             }
 
-            foreach ($rawResults as $key => $result) 
+            foreach ($rawResults as $key => $result)
             {
                 $results[$result[$this->groupResults]][$key] = $result;
             }
@@ -530,7 +535,7 @@ class Select extends SelectBase implements FetchableInterface
 
         // when the limit is specified to exactly one result we
         // return directly that one result instead of the entire array
-        if ($this->limit === 1) 
+        if ($this->limit === 1)
         {
             $results = reset($results);
         }
@@ -546,7 +551,7 @@ class Select extends SelectBase implements FetchableInterface
      */
     public function run()
     {
-        // run is basically ported from CCF, laravels `get` just feels 
+        // run is basically ported from CCF, laravels `get` just feels
         // much better so lets move on...
         trigger_error('The `run` method is deprecated, `get` method instead.', E_USER_DEPRECATED);
 
@@ -607,7 +612,7 @@ class Select extends SelectBase implements FetchableInterface
      */
     public function column($column)
     {
-        $result = $this->fields($column)->one(); 
+        $result = $this->fields($column)->one();
 
         // only return something if something is found
         if (is_array($result))

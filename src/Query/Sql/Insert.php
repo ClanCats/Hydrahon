@@ -72,7 +72,8 @@ class Insert extends Base
         // we have to sort them by their key.
         foreach($values as $key => $value)
         {
-            ksort( $value ); $values[$key] = $value;
+            ksort($value);
+            $values[$key] = $value;
         }
         
         // merge the new values with the existing ones.

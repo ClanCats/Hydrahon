@@ -10,24 +10,24 @@
 use ClanCats\Hydrahon\BaseQuery;
 
 class Base extends BaseQuery
-{ 
+{
     /**
      * The database the query should be executed on
-     * 
+     *
      * @var string
      */
     protected $database = null;
 
     /**
      * The table the query should be executed on
-     * 
+     *
      * @var string
      */
     protected $table = null;
 
     /**
      * Inherit property values from parent query
-     * 
+     *
      * @param BaseQuery             $parent
      * @return void
      */
@@ -45,10 +45,10 @@ class Base extends BaseQuery
     
     /**
      * Create a new select query builder
-     *      
+     *
      *     // selecting a table
      *     $h->table('users')
-     *  
+     *
      *     // selecting table and database
      *     $h->table('db_mydatabase.posts')
      *
@@ -63,8 +63,8 @@ class Base extends BaseQuery
         // we have an subselect inside the table
         if (is_object($table) && ($table instanceof \Closure))
         {
-            // we have to check if an alias isset 
-            // otherwise throw an exception to prevent the 
+            // we have to check if an alias isset
+            // otherwise throw an exception to prevent the
             // "Every derived table must have its own alias" error
             if (is_null($alias))
             {
@@ -75,8 +75,8 @@ class Base extends BaseQuery
         }
 
         // Check if the $table is an array and the value is an closure
-        // that we can pass a new query object as subquery 
-        if (is_array($table) && is_object(reset($table)) && (reset($table) instanceof \Closure)) 
+        // that we can pass a new query object as subquery
+        if (is_array($table) && is_object(reset($table)) && (reset($table) instanceof \Closure))
         {
             $alias = key($table);
             $table = reset($table);
@@ -87,7 +87,7 @@ class Base extends BaseQuery
             // run the closure callback on the sub query
             call_user_func_array($table, array(&$subquery));
 
-            // set the table 
+            // set the table
             // IMPORTANT: Only if we have a closure as table
             // we set the alias as key. This might cause some confusion
             // but only this way we can keep the normal ['table' => 'alias'] syntax

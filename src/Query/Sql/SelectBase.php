@@ -80,7 +80,8 @@ class SelectBase extends Base
      */
     public function resetOffset()
     {
-        $this->offset = null; return $this;
+        $this->offset = null;
+        return $this;
     }
 
     /**
@@ -117,7 +118,7 @@ class SelectBase extends Base
         }
 
         // when column is an array we assume to make a bulk and where.
-        if (is_array($column)) 
+        if (is_array($column))
         {
             $subquery = new SelectBase;
             foreach ($column as $key => $val) 
