@@ -25,7 +25,7 @@ class Update extends SelectBase
      * @param mixed                 $param2
      * @return self
      */
-    public function set($param1, $param2 = null)
+    public function set($param1, $param2 = null): self
     {
         // do nothing if we get nothing
         if (empty($param1))

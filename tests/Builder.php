@@ -46,7 +46,7 @@ class Builder_Test extends \PHPUnit\Framework\TestCase
 	/**
 	 * Builder::construct test
 	 *
-	 * @expectedException ClanCats\Hydrahon\Exception
+	 * @expectedException TypeError
 	 */
 	public function testConsturctInvalidCallback()
 	{	

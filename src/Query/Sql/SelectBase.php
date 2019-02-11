@@ -41,7 +41,7 @@ class SelectBase extends Base
      * @param string                $argument
      * @return array
      */
-    protected function stringArgumentToArray($argument)
+    protected function stringArgumentToArray(string $argument): array
     {
         if ( strpos($argument, ',') !== false )
         {
@@ -56,7 +56,7 @@ class SelectBase extends Base
      * 
      * @return self The current query builder.
      */
-    public function resetWheres()
+    public function resetWheres(): self
     {
         $this->wheres = [];
         return $this;
@@ -67,9 +67,10 @@ class SelectBase extends Base
      * 
      * @return self The current query builder.
      */
-    public function resetLimit()
+    public function resetLimit(): self
     {
-        $this->limit = null; return $this;
+        $this->limit = null;
+        return $this;
     }
 
     /**
@@ -96,7 +97,7 @@ class SelectBase extends Base
      *
      * @return self The current query builder.
      */
-    public function where($column, $param1 = null, $param2 = null, $type = 'and')
+    public function where($column, $param1 = null, $param2 = null, string $type = 'and'): self
     {
         // check if the where type is valid
         if ($type !== 'and' && $type !== 'or' && $type !== 'where' )
@@ -173,7 +174,7 @@ class SelectBase extends Base
      *
      * @return self The current query builder.
      */
-    public function orWhere($column, $param1 = null, $param2 = null)
+    public function orWhere($column, $param1 = null, $param2 = null): self
     {
         return $this->where($column, $param1, $param2, 'or');
     }
@@ -189,7 +190,7 @@ class SelectBase extends Base
      *
      * @return self The current query builder.
      */
-    public function andWhere($column, $param1 = null, $param2 = null)
+    public function andWhere($column, $param1 = null, $param2 = null): self
     {
         return $this->where($column, $param1, $param2, 'and');
     }
@@ -222,7 +223,7 @@ class SelectBase extends Base
      * @param string                    $column
      * @return self The current query builder.
      */
-    public function whereNull($column)
+    public function whereNull($column): self
     {
         return $this->where($column, 'is', $this->raw('NULL'));
     }
@@ -235,7 +236,7 @@ class SelectBase extends Base
      * @param string                    $column
      * @return self The current query builder.
      */
-    public function whereNotNull($column)
+    public function whereNotNull($column): self
     {
         return $this->where($column, 'is not', $this->raw('NULL'));
     }
@@ -248,7 +249,7 @@ class SelectBase extends Base
      * @param string                    $column
      * @return self The current query builder.
      */
-    public function orWhereNull($column)
+    public function orWhereNull($column): self
     {
         return $this->orWhere($column, 'is', $this->raw('NULL'));
     }
@@ -261,7 +262,7 @@ class SelectBase extends Base
      * @param string                    $column
      * @return self The current query builder.
      */
-    public function orWhereNotNull($column)
+    public function orNotNull($column): self
     {
         return $this->orWhere($column, 'is not', $this->raw('NULL'));
     }
@@ -279,14 +280,14 @@ class SelectBase extends Base
      * @param int           $limit2
      * @return self The current query builder.
      */
-    public function limit($limit, $limit2 = null)
+    public function limit(?int $limit, ?int $limit2 = null): self
     {
         if (!is_null($limit2)) 
         {
-            $this->offset = (int) $limit;
-            $this->limit = (int) $limit2;
+            $this->offset = $limit;
+            $this->limit = $limit2;
         } else {
-            $this->limit = (int) $limit;
+            $this->limit = $limit;
         }
 
         return $this;
@@ -298,9 +299,10 @@ class SelectBase extends Base
      * @param int               $offset
      * @return self The current query builder.
      */
-    public function offset($offset)
+    public function offset(int $offset): self
     {
-        $this->offset = (int) $offset; return $this;
+        $this->offset = $offset;
+        return $this;
     }
 
     /**
@@ -310,15 +312,15 @@ class SelectBase extends Base
      * @param int         $size
      * @return self The current query builder.
      */
-    public function page($page, $size = 25)
+    public function page(int $page, int $size = 25): self
     {
-        if (($page = (int) $page) < 0) 
+        if ($page < 0)
         {
             $page = 0;
         }
 
-        $this->limit = (int) $size;
-        $this->offset = (int) $size * $page;
+        $this->limit = $size;
+        $this->offset = $size * $page;
 
         return $this;
     }

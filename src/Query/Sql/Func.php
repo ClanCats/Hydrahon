@@ -52,7 +52,7 @@ class Func
 	 * 
 	 * @return string 
 	 */
-	public function name()
+	public function name(): string
 	{
 		return $this->name;
 	}
@@ -62,7 +62,7 @@ class Func
 	 * 
 	 * @return string 
 	 */
-	public function arguments()
+	public function arguments(): array
 	{
 		return $this->arguments;
 	}

@@ -70,7 +70,7 @@ class Select extends SelectBase implements FetchableInterface
      * @param BaseQuery             $parent
      * @return void
      */
-    protected function inheritFromParent(BaseQuery $parent)
+    protected function inheritFromParent(BaseQuery $parent): void
     {
         parent::inheritFromParent($parent);
 
@@ -84,7 +84,7 @@ class Select extends SelectBase implements FetchableInterface
      *
      * @param Select            $query
      */
-    public function copyTo(Select $query)
+    public function copyTo(Select $query): void
     {
         $query->fields = $this->fields;
         $query->distinct = $this->distinct;
@@ -101,9 +101,10 @@ class Select extends SelectBase implements FetchableInterface
      * @param bool        $distinct
      * @return self The current query builder.
      */
-    public function distinct($distinct = true)
+    public function distinct(bool $distinct = true): self
     {
-        $this->distinct = $distinct; return $this;
+        $this->distinct = $distinct;
+        return $this;
     }
 
     /**
@@ -118,7 +119,7 @@ class Select extends SelectBase implements FetchableInterface
      * @param array         $values
      * @return self The current query builder.
      */
-    public function fields($fields)
+    public function fields($fields): self
     {
         // we always have to reset the fields
         $this->fields = [];
@@ -159,13 +160,14 @@ class Select extends SelectBase implements FetchableInterface
      * 
      *     ->addField('title')
      *
-     * @param string                $field
+     * @param mixed                $field
      * @param string                $alias
      * @return self The current query builder.
      */
-    public function addField($field, $alias = null)
+    public function addField($field, ?string $alias = null): self
     {
-        $this->fields[] = array($field, $alias); return $this;
+        $this->fields[] = [$field, $alias];
+        return $this;
     }
 
     /**
@@ -177,7 +179,7 @@ class Select extends SelectBase implements FetchableInterface
      * @param string                $alias
      * @return self The current query builder.
      */
-    public function addFieldCount($field, $alias = null)
+    public function addFieldCount($field, ?string $alias = null): self
     {
         $this->addField(new Func('count', $field), $alias); return $this;
     }
@@ -191,7 +193,7 @@ class Select extends SelectBase implements FetchableInterface
      * @param string                $alias
      * @return self The current query builder.
      */
-    public function addFieldMax($field, $alias = null)
+    public function addFieldMax($field, ?string $alias = null): self
     {
         $this->addField(new Func('max', $field), $alias); return $this;
     }
@@ -219,7 +221,7 @@ class Select extends SelectBase implements FetchableInterface
      * @param string                $alias
      * @return self The current query builder.
      */
-    public function addFieldSum($field, $alias = null)
+    public function addFieldSum($field, ?string $alias = null): self
     {
         $this->addField(new Func('sum', $field), $alias); return $this;
     }
@@ -233,7 +235,7 @@ class Select extends SelectBase implements FetchableInterface
      * @param string                $alias
      * @return self The current query builder.
      */
-    public function addFieldAvg($field, $alias = null)
+    public function addFieldAvg($field, ?string $alias = null): self
     {
         $this->addField(new Func('avg', $field), $alias); return $this;
     }
@@ -247,9 +249,10 @@ class Select extends SelectBase implements FetchableInterface
      * @param string                $alias
      * @return self The current query builder.
      */
-    public function addFieldRound($field, $decimals = 0, $alias = null)
+    public function addFieldRound($field, int $decimals = 0, ?string $alias = null): self
     {
-        $this->addField(new Func('round', $field, new Expression((int)$decimals)), $alias); return $this;
+        $this->addField(new Func('round', $field, new Expression($decimals)), $alias);
+        return $this;
     }
 
     /**
@@ -268,7 +271,7 @@ class Select extends SelectBase implements FetchableInterface
      * @param string                    $order
      * @return self The current query builder.
      */
-    public function orderBy($columns, $direction = 'asc')
+    public function orderBy($columns, string $direction = 'asc'): self
     {
         if (is_string($columns))
         {
@@ -307,7 +310,7 @@ class Select extends SelectBase implements FetchableInterface
      * @param array|string              $keys
      * @return self The current query builder.
      */
-    public function groupBy($groupKeys)
+    public function groupBy($groupKeys): self
     {
         if (is_string($groupKeys))
         {
@@ -335,7 +338,7 @@ class Select extends SelectBase implements FetchableInterface
      * 
      * @return self The current query builder.
      */
-    public function join($table, $localKey, $operator = null, $referenceKey = null, $type = 'left')
+    public function join($table, $localKey, ?string $operator = null, $referenceKey = null, string $type = 'left'): self
     {
         // validate the join type
         if (!in_array($type, array('inner', 'left', 'right', 'outer')))
@@ -368,10 +371,10 @@ class Select extends SelectBase implements FetchableInterface
      * @param string                    $localKey
      * @param string                    $operator The operator (=, !=, <, > etc.)
      * @param string                    $referenceKey
-     * 
+     *
      * @return self The current query builder.
      */
-    public function leftJoin($table, $localKey, $operator = null, $referenceKey = null)
+    public function leftJoin($table, $localKey, ?string $operator = null, $referenceKey = null): self
     {
         return $this->join($table, $localKey, $operator, $referenceKey, 'left');
     }
@@ -383,10 +386,10 @@ class Select extends SelectBase implements FetchableInterface
      * @param string                    $localKey
      * @param string                    $operator The operator (=, !=, <, > etc.)
      * @param string                    $referenceKey
-     * 
+     *
      * @return self The current query builder.
      */
-    public function rightJoin($table, $localKey, $operator = null, $referenceKey = null)
+    public function rightJoin($table, $localKey, ?string $operator = null, $referenceKey = null): self
     {
         return $this->join($table, $localKey, $operator, $referenceKey, 'right');
     }
@@ -398,10 +401,10 @@ class Select extends SelectBase implements FetchableInterface
      * @param string                    $localKey
      * @param string                    $operator The operator (=, !=, <, > etc.)
      * @param string                    $referenceKey
-     * 
+     *
      * @return self The current query builder.
      */
-    public function innerJoin($table, $localKey, $operator = null, $referenceKey = null)
+    public function innerJoin($table, $localKey, ?string $operator = null, $referenceKey = null): self
     {
         return $this->join($table, $localKey, $operator, $referenceKey, 'inner');
     }
@@ -413,10 +416,10 @@ class Select extends SelectBase implements FetchableInterface
      * @param string                    $localKey
      * @param string                    $operator The operator (=, !=, <, > etc.)
      * @param string                    $referenceKey
-     * 
+     *
      * @return self The current query builder.
      */
-    public function outerJoin($table, $localKey, $operator = null, $referenceKey = null)
+    public function outerJoin($table, $localKey, ?string $operator = null, $referenceKey = null): self
     {
         return $this->join($table, $localKey, $operator, $referenceKey, 'outer');
     }
@@ -427,7 +430,7 @@ class Select extends SelectBase implements FetchableInterface
      * @param string|bool        $key
      * @return self The current query builder.
      */
-    public function forwardKey($key = true)
+    public function forwardKey($key = true): self
     {
         if ($key === false) {
             $this->forwardKey = false;
@@ -614,12 +617,12 @@ class Select extends SelectBase implements FetchableInterface
     }
 
     /**
-     * Just return the number of results 
+     * Just return the number of results
      *
      * @param string                    $field
      * @return int
      */
-    public function count($field = null)
+    public function count($field = null): int
     {
         // when no field is given we use *
         if (is_null($field))
@@ -637,9 +640,9 @@ class Select extends SelectBase implements FetchableInterface
      * @param string            $field
      * @return int
      */
-    public function sum($field)
+    public function sum($field): int
     {
-        return $this->column(new Func('sum', $field));
+        return (int) $this->column(new Func('sum', $field));
     }
 
     /**
@@ -675,12 +678,12 @@ class Select extends SelectBase implements FetchableInterface
         return $this->column(new Func('avg', $field));
     }
 
-    /** 
+    /**
      * Do any results of this query exist?
-     * 
+     *
      * @return bool
      */
-    public function exists()
+    public function exists(): bool
     {
         $existsQuery = new Exists($this);
 

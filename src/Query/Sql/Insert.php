@@ -33,9 +33,10 @@ class Insert extends Base
      * @param bool                  $ignore
      * @return self The current query builder.
      */
-    public function ignore($ignore = true)
+    public function ignore(bool $ignore = true): self
     {
-        $this->ignore = $ignore; return $this;
+        $this->ignore = $ignore;
+        return $this;
     }
     
     /**

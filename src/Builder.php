@@ -79,16 +79,11 @@ class Builder
      * @param callable              $executionCallback
      * @return void
      */
-    public function __construct($grammarKey, $executionCallback)
+    public function __construct(string $grammarKey, callable $executionCallback)
     {
         if (!isset(static::$grammar[$grammarKey])) 
         {
             throw new Exception('There is no Hydrahon grammar "' . $grammarKey . '" registered.');
-        }
-
-        if (!is_callable($executionCallback)) 
-        {
-            throw new Exception('Invalid query exec callback given.');
         }
 
         $this->executionCallback = $executionCallback;
@@ -122,7 +117,7 @@ class Builder
      * @param string                        $table
      * @return ClanCats\Hydrahon\BaseQuery
      */
-    public function __call($method, $arguments)
+    public function __call(string $method, array $arguments)
     {
         return call_user_func_array(array($this->queryBuilder, $method), $arguments);
     }
@@ -133,7 +128,7 @@ class Builder
      * @param BaseQuery                 $query
      * @return array
      */
-    public function translateQuery(BaseQuery $query)
+    public function translateQuery(BaseQuery $query): array
     {
         return $this->queryTranslator->translate($query);
     }

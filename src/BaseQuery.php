@@ -2,7 +2,7 @@
 
 /**
  * Base query object
- ** 
+ **
  * @package         Hydrahon
  * @copyright       2015 Mario Döring
  */
@@ -51,15 +51,15 @@ class BaseQuery
 
     /**
      * Inherit property values from parent query
-     * 
+     *
      * @param BaseQuery             $parent
      * @return void
      */
-    protected function inheritFromParent(BaseQuery $parent)
+    protected function inheritFromParent(BaseQuery $parent) : void
     {
         $this->macros = $parent->macros;
         $this->flags = $parent->flags;
-        $this->resultFetcher = $parent->resultFetcher;   
+        $this->resultFetcher = $parent->resultFetcher;
     }
 
     /**
@@ -68,7 +68,7 @@ class BaseQuery
      * @param callable              $resultFetcher
      * @return void
      */
-    public function setResultFetcher($resultFetcher = null)
+    public function setResultFetcher(callable $resultFetcher = null) : void
     {
         $this->resultFetcher = $resultFetcher;
     }
@@ -80,7 +80,7 @@ class BaseQuery
      * @param mixed             $value
      * @return void
      */
-    final public function setFlag($key, $value)
+    final public function setFlag(string $key, $value): void
     {
         $this->flags[$key] = $value;
     }
@@ -92,7 +92,7 @@ class BaseQuery
      * @param mixed             $default
      * @return void
      */
-    final public function getFlag($key, $default = null)
+    final public function getFlag(string $key, $default = null)
     {
         if (!isset($this->flags[$key])) {
             return $default;
@@ -103,24 +103,24 @@ class BaseQuery
 
     /**
      * Register a macro on the current query object
-     * 
+     *
      * @param string                $method
      * @param callable             $callback
      * @return void
      */
-    final public function macro($method, $callback)
+    final public function macro(string $method, callable $callback): void
     {
         $this->macros[$method] = $callback;
     }
 
     /**
-     * Allow macro calls 
-     * 
-     * @param stirng                $name
+     * Allow macro calls
+     *
+     * @param string                $name
      * @param array                 $arguments
      * @return mixed
-     */ 
-    public function __call($name, $arguments) 
+     */
+    public function __call(string $name, array $arguments): self
     {
         if (!isset($this->macros[$name]))
         {
@@ -132,11 +132,11 @@ class BaseQuery
 
     /**
      * Pass the own query to a callback
-     * 
+     *
      * @param callable              $callback
      * @return void
      */
-    public function call($callback)
+    public function call(callable $callback): self
     {
         if (!is_callable($callback))
         {
@@ -150,22 +150,22 @@ class BaseQuery
 
     /**
      * Creates a new raw db expression instance
-     * 
+     *
      * @param string                $expression
      * @return ClanCats\Hydrahon\Query\Expression
      */
-    final public function raw($expression)
+    final public function raw(string $expression): Expression
     {
         return new Expression($expression);
-    } 
+    }
 
     /**
      * Returns all avaialbe attribute data 
      * The result fetcher callback is excluded
-     * 
+     *
      * @return array
      */
-    final public function attributes()
+    final public function attributes(): array
     {
         $excluded = array('resultFetcher', 'macros');
         $attributes = get_object_vars($this);
@@ -186,7 +186,7 @@ class BaseQuery
      * 
      * @return array
      */
-    final public function overwriteAttributes($attributes)
+    final public function overwriteAttributes(array $attributes): array
     {
         foreach($attributes as $key => $attribute)
         {

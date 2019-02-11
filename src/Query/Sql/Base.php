@@ -31,7 +31,7 @@ class Base extends BaseQuery
      * @param BaseQuery             $parent
      * @return void
      */
-    protected function inheritFromParent(BaseQuery $parent)
+    protected function inheritFromParent(BaseQuery $parent): void
     {
         parent::inheritFromParent($parent);
 
@@ -55,13 +55,13 @@ class Base extends BaseQuery
      * @param string                   $table
      * @return self
      */
-    public function table($table, $alias = null)
+    public function table($table, ?string $alias = null): self
     {
         $database = null;
 
         // Check if the table is an object, this means
         // we have an subselect inside the table
-        if (is_object($table) && ($table instanceof \Closure)) 
+        if (is_object($table) && ($table instanceof \Closure))
         {
             // we have to check if an alias isset 
             // otherwise throw an exception to prevent the 

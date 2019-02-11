@@ -53,7 +53,7 @@ class Mysql implements TranslatorInterface
      * @param ClanCats\Hydrahon\BaseQuery                 $query
      * @return array
      */
-    public function translate(BaseQuery $query)
+    public function translate(BaseQuery $query): array
     {
         // retrive the query attributes
         $this->attributes = $query->attributes();
@@ -104,18 +104,19 @@ class Mysql implements TranslatorInterface
         }
 
         // get the query parameters and reset
-        $queryParameters = $this->parameters; $this->clearParameters();
+        $queryParameters = $this->parameters;
+        $this->clearParameters();
 
         return [$queryString, $queryParameters];
     }
 
     /**
-     * Returns the an attribute value for the given key
-     * 
+     * Returns the attribute value for the given key
+     *
      * @param string                $key
      * @return mixed
      */
-    protected function attr($key)
+    protected function attr(string $key)
     {
         return $this->attributes[$key];
     }
@@ -126,7 +127,7 @@ class Mysql implements TranslatorInterface
      * @param mixed                 $expression
      * @return bool
      */
-    protected function isExpression($expression)
+    protected function isExpression($expression): bool
     {
         return $expression instanceof Expression;
     }
@@ -137,7 +138,7 @@ class Mysql implements TranslatorInterface
      * @param mixed                 $expression
      * @return bool
      */
-    protected function isFunction($function)
+    protected function isFunction($function): bool
     {
         return $function instanceof Func;
     }
@@ -147,7 +148,7 @@ class Mysql implements TranslatorInterface
      *
      * @return void
      */
-    protected function clearParameters()
+    protected function clearParameters(): void
     {
         $this->parameters = [];
     }
@@ -157,7 +158,7 @@ class Mysql implements TranslatorInterface
      *
      * @return void
      */
-    protected function addParameter($value)
+    protected function addParameter($value): void
     {
         $this->parameters[] = $value;
     }
@@ -184,16 +185,16 @@ class Mysql implements TranslatorInterface
      * @param array         $parameters
      * @return array
      */
-    protected function filterParameters($parameters)
+    protected function filterParameters(array $parameters)
     {
-        return array_values(array_filter($parameters, function ($item) 
+        return array_values(array_filter($parameters, function ($item): bool
         {
             return !$this->isExpression($item);
         }));
     }
 
     /**
-     * Escape / wrap an string for sql
+     * Escape / wrap a string for sql
      *
      * @param string|object                 $string
      */
@@ -265,7 +266,7 @@ class Mysql implements TranslatorInterface
      * @param string     $string
      * @return string
      */
-    protected function escapeString($string)
+    protected function escapeString(string $string): string
     {
         return sprintf($this->escapePattern, $string);
     }
@@ -276,7 +277,7 @@ class Mysql implements TranslatorInterface
      * @param array         $array
      * @return string
      */
-    protected function escapeList($array)
+    protected function escapeList(array $array): string
     {
         foreach ($array as $key => $item) 
         {
@@ -362,7 +363,7 @@ class Mysql implements TranslatorInterface
      *
      * @return string
      */
-    protected function translateInsert($key)
+    protected function translateInsert($key): string
     {
         $build = ($this->attr('ignore') ? $key . ' ignore' : $key);
 
@@ -393,7 +394,7 @@ class Mysql implements TranslatorInterface
      *
      * @return string
      */
-    protected function translateUpdate()
+    protected function translateUpdate(): string
     {
         $build = 'update ' . $this->escapeTable() . ' set ';
 
@@ -425,7 +426,7 @@ class Mysql implements TranslatorInterface
      *
      * @return string
      */
-    protected function translateDelete()
+    protected function translateDelete(): string
     {
         $build = 'delete from ' . $this->escapeTable(false);
 
@@ -524,7 +525,7 @@ class Mysql implements TranslatorInterface
      * @param array                 $wheres
      * @return string
      */
-    protected function translateWhere($wheres)
+    protected function translateWhere(array $wheres): string
     {
         $build = '';
 
@@ -566,7 +567,7 @@ class Mysql implements TranslatorInterface
      *
      * @return string
      */
-    protected function translateJoins()
+    protected function translateJoins(): string
     {
         $build = '';
 
@@ -644,7 +645,7 @@ class Mysql implements TranslatorInterface
      *
      * @return string
      */
-    protected function translateOrderBy()
+    protected function translateOrderBy(): string
     {
         $build = " order by ";
 
@@ -672,7 +673,7 @@ class Mysql implements TranslatorInterface
      *
      * @return string
      */
-    protected function translateGroupBy()
+    protected function translateGroupBy(): string
     {
         return ' group by ' . $this->escapeList($this->attr('groups'));
     }
@@ -683,7 +684,7 @@ class Mysql implements TranslatorInterface
      * @param Query         $query
      * @return string
      */
-    protected function translateLimitWithOffset()
+    protected function translateLimitWithOffset(): string
     {
         return ' limit ' . ((int) ($this->attr('offset'))) . ', ' . ((int) ($this->attr('limit')));
     }
@@ -694,7 +695,7 @@ class Mysql implements TranslatorInterface
      * @param Query         $query
      * @return string
      */
-    protected function translateLimit()
+    protected function translateLimit(): string
     {
         return ' limit ' . ((int) $this->attr('limit'));
     }
@@ -704,7 +705,7 @@ class Mysql implements TranslatorInterface
      *
      * @return string
      */
-    protected function translateDrop()
+    protected function translateDrop(): string
     {
         return 'drop table ' . $this->escapeTable() .';';
     }
@@ -714,7 +715,7 @@ class Mysql implements TranslatorInterface
      *
      * @return string
      */
-    protected function translateTruncate()
+    protected function translateTruncate(): string
     {
         return 'truncate table ' . $this->escapeTable() .';';
     }
@@ -724,7 +725,7 @@ class Mysql implements TranslatorInterface
      *
      * @return string
      */
-    protected function translateExists()
+    protected function translateExists(): string
     {
         $translator = new static;
 

@@ -27,7 +27,7 @@ class Sql extends BaseQuery
      * @param string|array                              $fields
      * @return Table
      */
-    public function table($table = null, $alias = null)
+    public function table($table = null, ?string $alias = null): Table
     {
         $query = new Table($this); return $query->table($table, $alias);
     }
@@ -53,7 +53,7 @@ class Sql extends BaseQuery
      * @param array                                     $values
      * @return Insert
      */
-    public function insert($table = null, array $values = array())
+    public function insert($table = null, array $values = []): Insert
     {
         return $this->table($table)->insert($values);
     }

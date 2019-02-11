@@ -36,7 +36,7 @@ class SelectJoin extends SelectBase
      * 
      * @return self
      */
-    public function on($localKey, $operator, $referenceKey, $type = 'and')
+    public function on($localKey, string $operator, $referenceKey, string $type = 'and'): self
     {
         $this->ons[] = [$type, $localKey, $operator, $referenceKey];
         return $this;
@@ -65,7 +65,7 @@ class SelectJoin extends SelectBase
      * 
      * @return self
      */
-    public function andOn($localKey, $operator, $referenceKey)
+    public function andOn($localKey, $operator, $referenceKey): self
     {
         $this->on($localKey, $operator, $referenceKey, 'and'); return $this;
     }
