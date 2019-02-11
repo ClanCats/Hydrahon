@@ -26,6 +26,16 @@ class Base extends BaseQuery
     protected $table = null;
 
     /**
+     * Function to check if sub queries have been generated correctly, to avoid translation errors
+     *
+     * @return bool
+     */
+    protected function isValid(): bool
+    {
+        return !empty($this->table);
+    }
+
+    /**
      * Inherit property values from parent query
      *
      * @param BaseQuery             $parent
@@ -42,7 +52,27 @@ class Base extends BaseQuery
             $this->table = $parent->table;
         }
     }
-    
+
+    /**
+     * Process a subquery generator callback
+     *
+     * @param callable             $generator
+     * @return void
+     */
+    protected function generateSubQuery(callable $generator, ?BaseQuery $object = null): BaseQuery
+    {
+        // create new query object
+        $subquery = is_null($object)? new Select : $object;
+
+        // run the closure callback on the sub query
+        $generator($subquery);
+        if (!$subquery->isValid()) {
+            throw new Exception('Subquery generator did not generate a valid subquery.');
+        }
+
+        return $subquery;
+    }
+
     /**
      * Create a new select query builder
      *
@@ -86,11 +116,7 @@ class Base extends BaseQuery
             $alias = key($table);
             $table = reset($table);
 
-            // create new query object
-            $subquery = new Select;
-
-            // run the closure callback on the sub query
-            call_user_func_array($table, array(&$subquery));
+            $subquery = $this->generateSubQuery($table);
 
             // set the table
             // IMPORTANT: Only if we have a closure as table

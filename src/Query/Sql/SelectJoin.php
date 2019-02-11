@@ -29,6 +29,16 @@ class SelectJoin extends SelectBase
     protected $wheres = [];
 
     /**
+     * Function to check if sub queries have been generated correctly, to avoid translation errors
+     *
+     * @return bool
+     */
+    protected function isValid(): bool
+    {
+        return !empty($this->ons);
+    }
+
+    /**
      * Add an on condition to the join object
      * 
      * @param string                $localKey

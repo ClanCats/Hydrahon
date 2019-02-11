@@ -38,6 +38,16 @@ class SelectBase extends Base
     protected $limit = null;
 
     /**
+     * Function to check if sub queries have been generated correctly, to avoid translation errors
+     *
+     * @return bool
+     */
+    protected function isValid(): bool
+    {
+        return !empty($this->wheres);
+    }
+
+    /**
      * Returns an string argument as parsed array if possible
      * 
      * @param string                $argument
@@ -128,15 +138,10 @@ class SelectBase extends Base
         }
 
         // to make nested wheres possible you can pass an closure
-        // wich will create a new query where you can add your nested wheres
-        if (is_object($column) && ($column instanceof \Closure)) 
-        {
-            // create new query object
-            $subquery = new SelectBase;
+        // which will create a new query where you can add your nested wheres
+        if (is_object($column) && ($column instanceof \Closure)) {
+            $subquery = $this->generateSubQuery($column, new SelectBase);
 
-            // run the closure callback on the sub query
-            call_user_func_array($column, array( &$subquery ));
- 
             $this->wheres[] = [$wheretype, $subquery];
             return $this;
         }

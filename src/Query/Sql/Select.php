@@ -66,8 +66,18 @@ class Select extends SelectBase implements FetchableInterface
     protected $forwardKey = false;
 
     /**
+     * Function to check if sub queries have been generated correctly, to avoid translation errors
+     *
+     * @return bool
+     */
+    protected function isValid(): bool
+    {
+        return !empty($this->table);
+    }
+
+    /**
      * Inherit property values from parent query
-     * 
+     *
      * @param BaseQuery             $parent
      * @return void
      */
@@ -353,19 +363,20 @@ class Select extends SelectBase implements FetchableInterface
     {
         $jointype = new JoinType($type);
 
-        // to make nested joins possible you can pass an closure
-        // wich will create a new query where you can add your nested wheres
-        if (is_object($localKey) && ($localKey instanceof \Closure)) 
-        {
-            // create new query object
-            $subquery = new SelectJoin;
-
-            // run the closure callback on the sub query
-            call_user_func_array($localKey, array(&$subquery));
-    
-            // add the join
-            $this->joins[] = [$jointype, $table, $subquery]; return $this;
+        if (is_object($localKey)) {
+            // to make nested joins possible you can pass an closure
+            // which will create a new query where you can add your nested wheres
+            if ($localKey instanceof \Closure) {
+                $localKey = $this->generateSubQuery($localKey, new SelectJoin);
+            }
+            // also allow using a manually constructed SelectJoin object
+            if ($localKey instanceof SelectJoin) {
+                $this->joins[] = [$jointype, $table, $localKey];
+                return $this;
+            }
+            // continue, because localKey could be an expression object
         }
+
         if (is_null($operator) || is_null($referenceKey)) {
             throw new Exception('When using non nested join conditions, an operator and a reference key is required.');
         }
