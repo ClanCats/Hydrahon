@@ -57,6 +57,11 @@ class Base extends BaseQuery
      */
     public function table($table, ?string $alias = null): self
     {
+        if (empty($table) && !is_numeric($table))
+        {
+            throw new Exception('Table name cannot be empty.');
+        }
+
         $database = null;
 
         // Check if the table is an object, this means

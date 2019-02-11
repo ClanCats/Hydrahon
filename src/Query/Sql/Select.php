@@ -125,9 +125,12 @@ class Select extends SelectBase implements FetchableInterface
         $this->fields = [];
 
         // when a string is given
-        if (is_string($fields)) 
+        if (is_string($fields) || is_numeric($fields))
         {
-            $fields = $this->stringArgumentToArray($fields);
+            // cast to string, because if given a number, there is no way to differentiate between
+            // a literal numeric expression or a numeric identifier (eg. select 1 from ..., or select `1` from ...)
+            // so we assume it to always be an identifier
+            $fields = $this->stringArgumentToArray((string)$fields);
         }
         // it also could be an object
         elseif (is_object($fields))
@@ -278,9 +281,9 @@ class Select extends SelectBase implements FetchableInterface
      */
     public function orderBy($columns, string $direction = 'asc'): self
     {
-        if (is_string($columns))
+        if (is_string($columns) || is_numeric($columns))
         {
-            $columns = $this->stringArgumentToArray($columns);
+            $columns = $this->stringArgumentToArray((string)$columns);
         }
         elseif ($columns instanceof Expression)
         {
@@ -317,9 +320,9 @@ class Select extends SelectBase implements FetchableInterface
      */
     public function groupBy($groupKeys): self
     {
-        if (is_string($groupKeys))
+        if (is_string($groupKeys) || is_numeric($groupKeys))
         {
-            $groupKeys = $this->stringArgumentToArray($groupKeys);
+            $groupKeys = $this->stringArgumentToArray((string)$groupKeys);
         }
 
         foreach ($groupKeys as $groupKey) 
