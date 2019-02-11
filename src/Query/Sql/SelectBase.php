@@ -12,6 +12,8 @@ namespace ClanCats\Hydrahon\Query\Sql;
  * @copyright       2015 Mario Döring
  */
 
+use ClanCats\Hydrahon\Query\Sql\Keyword\{ConditionBinOp,BinOp,SpecialValue};
+
 class SelectBase extends Base
 { 
     /**
@@ -100,21 +102,16 @@ class SelectBase extends Base
      */
     public function where($column, $param1 = null, $param2 = null, string $type = 'and'): self
     {
-        // check if the where type is valid
-        if ($type !== 'and' && $type !== 'or' && $type !== 'where' )
-        {
-            throw new Exception('Invalid where type "'.$type.'"');
-        }
-
         // if this is the first where element we are going to change
         // the where type to 'where'
-        if (empty($this->wheres)) 
-        {
-            $type = 'where';
-        }
-        elseif($type === 'where')
-        {
-             $type = 'and';
+        if (!empty($this->wheres)) {
+            if ($type === 'where') {
+                $type = 'and';
+            }
+            // check if the where type is valid
+            $wheretype = new ConditionBinOp($type);
+        } else {
+            $wheretype = null;
         }
 
         // when column is an array we assume to make a bulk and where.
@@ -126,7 +123,7 @@ class SelectBase extends Base
                 $subquery->where($key, $val, null, $type);
             }
 
-            $this->wheres[] = [$type, $subquery];
+            $this->wheres[] = [$wheretype, $subquery];
             return $this;
         }
 
@@ -140,16 +137,19 @@ class SelectBase extends Base
             // run the closure callback on the sub query
             call_user_func_array($column, array( &$subquery ));
  
-            $this->wheres[] = [$type, $subquery];
+            $this->wheres[] = [$wheretype, $subquery];
             return $this;
         }
 
         // when param2 is null we replace param2 with param one as the
         // value holder and make param1 to the = operator.
-        if (is_null($param2)) 
+        if (is_null($param2))
         {
-            $param2 = $param1; $param1 = '=';
+            $param2 = $param1;
+            $param1 = '=';
         }
+
+        $operator = new BinOp($param1);
 
         // if the param2 is an array we filter it. Im no more sure why
         // but it's there since 4 years so i think i had a reason.
@@ -160,7 +160,7 @@ class SelectBase extends Base
             $param2 = array_unique($param2);
         }
 
-        $this->wheres[] = [$type, $column, $param1, $param2];
+        $this->wheres[] = [$wheretype, $column, $operator, $param2];
         return $this;
     }
 
@@ -226,7 +226,7 @@ class SelectBase extends Base
      */
     public function whereNull($column): self
     {
-        return $this->where($column, 'is', $this->raw('NULL'));
+        return $this->where($column, 'is', new SpecialValue('NULL'));
     }
 
      /**
@@ -239,7 +239,7 @@ class SelectBase extends Base
      */
     public function whereNotNull($column): self
     {
-        return $this->where($column, 'is not', $this->raw('NULL'));
+        return $this->where($column, 'is not', new SpecialValue('NULL'));
     }
 
     /**
@@ -252,7 +252,7 @@ class SelectBase extends Base
      */
     public function orWhereNull($column): self
     {
-        return $this->orWhere($column, 'is', $this->raw('NULL'));
+        return $this->orWhere($column, 'is', new SpecialValue('NULL'));
     }
 
     /**
@@ -265,7 +265,7 @@ class SelectBase extends Base
      */
     public function orNotNull($column): self
     {
-        return $this->orWhere($column, 'is not', $this->raw('NULL'));
+        return $this->orWhere($column, 'is not', new SpecialValue('NULL'));
     }
 
     /**

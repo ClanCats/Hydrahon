@@ -36,28 +36,28 @@ class Query_Sql_BaseSql_Test extends Query_QueryCase
 		// simple 
 		$this->assertAttributes($this->createQuery()->where('id', 42), array(
 			'wheres' => array(
-				array('where', 'id', '=', '42')
+				array(null, 'id', '=', '42')
 			)
 		));
 
 		// simple with other expression
 		$this->assertAttributes($this->createQuery()->where('id', '!=', 42), array(
 			'wheres' => array(
-				array('where', 'id', '!=', '42')
+				array(null, 'id', '!=', '42')
 			)
 		));
 
 		// array parameter
 		$this->assertAttributes($this->createQuery()->where('id', 'in', array(1, 2, 3)), array(
 			'wheres' => array(
-				array('where', 'id', 'in', array(1, 2, 3))
+				array(null, 'id', 'in', array(1, 2, 3))
 			)
 		));
 
 		// 2 wheres should be be and
 		$this->assertAttributes($this->createQuery()->where('age', '>', 18)->where('active', 1), array(
 			'wheres' => array(
-				array('where', 'age', '>', 18),
+				array(null, 'age', '>', 18),
 				array('and', 'active', '=', 1)
 			)
 		));
@@ -65,7 +65,7 @@ class Query_Sql_BaseSql_Test extends Query_QueryCase
 		// 2 wheres with sepcified or
 		$this->assertAttributes($this->createQuery()->where('age', '>', 18)->where('active', '=', 1, 'or'), array(
 			'wheres' => array(
-				array('where', 'age', '>', 18),
+				array(null, 'age', '>', 18),
 				array('or', 'active', '=', 1)
 			)
 		));
@@ -87,14 +87,14 @@ class Query_Sql_BaseSql_Test extends Query_QueryCase
 		// simple should still be where
 		$this->assertAttributes($this->createQuery()->orWhere('id', 42), array(
 			'wheres' => array(
-				array('where', 'id', '=', 42)
+				array(null, 'id', '=', 42)
 			)
 		));
 
 		// simple should still be where
 		$this->assertAttributes($this->createQuery()->orWhere('id', 42)->orWhere('id', 5), array(
 			'wheres' => array(
-				array('where', 'id', '=', 42),
+				array(null, 'id', '=', 42),
 				array('or', 'id', '=', 5)
 			)
 		));
@@ -108,14 +108,14 @@ class Query_Sql_BaseSql_Test extends Query_QueryCase
 		// simple should still be where
 		$this->assertAttributes($this->createQuery()->andWhere('id', 42), array(
 			'wheres' => array(
-				array('where', 'id', '=', 42)
+				array(null, 'id', '=', 42)
 			)
 		));
 
 		// simple should still be where
 		$this->assertAttributes($this->createQuery()->andWhere('id', 42)->andWhere('id', 5), array(
 			'wheres' => array(
-				array('where', 'id', '=', 42),
+				array(null, 'id', '=', 42),
 				array('and', 'id', '=', 5)
 			)
 		));
@@ -129,7 +129,7 @@ class Query_Sql_BaseSql_Test extends Query_QueryCase
 		// simple should still be where
 		$this->assertAttributes($this->createQuery()->whereIn('id', array(42, 31, 21)), array(
 			'wheres' => array(
-				array('where', 'id', 'in', array(42, 31, 21))
+				array(null, 'id', 'in', array(42, 31, 21))
 			)
 		));
 	}
@@ -151,8 +151,8 @@ class Query_Sql_BaseSql_Test extends Query_QueryCase
 	{
 		$this->assertAttributes($this->createQuery()->where(array('title' => 'foo', 'subtitle' => 'bar')), array(
 			'wheres' => array(
-				array('where', array( 'wheres' => array(
-					array('where', 'title', '=', 'foo'),
+				array(null, array( 'wheres' => array(
+					array(null, 'title', '=', 'foo'),
 					array('and', 'subtitle', '=', 'bar')
 				)))
 			)
@@ -165,12 +165,12 @@ class Query_Sql_BaseSql_Test extends Query_QueryCase
 			->where(array('age' => 18, 'active' => 1))
 			, array(
 			'wheres' => array(
-				array('where', array( 'wheres' => array(
-					array('where', 'title', '=', 'foo'),
+				array(null, array( 'wheres' => array(
+					array(null, 'title', '=', 'foo'),
 					array('and', 'subtitle', '=', 'bar')
 				))),
 				array('and', array( 'wheres' => array(
-					array('where', 'age', '=', 18),
+					array(null, 'age', '=', 18),
 					array('and', 'active', '=', 1)
 				)))
 			)
@@ -192,12 +192,12 @@ class Query_Sql_BaseSql_Test extends Query_QueryCase
 			$query->andWhere('inactive', 0);
 		}), array(
 			'wheres' => array(
-				array('where', array( 'wheres' => array(
-					array('where', 'id', 'in', array(1, 42, 43)),
+				array(null, array( 'wheres' => array(
+					array(null, 'id', 'in', array(1, 42, 43)),
 					array('or', 'foo', '=', 'bar')
 				))),
 				array('or', array( 'wheres' => array(
-					array('where', 'super_active', '=', 1),
+					array(null, 'super_active', '=', 1),
 					array('and', 'inactive', '=', 0)
 				)))
 			)
@@ -270,7 +270,7 @@ class Query_Sql_BaseSql_Test extends Query_QueryCase
 		$query = $this->createQuery();
 		$query->where('id', 42);
 
-		$this->assertAttributes($query, array('wheres' => array(array('where', 'id', '=', 42))));
+		$this->assertAttributes($query, array('wheres' => array(array(null, 'id', '=', 42))));
 
 		// overwrite the wheres
 		$query->overwriteAttributes(array('wheres' => array()));

@@ -21,6 +21,8 @@ use ClanCats\Hydrahon\Query\Sql\Drop;
 use ClanCats\Hydrahon\Query\Sql\Truncate;
 use ClanCats\Hydrahon\Query\Sql\Func;
 use ClanCats\Hydrahon\Query\Sql\Exists;
+use ClanCats\Hydrahon\Query\Sql\Keyword;
+use ClanCats\Hydrahon\Query\Sql\Keyword\SpecialValue;
 
 class Mysql implements TranslatorInterface
 {
@@ -143,6 +145,16 @@ class Mysql implements TranslatorInterface
         return $function instanceof Func;
     }
 
+    protected function isKeyword($keyword): bool
+    {
+        return $keyword instanceof Keyword;
+    }
+
+    protected function isSpecialValue($keyword): bool
+    {
+        return $keyword instanceof SpecialValue;
+    }
+
     /**
      * Clear all set parameters
      *
@@ -169,9 +181,9 @@ class Mysql implements TranslatorInterface
      * @param mixed         $value
      * @return string
      */
-    protected function param($value)
+    protected function param($value): string
     {
-        if (!$this->isExpression($value)) 
+        if (!$this->isExpression($value) && !$this->isSpecialValue($value))
         {
             $this->addParameter($value); return '?';
         }
@@ -209,6 +221,10 @@ class Mysql implements TranslatorInterface
             elseif ($this->isFunction($string))
             {
                 return $this->escapeFunction($string);
+            }
+            elseif ($this->isKeyword($string))
+            {
+                return (string)$string;
             }
             else
             {
@@ -521,20 +537,20 @@ class Mysql implements TranslatorInterface
     }
 
     /**
-     * Translate the where statements into sql 
-     * 
+     * Translate the where statements into sql
+     *
      * @param array                 $wheres
      * @return string
      */
     protected function translateWhere(array $wheres): string
     {
-        $build = '';
+        $build = ' where';
 
-        foreach ($wheres as $where) 
+        foreach ($wheres as $where)
         {
             // to make nested wheres possible you can pass an closure
             // wich will create a new query where you can add your nested wheres
-            if (!isset($where[2]) && isset( $where[1] ) && $where[1] instanceof BaseQuery ) 
+            if (!isset($where[2]) && isset($where[1]) && $where[1] instanceof BaseQuery)
             {
                 $subAttributes = $where[1]->attributes();
 
@@ -553,8 +569,13 @@ class Mysql implements TranslatorInterface
                 $where[3] = $this->param($where[3]);
             }
 
-            // we always need to escepe where 1 wich referrs to the key
+            // we always need to escape where[1], which refers to the key
             $where[1] = $this->escape($where[1]);
+
+            // first where has no where type
+            if (is_null($where[0])) {
+                unset($where[0]);
+            }
 
             // implode the beauty
             $build .= ' ' . implode(' ', $where);

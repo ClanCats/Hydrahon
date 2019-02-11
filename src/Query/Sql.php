@@ -16,6 +16,7 @@ use ClanCats\Hydrahon\Query\Sql\Delete;
 use ClanCats\Hydrahon\Query\Sql\Drop;
 use ClanCats\Hydrahon\Query\Sql\Truncate;
 use ClanCats\Hydrahon\Query\Sql\Table;
+use ClanCats\Hydrahon\Query\Sql\Keyword\SpecialValue;
 
 class Sql extends BaseQuery
 {
@@ -106,5 +107,16 @@ class Sql extends BaseQuery
     public function truncate($table = null): Truncate
     {
         return $this->table($table)->truncate();
+    }
+
+    /**
+     * Creates a new sql value keyword, limited to 'null', 'default', 'true', 'false', 'unknown'
+     *
+     * @param string                $value
+     * @return SpecialValue
+     */
+    final public function value(string $value): SpecialValue
+    {
+        return new SpecialValue($value);
     }
 }

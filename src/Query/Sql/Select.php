@@ -10,6 +10,7 @@ namespace ClanCats\Hydrahon\Query\Sql;
  */
 
 use ClanCats\Hydrahon\Query\Expression;
+use ClanCats\Hydrahon\Query\Sql\Keyword\{OrderType,JoinType,BinOp};
 
 use ClanCats\Hydrahon\BaseQuery;
 
@@ -281,13 +282,15 @@ class Select extends SelectBase implements FetchableInterface
      */
     public function orderBy($columns, string $direction = 'asc'): self
     {
+        $order = new OrderType($direction);
+
         if (is_string($columns) || is_numeric($columns))
         {
             $columns = $this->stringArgumentToArray((string)$columns);
         }
         elseif ($columns instanceof Expression)
         {
-            $this->orders[] = [$columns, $direction];
+            $this->orders[] = [$columns, $order];
             return $this;
         }
 
@@ -297,9 +300,9 @@ class Select extends SelectBase implements FetchableInterface
             {
                 if ($column instanceof Expression)
                 {
-                    $this->orders[] = [$column, $direction];
+                    $this->orders[] = [$column, $order];
                 } else {
-                    $this->orders[$column] = $direction;
+                    $this->orders[$column] = $order;
                 }
             } else {
                 $this->orders[$key] = $column;
@@ -348,11 +351,7 @@ class Select extends SelectBase implements FetchableInterface
      */
     public function join($table, $localKey, ?string $operator = null, $referenceKey = null, string $type = 'left'): self
     {
-        // validate the join type
-        if (!in_array($type, array('inner', 'left', 'right', 'outer')))
-        {
-            throw new Exception('Invalid join type "'.$type.'" given. Available type: inner, left, right, outer');
-        }
+        $jointype = new JoinType($type);
 
         // to make nested joins possible you can pass an closure
         // wich will create a new query where you can add your nested wheres
@@ -365,10 +364,15 @@ class Select extends SelectBase implements FetchableInterface
             call_user_func_array($localKey, array(&$subquery));
     
             // add the join
-            $this->joins[] = [$type, $table, $subquery]; return $this;
+            $this->joins[] = [$jointype, $table, $subquery]; return $this;
+        }
+        if (is_null($operator) || is_null($referenceKey)) {
+            throw new Exception('When using non nested join conditions, an operator and a reference key is required.');
         }
 
-        $this->joins[] = [$type, $table, $localKey, $operator, $referenceKey];
+        $joinop = new BinOp($operator);
+
+        $this->joins[] = [$jointype, $table, $localKey, $joinop, $referenceKey];
         return $this;
     }
 

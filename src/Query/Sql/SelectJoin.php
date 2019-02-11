@@ -10,6 +10,7 @@ namespace ClanCats\Hydrahon\Query\Sql;
  */
 
 use ClanCats\Hydrahon\Query\Expression;
+use ClanCats\Hydrahon\Query\Sql\Keyword\{ConditionBinOp,BinOp};
 
 class SelectJoin extends SelectBase
 {
@@ -38,7 +39,10 @@ class SelectJoin extends SelectBase
      */
     public function on($localKey, string $operator, $referenceKey, string $type = 'and'): self
     {
-        $this->ons[] = [$type, $localKey, $operator, $referenceKey];
+        $ontype = new ConditionBinOp($type);
+        $comparison = new BinOp($operator);
+
+        $this->ons[] = [$ontype, $localKey, $comparison, $referenceKey];
         return $this;
     }
 
