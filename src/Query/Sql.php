@@ -63,47 +63,47 @@ class Sql extends BaseQuery
      * Create a new update query builder
      *
      *     $h->update('users', ['age' => 25])->where('name', 'Johanna')
-     *         
+     *
      * @param array                                  $values
      * @return Update
      */
-    public function update($table = null, array $values = array())
+    public function update($table = null, array $values = []): Update
     {
         return $this->table($table)->update($values);
     }
 
     /**
      * Create a new delete sql builder
-     * 
+     *
      *     $h->delete('users')->where('age', '<', '18')
      *
      * @return Delete
      */
-    public function delete($table = null)
+    public function delete($table = null): Delete
     {
         return $this->table($table)->delete();
     }
 
     /**
      * Create a new drop table query
-     * 
+     *
      *     $h->drop('users')
      *
      * @return Drop
      */
-    public function drop($table = null)
+    public function drop($table = null): Drop
     {
         return $this->table($table)->drop();
     }
 
     /**
      * Create a new truncate table query
-     * 
+     *
      *     $h->truncate('users')
      *
      * @return Truncate
      */
-    public function truncate($table = null)
+    public function truncate($table = null): Truncate
     {
         return $this->table($table)->truncate();
     }

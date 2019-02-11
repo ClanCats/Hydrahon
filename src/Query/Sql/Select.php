@@ -308,9 +308,9 @@ class Select extends SelectBase implements FetchableInterface
 
     /**
      * Add a group by statement to the current query
-     * 
+     *
      *     ->groupBy('category')
-     *     ->gorupBy(['category', 'price'])
+     *     ->groupBy(['category', 'price'])
      *
      * @param array|string              $keys
      * @return self The current query builder.
@@ -332,15 +332,15 @@ class Select extends SelectBase implements FetchableInterface
 
     /**
      * Add a join statement to the current query
-     * 
+     *
      *     ->join('avatars', 'users.id', '=', 'avatars.user_id')
      *
      * @param array|string              $table The table to join. (can contain an alias definition.)
-     * @param string                    $localKey 
+     * @param string                    $localKey
      * @param string                    $operator The operator (=, !=, <, > etc.)
      * @param string                    $referenceKey
      * @param string                    $type The join type (inner, left, right, outer)
-     * 
+     *
      * @return self The current query builder.
      */
     public function join($table, $localKey, ?string $operator = null, $referenceKey = null, string $type = 'left'): self
