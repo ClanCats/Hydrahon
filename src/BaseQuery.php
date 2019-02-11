@@ -127,7 +127,8 @@ class BaseQuery
             throw new \BadMethodCallException('There is no macro or method with the name "'.$name.'" registered.');
         }
 
-        call_user_func_array($this->macros[$name], array_merge(array(&$this), $arguments)); return $this;
+        ($this->macros[$name])($this,...$arguments);
+        return $this;
     }
 
     /**
@@ -143,8 +144,7 @@ class BaseQuery
             throw new Exception('Invalid query callback given.');
         }
 
-        call_user_func_array($callback, array(&$this));
-
+        $callback($this);
         return $this;
     }
 
@@ -211,12 +211,12 @@ class BaseQuery
             throw new Exception('Cannot execute result fetcher callbacks without inital assignment.');
         }
 
-        return call_user_func_array($this->resultFetcher, array(&$this));
+        return ($this->resultFetcher)($this);
     }
 
     /**
      * Public alias of executeResultFetcher
-     * 
+     *
      * @return mixed
      */
     public function execute()

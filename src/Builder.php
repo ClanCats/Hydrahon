@@ -119,7 +119,7 @@ class Builder
      */
     public function __call(string $method, array $arguments)
     {
-        return call_user_func_array(array($this->queryBuilder, $method), $arguments);
+        return [$this->queryBuilder,$method](...$arguments);
     }
 
     /**
@@ -141,6 +141,6 @@ class Builder
      */
     public function executeQuery(BaseQuery $query)
     {
-        return call_user_func_array($this->executionCallback, array_merge(array($query), $this->translateQuery($query)));
+        return ($this->executionCallback)($query,...$this->translateQuery($query));
     }
 }

@@ -30,10 +30,8 @@ class Func
 	 * @param ...
 	 * @return void
 	 */
-	public function __construct()
+	public function __construct(...$arguments)
 	{
-		$arguments = func_get_args();
-
 		// throw an error when no arguments are given
 		if (empty($arguments))
 		{
