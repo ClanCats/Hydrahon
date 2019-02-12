@@ -585,6 +585,28 @@ class Mysql implements TranslatorInterface
     }
 
     /**
+     * Translate the subquery
+     *
+     * @param array                 $select
+     * @return string
+     */
+    protected function translateSubQuery($select): string
+    {
+        $translator = new static;
+
+        // translate the subselect
+        [$subQuery, $subQueryParameters] = $translator->translate($select);
+
+        // merge the parameters
+        foreach($subQueryParameters as $parameter)
+        {
+            $this->addParameter($parameter);
+        }
+
+        return $subQuery;
+    }
+
+    /**
      * Build the sql join statements
      *
      * @return string
@@ -599,6 +621,8 @@ class Mysql implements TranslatorInterface
             $type = $join[0];
             $table = $join[1];
 
+            $tablequery = '';
+
             // table
             if (is_array($table))
             {
@@ -608,23 +632,15 @@ class Mysql implements TranslatorInterface
                 // first and compile the select if it is one
                 if ($table[key($table)] instanceof Select)
                 {
-                    $translator = new static;
-
-                    // translate the subselect
-                    list($subQuery, $subQueryParameters) = $translator->translate($table[key($table)]);
-
-                    // merge the parameters
-                    foreach($subQueryParameters as $parameter)
-                    {
-                        $this->addParameter($parameter);
-                    }
-
-                    return '(' . $subQuery . ') as ' . $this->escape(key($table));
+                    $subQuery = $this->translateSubQuery($table[key($table)]);
+                    $tablequery = '(' . $subQuery . ') as ' . $this->escape(key($table));
                 }
+            } else {
+                $tablequery = $this->escape($table);
             }
 
             // start the join
-            $build .= ' ' . $type . ' join ' . $this->escape($table) . ' on ';
+            $build .= ' ' . $type . ' join ' . $tablequery . ' on ';
 
             // to make nested join conditions possible you can pass an closure
             // wich will create a new query where you can add your nested ons and wheres
@@ -750,17 +766,7 @@ class Mysql implements TranslatorInterface
      */
     protected function translateExists(): string
     {
-        $translator = new static;
-
-        // translate the subselect
-        list($subQuery, $subQueryParameters) = $translator->translate($this->attr('select'));
-
-        // merge the parameters
-        foreach($subQueryParameters as $parameter)
-        {
-            $this->addParameter($parameter);
-        }
-
+        $subQuery = $this->translateSubQuery($this->attr('select'));
         return 'select exists(' . $subQuery .') as `exists`';
     }
 }
