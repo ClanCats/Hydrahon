@@ -41,12 +41,15 @@ class Mysql implements TranslatorInterface
     protected $attributes = [];
 
     /**
-     * The escape pattern escapes table column names etc.
-     * select * from `table`...
+     * Function to escape identifier names (columns and tables)
+     * https://dev.mysql.com/doc/refman/8.0/en/identifiers.html
      *
      * @var string
      */
-    protected $escapePattern = '`%s`';
+    public function escapeIdentifier(string $identifier): string
+    {
+        return '`'.str_replace(['`',"\0"],['``',''],$identifier).'`';
+    }
 
     /**
      * Translate the given query object and return the results as
@@ -247,13 +250,13 @@ class Mysql implements TranslatorInterface
 
             foreach ($string as $key => $item)
             {
-                $string[$key] = $this->escapeString($item);
+                $string[$key] = $this->escapeIdentifier($item);
             }
 
             return implode('.', $string);
         }
 
-        return $this->escapeString($string);
+        return $this->escapeIdentifier($string);
     }
 
     /**
@@ -284,7 +287,7 @@ class Mysql implements TranslatorInterface
      */
     protected function escapeString(string $string): string
     {
-        return sprintf($this->escapePattern, $string);
+        return $this->escapeIdentifier($string);
     }
 
     /**
