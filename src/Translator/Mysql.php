@@ -311,50 +311,44 @@ class Mysql implements TranslatorInterface
      *
      * @return string
      */
-    protected function escapeTable($allowAlias = true)
+    protected function translateTable(bool $allowAlias = true): string
     {
-        $table = $this->attr('table');
-        $database = $this->attr('database');
         $buffer = '';
 
-        if (!is_null($database))
-        {
-            $buffer .= $this->escape($database) . '.';
-        }
+        $table = $this->attr('table');
+        $database = $this->attr('database');
+
+        $dbname = is_null($database)? '' : $this->escape($database).'.';
 
         // when the table is an array we have a table with alias
-        if (is_array($table)) 
-        {
+        if (is_array($table) && !empty($table)) {
             reset($table);
 
-            // the table might be a subselect so check that
-            // first and compile the select if it is one
-            if ($table[key($table)] instanceof Select)
-            {
-                $translator = new static;
+            foreach ($table as $tableref=>$alias) {
+                // the table might be a subselect so check that, first and compile the select if it is one
+                // notice that alias and table reference are inverted if using a subselect
+                if ($alias instanceof Select) {
+                    $subQuery = $this->translateSubQuery($alias);
 
-                // translate the subselect
-                list($subQuery, $subQueryParameters) = $translator->translate($table[key($table)]);
+                    $buffer .= '(' . $subQuery . ') as ' . $this->escape($tableref);
+                } else {
+                    // otherwise continue with normal table
+                    $buffer .= $dbname . $this->escape($tableref);
 
-                // merge the parameters
-                foreach($subQueryParameters as $parameter)
-                {
-                    $this->addParameter($parameter);
+                    if ($allowAlias) {
+                        $buffer .= ' as ' . $this->escape($alias);
+                    }
                 }
 
-                return '(' . $subQuery . ') as ' . $this->escape(key($table));
+                $buffer .= ',';
             }
 
-            // otherwise continue with normal table
-            if ($allowAlias)
-            {
-                $table = key($table) . ' as ' . $table[key($table)];
-            } else {
-                $table = key($table);
-            }
+            $buffer = rtrim($buffer,',');
+        } else {
+            $buffer .= $dbname . $this->escape($table);
         }
 
-        return $buffer . $this->escape($table);    
+        return $buffer;
     }
 
     /**
@@ -386,7 +380,7 @@ class Mysql implements TranslatorInterface
     {
         $build = ($this->attr('ignore') ? $key . ' ignore' : $key);
 
-        $build .= ' into ' . $this->escapeTable(false) . ' ';
+        $build .= ' into ' . $this->translateTable(false) . ' ';
 
         if (!$valueCollection = $this->attr('values'))
         {
@@ -415,7 +409,7 @@ class Mysql implements TranslatorInterface
      */
     protected function translateUpdate(): string
     {
-        $build = 'update ' . $this->escapeTable() . ' set ';
+        $build = 'update ' . $this->translateTable() . ' set ';
 
         // add the array values.
         foreach ($this->attr('values') as $key => $value) {
@@ -447,7 +441,7 @@ class Mysql implements TranslatorInterface
      */
     protected function translateDelete(): string
     {
-        $build = 'delete from ' . $this->escapeTable(false);
+        $build = 'delete from ' . $this->translateTable(false);
 
         // build the where statements
         if ($wheres = $this->attr('wheres'))
@@ -504,7 +498,7 @@ class Mysql implements TranslatorInterface
         }
 
         // append the table
-        $build .= ' from ' . $this->escapeTable();
+        $build .= ' from ' . $this->translateTable();
 
         // build the join statements
         if ($this->attr('joins'))
@@ -771,7 +765,7 @@ class Mysql implements TranslatorInterface
      */
     protected function translateDrop(): string
     {
-        return 'drop table ' . $this->escapeTable() .';';
+        return 'drop table ' . $this->translateTable() .';';
     }
 
     /**
@@ -781,7 +775,7 @@ class Mysql implements TranslatorInterface
      */
     protected function translateTruncate(): string
     {
-        return 'truncate table ' . $this->escapeTable() .';';
+        return 'truncate table ' . $this->translateTable() .';';
     }
 
     /**
