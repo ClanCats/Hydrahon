@@ -16,6 +16,7 @@ use ClanCats\Hydrahon\Query\Sql\Delete;
 use ClanCats\Hydrahon\Query\Sql\Drop;
 use ClanCats\Hydrahon\Query\Sql\Truncate;
 use ClanCats\Hydrahon\Query\Sql\Table;
+use ClanCats\Hydrahon\Query\Sql\Field;
 use ClanCats\Hydrahon\Query\Sql\Keyword\SpecialValue;
 
 class Sql extends BaseQuery
@@ -118,5 +119,16 @@ class Sql extends BaseQuery
     final public function value(string $value): SpecialValue
     {
         return new SpecialValue($value);
+    }
+
+    /**
+     * Forces an operand to be treated as a field
+     *
+     * @param string                $field
+     * @return Field
+     */
+    final public function field(string $field): Field
+    {
+        return new Field($field);
     }
 }

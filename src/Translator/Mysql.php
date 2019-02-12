@@ -21,6 +21,7 @@ use ClanCats\Hydrahon\Query\Sql\Drop;
 use ClanCats\Hydrahon\Query\Sql\Truncate;
 use ClanCats\Hydrahon\Query\Sql\Func;
 use ClanCats\Hydrahon\Query\Sql\Exists;
+use ClanCats\Hydrahon\Query\Sql\Field;
 use ClanCats\Hydrahon\Query\Sql\Keyword;
 use ClanCats\Hydrahon\Query\Sql\Keyword\SpecialValue;
 
@@ -158,6 +159,16 @@ class Mysql implements TranslatorInterface
         return $keyword instanceof SpecialValue;
     }
 
+    protected function isField($field): bool
+    {
+        return $field instanceof Field;
+    }
+
+    protected function isParam($value): bool
+    {
+        return !($value instanceof Expression || $value instanceof Keyword || $value instanceof Func || $value instanceof Field);
+    }
+
     /**
      * Clear all set parameters
      *
@@ -186,12 +197,24 @@ class Mysql implements TranslatorInterface
      */
     protected function param($value): string
     {
-        if (!$this->isExpression($value) && !$this->isSpecialValue($value))
-        {
-            $this->addParameter($value); return '?';
+        $this->addParameter($value);
+        return '?';
+    }
+
+    /**
+     * Translate a parameter
+     *
+     * @return string
+     */
+    protected function translateParam($param): string 
+    {
+        if ($this->isParam($param))    {
+            return $this->param($param);
+        } else if ($this->isField($param)) {
+            return $this->escape($param);
         }
 
-        return $value;
+        return $param;
     }
 
     /**
@@ -228,6 +251,10 @@ class Mysql implements TranslatorInterface
             elseif ($this->isKeyword($string))
             {
                 return (string)$string;
+            }
+            else if ($this->isField($string))
+            {
+                $string = (string)$string;
             }
             else
             {
@@ -361,7 +388,7 @@ class Mysql implements TranslatorInterface
     {
         foreach ($params as $key => $param) 
         {
-            $params[$key] = $this->param($param);
+            $params[$key] = $this->translateParam($param);
         }
 
         return implode(', ', $params);
@@ -413,7 +440,7 @@ class Mysql implements TranslatorInterface
 
         // add the array values.
         foreach ($this->attr('values') as $key => $value) {
-            $build .= $this->escape($key) . ' = ' . $this->param($value) . ', ';
+            $build .= $this->escape($key) . ' = ' . $this->translateParam($value) . ', ';
         }
 
         // cut away the last comma and space
@@ -569,7 +596,7 @@ class Mysql implements TranslatorInterface
             {
                 $where[3] = '(' . $this->parameterize($where[3]) . ')';
             } else {
-                $where[3] = $this->param($where[3]);
+                $where[3] = $this->translateParam($where[3]);
             }
 
             // we always need to escape where[1], which refers to the key
