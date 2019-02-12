@@ -524,6 +524,12 @@ class Mysql implements TranslatorInterface
             $build .= $this->translateGroupBy();
         }
 
+        // build the unions
+        if ($unions = $this->attr('unions'))
+        {
+            $build .= $this->translateUnions($unions);
+        }
+
         // build the order statement
         if ($this->attr('orders'))
         {
@@ -584,6 +590,22 @@ class Mysql implements TranslatorInterface
             $build .= ' ' . implode(' ', $where);
         }
 
+        return $build;
+    }
+
+    /**
+     * Translate the unions into sub selects
+     *
+     * @param array                 $unions
+     * @return string
+     */
+    protected function translateUnions($unions): string
+    {
+        $build = '';
+        foreach ($unions as $union) {
+            $build .= ' union '.(($union[0] === 'all')? 'all ':'');
+            $build .= '('.$this->translateSubQuery($union[1]).')';
+        }
         return $build;
     }
 

@@ -10,7 +10,7 @@ namespace ClanCats\Hydrahon\Query\Sql;
  */
 
 use ClanCats\Hydrahon\Query\Expression;
-use ClanCats\Hydrahon\Query\Sql\Keyword\{OrderType,JoinType,BinOp};
+use ClanCats\Hydrahon\Query\Sql\Keyword\{OrderType,JoinType,BinOp,UnionType};
 
 use ClanCats\Hydrahon\BaseQuery;
 
@@ -50,6 +50,13 @@ class Select extends SelectBase implements FetchableInterface
      * @var array
      */
     protected $joins = [];
+
+    /**
+     * array of selects
+     *
+     * @var array
+     */
+    protected $unions = [];
 
     /**
      * group the results by a given key
@@ -116,6 +123,31 @@ class Select extends SelectBase implements FetchableInterface
     {
         $this->distinct = $distinct;
         return $this;
+    }
+
+    /**
+     * Add a sub query to unions
+     *
+     * @param string|callable   $select
+     * @param ?string            $type
+     * @return self The current query builder.
+     */
+    public function union($select, ?string $type = null)
+    {
+        $uniontype = !is_null($type)? new UnionType($type) : null;
+
+        $subquery = $select;
+        if (is_callable($select)) {
+            $subquery = $this->generateSubQuery($select);
+        }
+
+        $this->unions[] = [$uniontype,$subquery];
+        return $this;
+    }
+
+    public function unionAll($select)
+    {
+        return $this->union($select,'all');
     }
 
     /**
