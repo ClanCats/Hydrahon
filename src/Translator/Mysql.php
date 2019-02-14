@@ -42,17 +42,6 @@ class Mysql implements TranslatorInterface
     protected $attributes = [];
 
     /**
-     * Function to escape identifier names (columns and tables)
-     * https://dev.mysql.com/doc/refman/8.0/en/identifiers.html
-     *
-     * @var string
-     */
-    public function escapeIdentifier(string $identifier): string
-    {
-        return '`'.str_replace(['`',"\0"],['``',''],$identifier).'`';
-    }
-
-    /**
      * Translate the given query object and return the results as
      * argument array
      *
@@ -232,6 +221,18 @@ class Mysql implements TranslatorInterface
     }
 
     /**
+     * Function to escape identifier names (columns and tables)
+     * Doubles backticks, removes null bytes
+     * https://dev.mysql.com/doc/refman/8.0/en/identifiers.html
+     *
+     * @var string
+     */
+    public function escapeIdentifier(string $identifier): string
+    {
+        return '`'.str_replace(['`',"\0"],['``',''],$identifier).'`';
+    }
+
+    /**
      * Escape / wrap a string for sql
      *
      * @param string|object                 $string
@@ -304,17 +305,6 @@ class Mysql implements TranslatorInterface
         }
 
         return $buffer . implode(', ', $arguments) . ')';
-    }
-
-    /**
-     * Escape a single string without checking for as and dots
-     *
-     * @param string     $string
-     * @return string
-     */
-    protected function escapeString(string $string): string
-    {
-        return $this->escapeIdentifier($string);
     }
 
     /**
