@@ -575,7 +575,10 @@ class Mysql implements TranslatorInterface
                 $subAttributes = $where[1]->attributes();
 
                 // The parameters get added by the call of compile where
-                $build .= ' ' . $where[0] . ' ( ' . substr($this->translateWhere($subAttributes['wheres']), 7) . ' )';
+                if (!is_null($where[0])) {
+                	$build .= ' ' . $where[0];
+                }
+                $build .= ' ( ' . substr($this->translateWhere($subAttributes['wheres']), 7) . ' )';
 
                 continue;
             }
