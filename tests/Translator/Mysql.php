@@ -322,10 +322,11 @@ class Translator_Mysql_Test extends TranslatorCase
 		});
 
 		// invalid stuff
-		$this->assertQueryTranslation('select * from `phpunit`', array(), function($q) 
-		{
-			return $q->table('phpunit')->select()->limit('ignore');
-		});
+		try {
+			$this->createBuilder()->table('phpunit')->select()->limit('ignore');
+		} catch (\TypeError $e) {
+			$this->assertInstanceOf(\TypeError::class,$e);
+		}
 	}
 
 	/**
