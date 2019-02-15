@@ -297,7 +297,7 @@ class Translator_Mysql_Test extends TranslatorCase
 		});
 
 		//  where null
-		$this->assertQueryTranslation('select * from `phpunit` where `user`.`updated` is NULL', array(), function($q) 
+		$this->assertQueryTranslation('select * from `phpunit` where `user`.`updated` is null', array(), function($q) 
 		{
 			return $q->table('phpunit')->select()
 				->whereNull('user.updated');
