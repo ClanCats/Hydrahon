@@ -139,6 +139,8 @@ class Select extends SelectBase implements FetchableInterface
         $subquery = $select;
         if (is_callable($select)) {
             $subquery = $this->generateSubQuery($select);
+        } else if (!$select instanceof Select) {
+            throw new Exception('Invalid select object supplied of type '. (is_object($select)? get_class($select):gettype($select)) . ' for union');
         }
 
         $this->unions[] = [$uniontype,$subquery];
