@@ -39,18 +39,6 @@ class Mysql implements TranslatorInterface
     protected $attributes = array();
 
     /**
-     * Function to escape identifier names (columns and tables)
-     * Doubles backticks, removes null bytes
-     * https://dev.mysql.com/doc/refman/8.0/en/identifiers.html
-     *
-     * @var string
-     */
-    public function escapeIdentifier($identifier)
-    {
-        return '`'.str_replace(['`',"\0"],['``',''],$identifier).'`';
-    }
-
-    /**
      * Translate the given query object and return the results as
      * argument array
      *
@@ -241,6 +229,18 @@ class Mysql implements TranslatorInterface
         }
 
         return $this->escapeIdentifier($string);
+    }
+
+    /**
+     * Function to escape identifier names (columns and tables)
+     * Doubles backticks, removes null bytes
+     * https://dev.mysql.com/doc/refman/8.0/en/identifiers.html
+     *
+     * @var string
+     */
+    public function escapeIdentifier($identifier)
+    {
+        return '`' . str_replace(['`', "\0"], ['``',''], $identifier) . '`';
     }
 
     /**
