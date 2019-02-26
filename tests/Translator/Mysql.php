@@ -45,6 +45,22 @@ class Translator_Mysql_Test extends TranslatorCase
 	/**
 	 * mysql grammar tests
 	 */
+	public function testTable()
+	{
+		$this->assertQueryTranslation('select * from `phpunit``b`', array(), function($q) 
+		{
+			return $q->table('phpunit`b')->select();
+		});
+
+		$this->assertQueryTranslation('select * from `phpunit` as `foo`', array(), function($q) 
+		{
+			return $q->table('phpunit', 'foo')->select();
+		});
+	}
+
+	/**
+	 * mysql grammar tests
+	 */
 	public function testSelectFields()
 	{
 		$this->assertQueryTranslation('select `id` from `phpunit`', array(), function($q) 
