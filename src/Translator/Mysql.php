@@ -617,7 +617,7 @@ class Mysql implements TranslatorInterface
     {
         $build = '';
         foreach ($unions as $union) {
-            $build .= ' union '.(($union[0] === 'all')? 'all ':'');
+            $build .= ' union '.(!is_null($union[0])? $union[0].' ' : '');
             $build .= '('.$this->translateSubQuery($union[1]).')';
         }
         return $build;
