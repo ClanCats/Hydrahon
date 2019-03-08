@@ -253,7 +253,24 @@ Union all:
 ```php
 // select `id` from `tbl1` union all (select `id` from `tbl3`)
 $q1 = $q->table('tbl2')->select('id');
-$q->table('tbl1')->select('id')->unionall($q1)->execute();
+$q->table('tbl1')->select('id')->unionAll($q1)->execute();
+```
+
+Multiple unions:
+
+```php
+// select * from `tbl1`
+//  union (select * from `tbl2` where `col` > ?)
+//  union (select * from `tbl3` order by `id` desc)
+//  union all (select * from `tbl4` limit 0, 10)
+
+$q1 = $q->table('tbl2')->select()->where('col','>',10);
+$q2 = $q->table('tbl3')->select()->orderBy('id','desc');
+$q3 = $q->table('tbl4')->select()->limit(10);
+$q->table('tbl1')->select()
+    ->union($q1)
+    ->union($q2)
+    ->unionAll($q3)->execute();
 ```
 
 ### Ordering
