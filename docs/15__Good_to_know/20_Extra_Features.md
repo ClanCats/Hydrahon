@@ -15,3 +15,44 @@ Query objects for subselects:
 $select = $q->table('tbl')->select('f1','f2')->orderBy('f1','desc')->where('f2','<>',15);
 $q->table(['t1' => $select])->select()->where('f1','=',3)->execute();
 ```
+
+### Variadic syntax for select fields:
+
+```php
+// select `id`, `name` from `users`
+$q->table('users')->select('id','name')->execute();
+$q->table('users')->select('id,name')->execute();
+$q->table('users')->select(['id','name'])->execute();
+```
+
+### Special values:
+
+Null values:
+
+```php
+// select `field` from `tbl` where `id` is null
+$q->table('tbl')->select('field')->where('id','is',$q->value('null'))->execute();
+```
+
+Default values:
+
+```php
+// insert into `tbl` (`col1`) values (default)
+$q->table('tbl')->insert(['col1' => $q->value('default')])->execute();
+```
+
+### Multiple tables in from clause:
+
+```php
+// select `t1`.`col`, `t2`.`col` from `t1` as `table_1`,`t2` as `table_2`
+$q->table(['t1' => 'table_1', 't2' => 'table_2'])->select('t1.col,t2.col')->execute();
+```
+
+### Force an operand to be escaped as a field:
+
+```php
+// select `col` from `table` where `col` = `id`
+$q->table('table')->select('col')->where('col','=',$q->field('id'))->execute();
+```
+
+
