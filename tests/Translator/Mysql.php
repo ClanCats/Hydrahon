@@ -487,6 +487,63 @@ class Translator_Mysql_Test extends TranslatorCase
 	/**
 	 * mysql grammar tests
 	 */
+	public function testSelectUnions()
+	{
+
+		$this->assertQueryTranslation('select `id` from `tbl1` union (select `id` from `tbl2`)', [], function($q)
+		{
+			$q1 = $q->table('tbl2')->select('id');
+			return $q->table('tbl1')->select('id')->union($q1);
+		});
+
+		$this->assertQueryTranslation('select `id` from `tbl1` union all (select `id` from `tbl2`)', [], function($q)
+		{
+			$q1 = $q->table('tbl2')->select('id');
+			return $q->table('tbl1')->select('id')->unionall($q1);
+		});
+	}
+
+	/**
+	 * mysql grammar tests
+	 */
+	public function testSpecialValues()
+	{
+		$this->assertQueryTranslation('insert into `tbl` (`col1`) values (default)', [], function($q)
+		{
+			return $q->table('tbl')->insert(['col1' => $q->value('default')]);
+		});
+
+		$this->assertQueryTranslation('select `field` from `tbl` where `id` is null', [], function($q)
+		{
+			return $q->table('tbl')->select('field')->where('id','is',$q->value('null'));
+		});
+	}
+
+	/**
+	 * mysql grammar tests
+	 */
+	public function testMultiTableFrom()
+	{
+		$this->assertQueryTranslation('select `t1`.`col`, `t2`.`col` from `t1` as `table_1`,`t2` as `table_2`', [], function($q)
+		{
+			return $q->table(['t1' => 'table_1', 't2' => 'table_2'])->select('t1.col,t2.col');
+		});
+	}
+
+	/**
+	 * mysql grammar tests
+	 */
+	public function testField()
+	{
+		$this->assertQueryTranslation('select `col` from `table` where `col` = `id`', [], function($q)
+		{
+			return $q->table('table')->select('col')->where('col','=',$q->field('id'));
+		});
+	}
+
+	/**
+	 * mysql grammar tests
+	 */
 	public function testInsertSimple()
 	{
 		// simple
