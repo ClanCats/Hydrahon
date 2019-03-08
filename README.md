@@ -238,6 +238,24 @@ Grouping data:
 $people->select()->groupBy('age')->get();
 ```
 
+### Unions
+
+Simple union:
+
+```php
+// select `id` from `tbl1` union (select `id` from `tbl2`)
+$q1 = $q->table('tbl2')->select('id');
+$q->table('tbl1')->select('id')->union($q1)->execute();
+```
+
+Union all:
+
+```php
+// select `id` from `tbl1` union all (select `id` from `tbl3`)
+$q1 = $q->table('tbl2')->select('id');
+$q->table('tbl1')->select('id')->unionall($q1)->execute();
+```
+
 ### Ordering
 
 Ordering data:
