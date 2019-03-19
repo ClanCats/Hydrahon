@@ -30,7 +30,7 @@ $ composer require 'clancats/hydrahon'
 ```
 ## Documentation 💡
 
-The full documentation can be found on [clancats.io](http://clancats.io/hydrahon/master/introduction/getting-started)
+The full documentation can be found on [clancats.io](http://clancats.io/hydrahon/master/)
 
 ## Quick Start (MySQL) ⚡️
 
@@ -124,7 +124,7 @@ update `people` set `age` = 26 where `name` = 'Ray'
 
 Currently, you might think: "Well isn't it much simpler to just write the SQL query? I mean the PHP code is even longer...". 
 
-You have to understand that these are some very very basic examples the Hydrahon query builder starts to shine when things get more complex. However, a "Quick Start" is just the wrong place for complicated stuff, so throw an eye on the [full documentation](http://clancats.io/hydrahon/master/introduction/getting-started).
+You have to understand that these are some very very basic examples the Hydrahon query builder starts to shine when things get more complex. However, a "Quick Start" is just the wrong place for complicated stuff, so throw an eye on the [full documentation](http://clancats.io/hydrahon/master/).
 
 ### Deleting 
 
