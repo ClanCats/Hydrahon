@@ -21,6 +21,9 @@ use ClanCats\Hydrahon\Query\Sql\Drop;
 use ClanCats\Hydrahon\Query\Sql\Truncate;
 use ClanCats\Hydrahon\Query\Sql\Func;
 use ClanCats\Hydrahon\Query\Sql\Exists;
+use ClanCats\Hydrahon\Query\Sql\Field;
+use ClanCats\Hydrahon\Query\Sql\Keyword;
+use ClanCats\Hydrahon\Query\Sql\Keyword\SpecialValue;
 
 class Mysql implements TranslatorInterface
 {
@@ -29,14 +32,14 @@ class Mysql implements TranslatorInterface
      *
      * @var array
      */
-    protected $parameters = array();
+    protected $parameters = [];
 
     /**
      * The current query attributes
-     * 
+     *
      * @param array
      */
-    protected $attributes = array();
+    protected $attributes = [];
 
     /**
      * Translate the given query object and return the results as
@@ -45,7 +48,7 @@ class Mysql implements TranslatorInterface
      * @param ClanCats\Hydrahon\BaseQuery                 $query
      * @return array
      */
-    public function translate(BaseQuery $query)
+    public function translate(BaseQuery $query): array
     {
         // retrive the query attributes
         $this->attributes = $query->attributes();
@@ -96,18 +99,19 @@ class Mysql implements TranslatorInterface
         }
 
         // get the query parameters and reset
-        $queryParameters = $this->parameters; $this->clearParameters();
+        $queryParameters = $this->parameters;
+        $this->clearParameters();
 
-        return array($queryString, $queryParameters);
+        return [$queryString, $queryParameters];
     }
 
     /**
-     * Returns the an attribute value for the given key
-     * 
+     * Returns the attribute value for the given key
+     *
      * @param string                $key
      * @return mixed
      */
-    protected function attr($key)
+    protected function attr(string $key)
     {
         return $this->attributes[$key];
     }
@@ -118,7 +122,7 @@ class Mysql implements TranslatorInterface
      * @param mixed                 $expression
      * @return bool
      */
-    protected function isExpression($expression)
+    protected function isExpression($expression): bool
     {
         return $expression instanceof Expression;
     }
@@ -129,9 +133,29 @@ class Mysql implements TranslatorInterface
      * @param mixed                 $expression
      * @return bool
      */
-    protected function isFunction($function)
+    protected function isFunction($function): bool
     {
         return $function instanceof Func;
+    }
+
+    protected function isKeyword($keyword): bool
+    {
+        return $keyword instanceof Keyword;
+    }
+
+    protected function isSpecialValue($keyword): bool
+    {
+        return $keyword instanceof SpecialValue;
+    }
+
+    protected function isField($field): bool
+    {
+        return $field instanceof Field;
+    }
+
+    protected function isParam($value): bool
+    {
+        return !($value instanceof Expression || $value instanceof Keyword || $value instanceof Func || $value instanceof Field);
     }
 
     /**
@@ -139,9 +163,9 @@ class Mysql implements TranslatorInterface
      *
      * @return void
      */
-    protected function clearParameters()
+    protected function clearParameters(): void
     {
-        $this->parameters = array();
+        $this->parameters = [];
     }
 
     /**
@@ -149,7 +173,7 @@ class Mysql implements TranslatorInterface
      *
      * @return void
      */
-    protected function addParameter($value)
+    protected function addParameter($value): void
     {
         $this->parameters[] = $value;
     }
@@ -160,14 +184,26 @@ class Mysql implements TranslatorInterface
      * @param mixed         $value
      * @return string
      */
-    protected function param($value)
+    protected function param($value): string
     {
-        if (!$this->isExpression($value)) 
-        {
-            $this->addParameter($value); return '?';
+        $this->addParameter($value);
+        return '?';
+    }
+
+    /**
+     * Translate a parameter
+     *
+     * @return string
+     */
+    protected function translateParam($param): string 
+    {
+        if ($this->isParam($param))    {
+            return $this->param($param);
+        } else if ($this->isField($param)) {
+            return $this->escape($param);
         }
 
-        return $value;
+        return $param;
     }
 
     /**
@@ -176,16 +212,28 @@ class Mysql implements TranslatorInterface
      * @param array         $parameters
      * @return array
      */
-    protected function filterParameters($parameters)
+    protected function filterParameters(array $parameters)
     {
-        return array_values(array_filter($parameters, function ($item) 
+        return array_values(array_filter($parameters, function ($item): bool
         {
             return !$this->isExpression($item);
         }));
     }
 
     /**
-     * Escape / wrap an string for sql
+     * Function to escape identifier names (columns and tables)
+     * Doubles backticks, removes null bytes
+     * https://dev.mysql.com/doc/refman/8.0/en/identifiers.html
+     *
+     * @var string
+     */
+    public function escapeIdentifier(string $identifier): string
+    {
+        return '`'.str_replace(['`',"\0"],['``',''],$identifier).'`';
+    }
+
+    /**
+     * Escape / wrap a string for sql
      *
      * @param string|object                 $string
      */
@@ -193,7 +241,7 @@ class Mysql implements TranslatorInterface
     {
         if (is_object($string))
         {
-            if ($this->isExpression($string)) 
+            if ($this->isExpression($string))
             {
                 return $string->value();
             }
@@ -201,14 +249,22 @@ class Mysql implements TranslatorInterface
             {
                 return $this->escapeFunction($string);
             }
+            elseif ($this->isKeyword($string))
+            {
+                return (string)$string;
+            }
+            else if ($this->isField($string))
+            {
+                $string = (string)$string;
+            }
             else
             {
                 throw new Exception('Cannot translate object of class: ' . get_class($string));
             }
         }
-        
+
         // the string might contain an 'as' statement that we wil have to split.
-        if (strpos($string, ' as ') !== false) 
+        if (strpos($string, ' as ') !== false)
         {
             $string = explode(' as ', $string);
 
@@ -216,11 +272,11 @@ class Mysql implements TranslatorInterface
         }
 
         // it also might contain dott seperations we have to split
-        if (strpos($string, '.') !== false) 
+        if (strpos($string, '.') !== false)
         {
             $string = explode('.', $string);
 
-            foreach ($string as $key => $item) 
+            foreach ($string as $key => $item)
             {
                 $string[$key] = $this->escapeIdentifier($item);
             }
@@ -232,20 +288,8 @@ class Mysql implements TranslatorInterface
     }
 
     /**
-     * Function to escape identifier names (columns and tables)
-     * Doubles backticks, removes null bytes
-     * https://dev.mysql.com/doc/refman/8.0/en/identifiers.html
-     *
-     * @var string
-     */
-    public function escapeIdentifier($identifier)
-    {
-        return '`' . str_replace(['`', "\0"], ['``',''], $identifier) . '`';
-    }
-
-    /**
      * Escapes an sql function object
-     * 
+     *
      * @param Func              $function
      * @return string
      */
@@ -269,7 +313,7 @@ class Mysql implements TranslatorInterface
      * @param array         $array
      * @return string
      */
-    protected function escapeList($array)
+    protected function escapeList(array $array): string
     {
         foreach ($array as $key => $item) 
         {
@@ -284,50 +328,44 @@ class Mysql implements TranslatorInterface
      *
      * @return string
      */
-    protected function escapeTable($allowAlias = true)
+    protected function translateTable(bool $allowAlias = true): string
     {
-        $table = $this->attr('table');
-        $database = $this->attr('database');
         $buffer = '';
 
-        if (!is_null($database))
-        {
-            $buffer .= $this->escape($database) . '.';
-        }
+        $table = $this->attr('table');
+        $database = $this->attr('database');
+
+        $dbname = is_null($database)? '' : $this->escape($database).'.';
 
         // when the table is an array we have a table with alias
-        if (is_array($table)) 
-        {
+        if (is_array($table) && !empty($table)) {
             reset($table);
 
-            // the table might be a subselect so check that
-            // first and compile the select if it is one
-            if ($table[key($table)] instanceof Select)
-            {
-                $translator = new static;
+            foreach ($table as $tableref=>$alias) {
+                // the table might be a subselect so check that, first and compile the select if it is one
+                // notice that alias and table reference are inverted if using a subselect
+                if ($alias instanceof Select) {
+                    $subQuery = $this->translateSubQuery($alias);
 
-                // translate the subselect
-                list($subQuery, $subQueryParameters) = $translator->translate($table[key($table)]);
+                    $buffer .= '(' . $subQuery . ') as ' . $this->escape($tableref);
+                } else {
+                    // otherwise continue with normal table
+                    $buffer .= $dbname . $this->escape($tableref);
 
-                // merge the parameters
-                foreach($subQueryParameters as $parameter)
-                {
-                    $this->addParameter($parameter);
+                    if ($allowAlias) {
+                        $buffer .= ' as ' . $this->escape($alias);
+                    }
                 }
 
-                return '(' . $subQuery . ') as ' . $this->escape(key($table));
+                $buffer .= ',';
             }
 
-            // otherwise continue with normal table
-            if ($allowAlias)
-            {
-                $table = key($table) . ' as ' . $table[key($table)];
-            } else {
-                $table = key($table);
-            }
+            $buffer = rtrim($buffer,',');
+        } else {
+            $buffer .= $dbname . $this->escape($table);
         }
 
-        return $buffer . $this->escape($table);    
+        return $buffer;
     }
 
     /**
@@ -340,7 +378,7 @@ class Mysql implements TranslatorInterface
     {
         foreach ($params as $key => $param) 
         {
-            $params[$key] = $this->param($param);
+            $params[$key] = $this->translateParam($param);
         }
 
         return implode(', ', $params);
@@ -355,11 +393,11 @@ class Mysql implements TranslatorInterface
      *
      * @return string
      */
-    protected function translateInsert($key)
+    protected function translateInsert($key): string
     {
         $build = ($this->attr('ignore') ? $key . ' ignore' : $key);
 
-        $build .= ' into ' . $this->escapeTable(false) . ' ';
+        $build .= ' into ' . $this->translateTable(false) . ' ';
 
         if (!$valueCollection = $this->attr('values'))
         {
@@ -386,13 +424,13 @@ class Mysql implements TranslatorInterface
      *
      * @return string
      */
-    protected function translateUpdate()
+    protected function translateUpdate(): string
     {
-        $build = 'update ' . $this->escapeTable() . ' set ';
+        $build = 'update ' . $this->translateTable() . ' set ';
 
         // add the array values.
         foreach ($this->attr('values') as $key => $value) {
-            $build .= $this->escape($key) . ' = ' . $this->param($value) . ', ';
+            $build .= $this->escape($key) . ' = ' . $this->translateParam($value) . ', ';
         }
 
         // cut away the last comma and space
@@ -403,7 +441,7 @@ class Mysql implements TranslatorInterface
         {
             $build .= $this->translateWhere($wheres);
         }
-    
+
         // build offset and limit
         if ($this->attr('limit'))
         {
@@ -418,16 +456,16 @@ class Mysql implements TranslatorInterface
      *
      * @return string
      */
-    protected function translateDelete()
+    protected function translateDelete(): string
     {
-        $build = 'delete from ' . $this->escapeTable(false);
+        $build = 'delete from ' . $this->translateTable(false);
 
         // build the where statements
         if ($wheres = $this->attr('wheres'))
         {
             $build .= $this->translateWhere($wheres);
         }
-    
+
         // build offset and limit
         if ($this->attr('limit'))
         {
@@ -447,20 +485,21 @@ class Mysql implements TranslatorInterface
         // normal or distinct selection?
         $build = ($this->attr('distinct') ? 'select distinct' : 'select') . ' ';
 
-        // build the selected fields 
+        // build the selected fields
         $fields = $this->attr('fields');
 
-        if (!empty($fields)) 
+        if (!empty($fields))
         {
-            foreach ($fields as $key => $field) 
-            {
-                list($column, $alias) = $field;
 
-                if (!is_null($alias)) 
+            foreach ($fields as $key => $field)
+            {
+                [$column, $alias] = $field;
+
+                if (!is_null($alias))
                 {
                     $build .= $this->escape($column) . ' as ' . $this->escape($alias);
                 }
-                else 
+                else
                 {
                     $build .= $this->escape($column);
                 }
@@ -469,14 +508,14 @@ class Mysql implements TranslatorInterface
             }
 
             $build = substr($build, 0, -2);
-        } 
-        else 
+        }
+        else
         {
             $build .= '*';
         }
 
         // append the table
-        $build .= ' from ' . $this->escapeTable();
+        $build .= ' from ' . $this->translateTable();
 
         // build the join statements
         if ($this->attr('joins'))
@@ -496,12 +535,18 @@ class Mysql implements TranslatorInterface
             $build .= $this->translateGroupBy();
         }
 
+        // build the unions
+        if ($unions = $this->attr('unions'))
+        {
+            $build .= $this->translateUnions($unions);
+        }
+
         // build the order statement
         if ($this->attr('orders'))
         {
             $build .= $this->translateOrderBy();
         }
-    
+
         // build offset and limit
         if ($this->attr('limit') || $this->attr('offset'))
         {
@@ -512,25 +557,28 @@ class Mysql implements TranslatorInterface
     }
 
     /**
-     * Translate the where statements into sql 
-     * 
+     * Translate the where statements into sql
+     *
      * @param array                 $wheres
      * @return string
      */
-    protected function translateWhere($wheres)
+    protected function translateWhere(array $wheres): string
     {
-        $build = '';
+        $build = ' where';
 
-        foreach ($wheres as $where) 
+        foreach ($wheres as $where)
         {
             // to make nested wheres possible you can pass an closure
             // wich will create a new query where you can add your nested wheres
-            if (!isset($where[2]) && isset( $where[1] ) && $where[1] instanceof BaseQuery ) 
+            if (!isset($where[2]) && isset($where[1]) && $where[1] instanceof BaseQuery)
             {
                 $subAttributes = $where[1]->attributes();
 
                 // The parameters get added by the call of compile where
-                $build .= ' ' . $where[0] . ' ( ' . substr($this->translateWhere($subAttributes['wheres']), 7) . ' )';
+                if (!is_null($where[0])) {
+                	$build .= ' ' . $where[0];
+                }
+                $build .= ' ( ' . substr($this->translateWhere($subAttributes['wheres']), 7) . ' )';
 
                 continue;
             }
@@ -541,11 +589,16 @@ class Mysql implements TranslatorInterface
             {
                 $where[3] = '(' . $this->parameterize($where[3]) . ')';
             } else {
-                $where[3] = $this->param($where[3]);
+                $where[3] = $this->translateParam($where[3]);
             }
 
-            // we always need to escepe where 1 wich referrs to the key
+            // we always need to escape where[1], which refers to the key
             $where[1] = $this->escape($where[1]);
+
+            // first where has no where type
+            if (is_null($where[0])) {
+                unset($where[0]);
+            }
 
             // implode the beauty
             $build .= ' ' . implode(' ', $where);
@@ -555,21 +608,62 @@ class Mysql implements TranslatorInterface
     }
 
     /**
+     * Translate the unions into sub selects
+     *
+     * @param array                 $unions
+     * @return string
+     */
+    protected function translateUnions($unions): string
+    {
+        $build = '';
+        foreach ($unions as $union) {
+            $build .= ' union '.(!is_null($union[0])? $union[0].' ' : '');
+            $build .= '('.$this->translateSubQuery($union[1]).')';
+        }
+        return $build;
+    }
+
+    /**
+     * Translate the subquery
+     *
+     * @param array                 $select
+     * @return string
+     */
+    protected function translateSubQuery($select): string
+    {
+        $translator = new static;
+
+        // translate the subselect
+        [$subQuery, $subQueryParameters] = $translator->translate($select);
+
+        // merge the parameters
+        foreach($subQueryParameters as $parameter)
+        {
+            $this->addParameter($parameter);
+        }
+
+        return $subQuery;
+    }
+
+    /**
      * Build the sql join statements
      *
      * @return string
      */
-    protected function translateJoins()
+    protected function translateJoins(): string
     {
         $build = '';
 
-        foreach ($this->attr('joins') as $join) 
+        foreach ($this->attr('joins') as $join)
         {
             // get the type and table
-            $type = $join[0]; $table = $join[1];
+            $type = $join[0];
+            $table = $join[1];
 
-            // table 
-            if (is_array($table)) 
+            $tablequery = '';
+
+            // table
+            if (is_array($table))
             {
                 reset($table);
 
@@ -577,27 +671,19 @@ class Mysql implements TranslatorInterface
                 // first and compile the select if it is one
                 if ($table[key($table)] instanceof Select)
                 {
-                    $translator = new static;
-
-                    // translate the subselect
-                    list($subQuery, $subQueryParameters) = $translator->translate($table[key($table)]);
-
-                    // merge the parameters
-                    foreach($subQueryParameters as $parameter)
-                    {
-                        $this->addParameter($parameter);
-                    }
-
-                    return '(' . $subQuery . ') as ' . $this->escape(key($table));
+                    $subQuery = $this->translateSubQuery($table[key($table)]);
+                    $tablequery = '(' . $subQuery . ') as ' . $this->escape(key($table));
                 }
+            } else {
+                $tablequery = $this->escape($table);
             }
 
             // start the join
-            $build .= ' ' . $type . ' join ' . $this->escape($table) . ' on ';
+            $build .= ' ' . $type . ' join ' . $tablequery . ' on ';
 
             // to make nested join conditions possible you can pass an closure
             // wich will create a new query where you can add your nested ons and wheres
-            if (!isset($join[3]) && isset($join[2]) && $join[2] instanceof BaseQuery) 
+            if (!isset($join[3]) && isset($join[2]) && $join[2] instanceof BaseQuery)
             {
                 $subAttributes = $join[2]->attributes();
 
@@ -624,7 +710,7 @@ class Mysql implements TranslatorInterface
             else
             {
                 // othewise default join
-                list($type, $table, $localKey, $operator, $referenceKey) = $join;
+                [$type, $table, $localKey, $operator, $referenceKey] = $join;
                 $build .= $this->escape($localKey) . ' ' . $operator . ' ' . $this->escape($referenceKey);
             }
         }
@@ -637,21 +723,21 @@ class Mysql implements TranslatorInterface
      *
      * @return string
      */
-    protected function translateOrderBy()
+    protected function translateOrderBy(): string
     {
-        $build = " order by ";
+        $build = ' order by ';
 
-        foreach ($this->attr('orders') as $column => $direction) 
+        foreach ($this->attr('orders') as $column => $direction)
         {
-            // in case a raw value is given we had to 
+            // in case a raw value is given we had to
             // put the column / raw value an direction inside another
             // array because we cannot make objects to array keys.
             if (is_array($direction))
             {
                 // This only works in php 7 the php 5 fix is below 
-                //list($column, $direction) = $direction;
-                $column = $direction[0];
-                $direction = $direction[1];
+                [$column, $direction] = $direction;
+                //$column = $direction[0];
+                //$direction = $direction[1];
             }
 
             $build .= $this->escape($column) . ' ' . $direction . ', ';
@@ -665,7 +751,7 @@ class Mysql implements TranslatorInterface
      *
      * @return string
      */
-    protected function translateGroupBy()
+    protected function translateGroupBy(): string
     {
         return ' group by ' . $this->escapeList($this->attr('groups'));
     }
@@ -676,7 +762,7 @@ class Mysql implements TranslatorInterface
      * @param Query         $query
      * @return string
      */
-    protected function translateLimitWithOffset()
+    protected function translateLimitWithOffset(): string
     {
         return ' limit ' . ((int) ($this->attr('offset'))) . ', ' . ((int) ($this->attr('limit')));
     }
@@ -687,7 +773,7 @@ class Mysql implements TranslatorInterface
      * @param Query         $query
      * @return string
      */
-    protected function translateLimit()
+    protected function translateLimit(): string
     {
         return ' limit ' . ((int) $this->attr('limit'));
     }
@@ -697,9 +783,9 @@ class Mysql implements TranslatorInterface
      *
      * @return string
      */
-    protected function translateDrop()
+    protected function translateDrop(): string
     {
-        return 'drop table ' . $this->escapeTable() .';';
+        return 'drop table ' . $this->translateTable() .';';
     }
 
     /**
@@ -707,9 +793,9 @@ class Mysql implements TranslatorInterface
      *
      * @return string
      */
-    protected function translateTruncate()
+    protected function translateTruncate(): string
     {
-        return 'truncate table ' . $this->escapeTable() .';';
+        return 'truncate table ' . $this->translateTable() .';';
     }
 
     /**
@@ -717,19 +803,9 @@ class Mysql implements TranslatorInterface
      *
      * @return string
      */
-    protected function translateExists()
+    protected function translateExists(): string
     {
-        $translator = new static;
-
-        // translate the subselect
-        list($subQuery, $subQueryParameters) = $translator->translate($this->attr('select'));
-
-        // merge the parameters
-        foreach($subQueryParameters as $parameter)
-        {
-            $this->addParameter($parameter);
-        }
-
+        $subQuery = $this->translateSubQuery($this->attr('select'));
         return 'select exists(' . $subQuery .') as `exists`';
     }
 }

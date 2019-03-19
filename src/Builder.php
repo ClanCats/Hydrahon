@@ -46,7 +46,7 @@ class Builder
             throw new Exception('Cannot overwrite Hydrahon grammar.');
         }
 
-        static::$grammar[$grammarKey] = array($queryBuilder, $queryTranslator);
+        static::$grammar[$grammarKey] = [$queryBuilder, $queryTranslator];
     }
 
     /**
@@ -79,29 +79,24 @@ class Builder
      * @param callable              $executionCallback
      * @return void
      */
-    public function __construct($grammarKey, $executionCallback)
+    public function __construct(string $grammarKey, callable $executionCallback)
     {
         if (!isset(static::$grammar[$grammarKey])) 
         {
             throw new Exception('There is no Hydrahon grammar "' . $grammarKey . '" registered.');
         }
 
-        if (!is_callable($executionCallback)) 
-        {
-            throw new Exception('Invalid query exec callback given.');
-        }
-
         $this->executionCallback = $executionCallback;
 
         // prepare the current grammar
-        list($queryBuilderClass, $translatorClass) = static::$grammar[$grammarKey];
+        [$queryBuilderClass, $translatorClass] = static::$grammar[$grammarKey];
 
         // create the query builder specific instances
         $this->queryTranslator = new $translatorClass;
         $this->queryBuilder = new $queryBuilderClass;
 
         // assign the result fetcher
-        $this->queryBuilder->setResultFetcher(array($this, 'executeQuery'));
+        $this->queryBuilder->setResultFetcher([$this, 'executeQuery']);
 
         // check if the translator is valid
         if (!$this->queryTranslator instanceof TranslatorInterface)
@@ -122,9 +117,9 @@ class Builder
      * @param string                        $table
      * @return ClanCats\Hydrahon\BaseQuery
      */
-    public function __call($method, $arguments)
+    public function __call(string $method, array $arguments)
     {
-        return call_user_func_array(array($this->queryBuilder, $method), $arguments);
+        return [$this->queryBuilder,$method](...$arguments);
     }
 
     /**
@@ -133,7 +128,7 @@ class Builder
      * @param BaseQuery                 $query
      * @return array
      */
-    public function translateQuery(BaseQuery $query)
+    public function translateQuery(BaseQuery $query): array
     {
         return $this->queryTranslator->translate($query);
     }
@@ -146,6 +141,6 @@ class Builder
      */
     public function executeQuery(BaseQuery $query)
     {
-        return call_user_func_array($this->executionCallback, array_merge(array($query), $this->translateQuery($query)));
+        return ($this->executionCallback)($query,...$this->translateQuery($query));
     }
 }

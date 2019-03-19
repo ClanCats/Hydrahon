@@ -21,7 +21,7 @@ class Func
 	 * 
 	 * @param array
 	 */
-	protected $arguments = array();
+	protected $arguments = [];
 	
 	/**
 	 * The constructor that assigns our value
@@ -30,10 +30,8 @@ class Func
 	 * @param ...
 	 * @return void
 	 */
-	public function __construct()
+	public function __construct(...$arguments)
 	{
-		$arguments = func_get_args();
-
 		// throw an error when no arguments are given
 		if (empty($arguments))
 		{
@@ -52,7 +50,7 @@ class Func
 	 * 
 	 * @return string 
 	 */
-	public function name()
+	public function name(): string
 	{
 		return $this->name;
 	}
@@ -62,7 +60,7 @@ class Func
 	 * 
 	 * @return string 
 	 */
-	public function arguments()
+	public function arguments(): array
 	{
 		return $this->arguments;
 	}

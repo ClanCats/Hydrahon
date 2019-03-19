@@ -29,7 +29,7 @@ class Exists extends BaseQuery implements FetchableInterface
      * @param Select 				$select
      * @return void
      */
-    public function setSelect(Select $select)
+    public function setSelect(Select $select): void
     {
     	$this->select = $select;
     }

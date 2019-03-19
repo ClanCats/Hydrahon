@@ -12,6 +12,8 @@ namespace ClanCats\Hydrahon\Query\Sql;
  * @copyright       2015 Mario Döring
  */
 
+use ClanCats\Hydrahon\Query\Sql\Keyword\{ConditionBinOp,BinOp,SpecialValue};
+
 class SelectBase extends Base
 { 
     /**
@@ -19,7 +21,7 @@ class SelectBase extends Base
      *
      * @var array
      */
-    protected $wheres = array();
+    protected $wheres = [];
 
     /**
      * the query offset
@@ -36,19 +38,29 @@ class SelectBase extends Base
     protected $limit = null;
 
     /**
+     * Function to check if sub queries have been generated correctly, to avoid translation errors
+     *
+     * @return bool
+     */
+    protected function isValid(): bool
+    {
+        return !empty($this->wheres);
+    }
+
+    /**
      * Returns an string argument as parsed array if possible
      * 
      * @param string                $argument
      * @return array
      */
-    protected function stringArgumentToArray($argument)
+    protected function stringArgumentToArray(string $argument): array
     {
         if ( strpos($argument, ',') !== false )
         {
             return array_map('trim', explode(',', $argument));
         }
 
-        return array($argument);
+        return [$argument];
     }
 
     /**
@@ -56,9 +68,10 @@ class SelectBase extends Base
      * 
      * @return self The current query builder.
      */
-    public function resetWheres()
+    public function resetWheres(): self
     {
-        $this->wheres = array(); return $this;
+        $this->wheres = [];
+        return $this;
     }
 
     /**
@@ -66,9 +79,10 @@ class SelectBase extends Base
      * 
      * @return self The current query builder.
      */
-    public function resetLimit()
+    public function resetLimit(): self
     {
-        $this->limit = null; return $this;
+        $this->limit = null;
+        return $this;
     }
 
     /**
@@ -78,7 +92,8 @@ class SelectBase extends Base
      */
     public function resetOffset()
     {
-        $this->offset = null; return $this;
+        $this->offset = null;
+        return $this;
     }
 
     /**
@@ -95,27 +110,22 @@ class SelectBase extends Base
      *
      * @return self The current query builder.
      */
-    public function where($column, $param1 = null, $param2 = null, $type = 'and')
+    public function where($column, $param1 = null, $param2 = null, string $type = 'and'): self
     {
-        // check if the where type is valid
-        if ($type !== 'and' && $type !== 'or' && $type !== 'where' )
-        {
-            throw new Exception('Invalid where type "'.$type.'"');
-        }
-
         // if this is the first where element we are going to change
         // the where type to 'where'
-        if (empty($this->wheres)) 
-        {
-            $type = 'where';
-        }
-        elseif($type === 'where')
-        {
-             $type = 'and';
+        if (!empty($this->wheres)) {
+            if ($type === 'where') {
+                $type = 'and';
+            }
+            // check if the where type is valid
+            $wheretype = new ConditionBinOp($type);
+        } else {
+            $wheretype = null;
         }
 
         // when column is an array we assume to make a bulk and where.
-        if (is_array($column)) 
+        if (is_array($column))
         {
             $subquery = new SelectBase;
             foreach ($column as $key => $val) 
@@ -123,28 +133,28 @@ class SelectBase extends Base
                 $subquery->where($key, $val, null, $type);
             }
 
-            $this->wheres[] = array($type, $subquery); return $this;
+            $this->wheres[] = [$wheretype, $subquery];
+            return $this;
         }
 
         // to make nested wheres possible you can pass an closure
-        // wich will create a new query where you can add your nested wheres
-        if (is_object($column) && ($column instanceof \Closure)) 
-        {
-            // create new query object
-            $subquery = new SelectBase;
+        // which will create a new query where you can add your nested wheres
+        if (is_object($column) && ($column instanceof \Closure)) {
+            $subquery = $this->generateSubQuery($column, new SelectBase);
 
-            // run the closure callback on the sub query
-            call_user_func_array($column, array( &$subquery ));
- 
-            $this->wheres[] = array($type, $subquery); return $this;
+            $this->wheres[] = [$wheretype, $subquery];
+            return $this;
         }
 
         // when param2 is null we replace param2 with param one as the
         // value holder and make param1 to the = operator.
-        if (is_null($param2)) 
+        if (is_null($param2))
         {
-            $param2 = $param1; $param1 = '=';
+            $param2 = $param1;
+            $param1 = '=';
         }
+
+        $operator = new BinOp($param1);
 
         // if the param2 is an array we filter it. Im no more sure why
         // but it's there since 4 years so i think i had a reason.
@@ -155,8 +165,7 @@ class SelectBase extends Base
             $param2 = array_unique($param2);
         }
 
-        $this->wheres[] = array($type, $column, $param1, $param2);
-
+        $this->wheres[] = [$wheretype, $column, $operator, $param2];
         return $this;
     }
 
@@ -171,7 +180,7 @@ class SelectBase extends Base
      *
      * @return self The current query builder.
      */
-    public function orWhere($column, $param1 = null, $param2 = null)
+    public function orWhere($column, $param1 = null, $param2 = null): self
     {
         return $this->where($column, $param1, $param2, 'or');
     }
@@ -187,7 +196,7 @@ class SelectBase extends Base
      *
      * @return self The current query builder.
      */
-    public function andWhere($column, $param1 = null, $param2 = null)
+    public function andWhere($column, $param1 = null, $param2 = null): self
     {
         return $this->where($column, $param1, $param2, 'and');
     }
@@ -201,10 +210,10 @@ class SelectBase extends Base
      * @param array                     $options
      * @return self The current query builder.
      */
-    public function whereIn($column, array $options = array())
+    public function whereIn($column, array $options = []): self
     {
         // when the options are empty we skip
-        if ( empty( $options ) )
+        if (empty($options))
         {
             return $this;
         }
@@ -220,9 +229,9 @@ class SelectBase extends Base
      * @param string                    $column
      * @return self The current query builder.
      */
-    public function whereNull($column)
+    public function whereNull($column): self
     {
-        return $this->where($column, 'is', $this->raw('NULL'));
+        return $this->where($column, 'is', new SpecialValue('NULL'));
     }
 
      /**
@@ -233,9 +242,9 @@ class SelectBase extends Base
      * @param string                    $column
      * @return self The current query builder.
      */
-    public function whereNotNull($column)
+    public function whereNotNull($column): self
     {
-        return $this->where($column, 'is not', $this->raw('NULL'));
+        return $this->where($column, 'is not', new SpecialValue('NULL'));
     }
 
     /**
@@ -246,9 +255,9 @@ class SelectBase extends Base
      * @param string                    $column
      * @return self The current query builder.
      */
-    public function orWhereNull($column)
+    public function orWhereNull($column): self
     {
-        return $this->orWhere($column, 'is', $this->raw('NULL'));
+        return $this->orWhere($column, 'is', new SpecialValue('NULL'));
     }
 
     /**
@@ -259,9 +268,9 @@ class SelectBase extends Base
      * @param string                    $column
      * @return self The current query builder.
      */
-    public function orWhereNotNull($column)
+    public function orNotNull($column): self
     {
-        return $this->orWhere($column, 'is not', $this->raw('NULL'));
+        return $this->orWhere($column, 'is not', new SpecialValue('NULL'));
     }
 
     /**
@@ -277,14 +286,14 @@ class SelectBase extends Base
      * @param int           $limit2
      * @return self The current query builder.
      */
-    public function limit($limit, $limit2 = null)
+    public function limit(?int $limit, ?int $limit2 = null): self
     {
         if (!is_null($limit2)) 
         {
-            $this->offset = (int) $limit;
-            $this->limit = (int) $limit2;
+            $this->offset = $limit;
+            $this->limit = $limit2;
         } else {
-            $this->limit = (int) $limit;
+            $this->limit = $limit;
         }
 
         return $this;
@@ -296,9 +305,10 @@ class SelectBase extends Base
      * @param int               $offset
      * @return self The current query builder.
      */
-    public function offset($offset)
+    public function offset(int $offset): self
     {
-        $this->offset = (int) $offset; return $this;
+        $this->offset = $offset;
+        return $this;
     }
 
     /**
@@ -308,15 +318,15 @@ class SelectBase extends Base
      * @param int         $size
      * @return self The current query builder.
      */
-    public function page($page, $size = 25)
+    public function page(int $page, int $size = 25): self
     {
-        if (($page = (int) $page) < 0) 
+        if ($page < 0)
         {
             $page = 0;
         }
 
-        $this->limit = (int) $size;
-        $this->offset = (int) $size * $page;
+        $this->limit = $size;
+        $this->offset = $size * $page;
 
         return $this;
     }

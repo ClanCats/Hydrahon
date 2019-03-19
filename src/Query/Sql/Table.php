@@ -19,9 +19,10 @@ class Table extends Base
      * @param string|array                              $fields
      * @return Select
      */
-    public function select($fields = null)
+    public function select(...$fields): Select
     {
-        $query = new Select($this); return $query->fields($fields);
+        $query = new Select($this);
+        return $query->fields(count($fields)==1 ? $fields[key($fields)] : $fields);
     }
 
     /**
@@ -32,9 +33,10 @@ class Table extends Base
      * @param array                                     $values
      * @return Insert
      */
-    public function insert(array $values = array())
+    public function insert(array $values = []): Insert
     {
-        $query = new Insert($this); return $query->values($values);
+        $query = new Insert($this);
+        return $query->values($values);
     }
 
     /**
@@ -45,7 +47,7 @@ class Table extends Base
      * @param array                                     $values
      * @return Insert
      */
-    public function replace(array $values = array())
+    public function replace(array $values = []): Replace
     {
         $query = new Replace($this); return $query->values($values);
     }
@@ -58,9 +60,10 @@ class Table extends Base
      * @param array                                  $values
      * @return Update
      */
-    public function update(array $values = array())
+    public function update(array $values = []): Update
     {
-        $query = new Update($this); return $query->set($values);
+        $query = new Update($this);
+        return $query->set($values);
     }
 
     /**
@@ -70,7 +73,7 @@ class Table extends Base
      *
      * @return Delete
      */
-    public function delete()
+    public function delete(): Delete
     {
         return new Delete($this);
     }
@@ -82,7 +85,7 @@ class Table extends Base
      *
      * @return Drop
      */
-    public function drop()
+    public function drop(): Drop
     {
         return new Drop($this);
     }
@@ -94,7 +97,7 @@ class Table extends Base
      *
      * @return Truncate
      */
-    public function truncate()
+    public function truncate(): Truncate
     {
         return new Truncate($this);
     }

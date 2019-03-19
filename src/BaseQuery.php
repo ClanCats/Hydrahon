@@ -2,7 +2,7 @@
 
 /**
  * Base query object
- ** 
+ **
  * @package         Hydrahon
  * @copyright       2015 Mario Döring
  */
@@ -10,23 +10,23 @@
 use ClanCats\Hydrahon\Query\Expression;
 
 class BaseQuery
-{   
+{
     /**
      * Query builder callback macros
-     * 
+     *
      * @var array
      */
-    protected $macros = array();
+    protected $macros = [];
 
     /**
      * Query flags
      * These allow you to store data inside the query object.
      * This data has no influence on the generated query string or parameters directly.
      * But allow you to use the query a state mashine.
-     *  
+     *
      * @var array
      */
-    protected $flags = array();
+    protected $flags = [];
 
     /**
      * The callback where we fetch the results from
@@ -51,15 +51,15 @@ class BaseQuery
 
     /**
      * Inherit property values from parent query
-     * 
+     *
      * @param BaseQuery             $parent
      * @return void
      */
-    protected function inheritFromParent(BaseQuery $parent)
+    protected function inheritFromParent(BaseQuery $parent) : void
     {
         $this->macros = $parent->macros;
         $this->flags = $parent->flags;
-        $this->resultFetcher = $parent->resultFetcher;   
+        $this->resultFetcher = $parent->resultFetcher;
     }
 
     /**
@@ -68,7 +68,7 @@ class BaseQuery
      * @param callable              $resultFetcher
      * @return void
      */
-    public function setResultFetcher($resultFetcher = null)
+    public function setResultFetcher(callable $resultFetcher = null) : void
     {
         $this->resultFetcher = $resultFetcher;
     }
@@ -80,7 +80,7 @@ class BaseQuery
      * @param mixed             $value
      * @return void
      */
-    final public function setFlag($key, $value)
+    final public function setFlag(string $key, $value): void
     {
         $this->flags[$key] = $value;
     }
@@ -92,7 +92,7 @@ class BaseQuery
      * @param mixed             $default
      * @return void
      */
-    final public function getFlag($key, $default = null)
+    final public function getFlag(string $key, $default = null)
     {
         if (!isset($this->flags[$key])) {
             return $default;
@@ -103,96 +103,89 @@ class BaseQuery
 
     /**
      * Register a macro on the current query object
-     * 
+     *
      * @param string                $method
      * @param callable             $callback
      * @return void
      */
-    final public function macro($method, $callback)
+    final public function macro(string $method, callable $callback): void
     {
         $this->macros[$method] = $callback;
     }
 
     /**
-     * Allow macro calls 
-     * 
-     * @param stirng                $name
+     * Allow macro calls
+     *
+     * @param string                $name
      * @param array                 $arguments
      * @return mixed
-     */ 
-    public function __call($name, $arguments) 
+     */
+    public function __call(string $name, array $arguments): self
     {
         if (!isset($this->macros[$name]))
         {
             throw new \BadMethodCallException('There is no macro or method with the name "'.$name.'" registered.');
         }
 
-        call_user_func_array($this->macros[$name], array_merge(array(&$this), $arguments)); return $this;
+        ($this->macros[$name])($this,...$arguments);
+        return $this;
     }
 
     /**
      * Pass the own query to a callback
-     * 
+     *
      * @param callable              $callback
      * @return void
      */
-    public function call($callback)
+    public function call(callable $callback): self
     {
         if (!is_callable($callback))
         {
             throw new Exception('Invalid query callback given.');
         }
 
-        call_user_func_array($callback, array(&$this));
-
+        $callback($this);
         return $this;
     }
 
     /**
      * Creates a new raw db expression instance
-     * 
+     *
      * @param string                $expression
      * @return ClanCats\Hydrahon\Query\Expression
      */
-    final public function raw($expression)
+    final public function raw(string $expression): Expression
     {
         return new Expression($expression);
-    } 
+    }
 
     /**
-     * Returns all avaialbe attribute data 
+     * Returns all available attribute data
      * The result fetcher callback is excluded
-     * 
+     *
      * @return array
      */
-    final public function attributes()
+    final public function attributes(): array
     {
-        $excluded = array('resultFetcher', 'macros');
-        $attributes = get_object_vars($this);
-
-        foreach ($excluded as $key) 
-        {
-            if (isset($attributes[$key])) { unset($attributes[$key]); }
-        }
-
-        return $attributes;
+        $excluded = ['resultFetcher', 'macros'];
+        return array_diff_key(get_object_vars($this),array_flip($excluded));
     }
 
     /**
      * Overwrite the query attributes
-     * 
-     * Jesuz only use this if you really really know what your are doing 
+     *
+     * Jesuz only use this if you really really know what your are doing
      * otherwise you might break stuff add sql injection and all other bad stuff..
-     * 
+     *
      * @return array
      */
-    final public function overwriteAttributes($attributes)
+    final public function overwriteAttributes(array $attributes): array
     {
         foreach($attributes as $key => $attribute)
         {
             if (isset($this->{$key}))
             {
-                $this->{$key} = $attribute;
+                $this->{$key} = $attribute;   
             }
         }
 
@@ -211,12 +204,12 @@ class BaseQuery
             throw new Exception('Cannot execute result fetcher callbacks without inital assignment.');
         }
 
-        return call_user_func_array($this->resultFetcher, array(&$this));
+        return ($this->resultFetcher)($this);
     }
 
     /**
      * Public alias of executeResultFetcher
-     * 
+     *
      * @return mixed
      */
     public function execute()

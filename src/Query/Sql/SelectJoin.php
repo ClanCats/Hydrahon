@@ -10,6 +10,7 @@ namespace ClanCats\Hydrahon\Query\Sql;
  */
 
 use ClanCats\Hydrahon\Query\Expression;
+use ClanCats\Hydrahon\Query\Sql\Keyword\{ConditionBinOp,BinOp};
 
 class SelectJoin extends SelectBase
 {
@@ -18,14 +19,24 @@ class SelectJoin extends SelectBase
      *
      * @var array
      */
-    protected $ons = array();
+    protected $ons = [];
 
     /**
      * The query where statements
      *
      * @var array
      */
-    protected $wheres = array();
+    protected $wheres = [];
+
+    /**
+     * Function to check if sub queries have been generated correctly, to avoid translation errors
+     *
+     * @return bool
+     */
+    protected function isValid(): bool
+    {
+        return !empty($this->ons);
+    }
 
     /**
      * Add an on condition to the join object
@@ -36,9 +47,13 @@ class SelectJoin extends SelectBase
      * 
      * @return self
      */
-    public function on($localKey, $operator, $referenceKey, $type = 'and')
+    public function on($localKey, string $operator, $referenceKey, string $type = 'and'): self
     {
-        $this->ons[] = array($type, $localKey, $operator, $referenceKey); return $this;
+        $ontype = new ConditionBinOp($type);
+        $comparison = new BinOp($operator);
+
+        $this->ons[] = [$ontype, $localKey, $comparison, $referenceKey];
+        return $this;
     }
 
     /**
@@ -52,7 +67,8 @@ class SelectJoin extends SelectBase
      */
     public function orOn($localKey, $operator, $referenceKey)
     {
-        $this->on($localKey, $operator, $referenceKey, 'or'); return $this;
+        $this->on($localKey, $operator, $referenceKey, 'or');
+        return $this;
     }
 
      /**
@@ -64,8 +80,9 @@ class SelectJoin extends SelectBase
      * 
      * @return self
      */
-    public function andOn($localKey, $operator, $referenceKey)
+    public function andOn($localKey, $operator, $referenceKey): self
     {
-        $this->on($localKey, $operator, $referenceKey, 'and'); return $this;
+        $this->on($localKey, $operator, $referenceKey, 'and');
+        return $this;
     }
 }
