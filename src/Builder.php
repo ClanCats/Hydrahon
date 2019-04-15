@@ -1,4 +1,6 @@
-<?php namespace ClanCats\Hydrahon;
+<?php 
+
+namespace ClanCats\Hydrahon;
 
 /**
  * Query Builder manager

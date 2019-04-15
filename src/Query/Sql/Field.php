@@ -1,4 +1,6 @@
-<?php namespace ClanCats\Hydrahon\Query\Sql;
+<?php 
+
+namespace ClanCats\Hydrahon\Query\Sql;
 
 class Field
 {

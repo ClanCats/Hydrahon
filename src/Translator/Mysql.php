@@ -1,4 +1,6 @@
-<?php namespace ClanCats\Hydrahon\Translator;
+<?php 
+
+namespace ClanCats\Hydrahon\Translator;
 
 /**
  * Mysql query translator
