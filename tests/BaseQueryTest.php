@@ -1,4 +1,6 @@
-<?php namespace ClanCats\Hydrahon\Test;
+<?php 
+
+namespace ClanCats\Hydrahon\Test;
 /**
  * Hydrahon base query test 
  ** 
