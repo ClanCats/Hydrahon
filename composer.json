@@ -1,6 +1,6 @@
 {
     "name": "clancats/hydrahon",
-    "description": "Fast and simple Query Builder without extra bacon, written in PHP.",
+    "description": "Fast & standalone PHP MySQL Query Builder library.",
     "keywords": [
         "query",
         "builder",
@@ -20,7 +20,7 @@
         "php": ">=5.4.0"
     },
     "require-dev": {
-        "phpunit/phpunit" : "4.*"
+        "phpunit/phpunit" : "6.*"
     },
     "autoload": {
         "psr-4": { "ClanCats\\Hydrahon\\": "src/" }
