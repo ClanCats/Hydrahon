@@ -8,7 +8,7 @@ namespace ClanCats\Hydrahon\Query\Sql;
  * Allows building queries like "SELECT EXISTS(select * from showtimes) as hasShows"
  **
  * @package         Hydrahon
- * @copyright       2015 Mario Döring
+ * @copyright       2015-2019 Mario Döring
  */
 
 use ClanCats\Hydrahon\BaseQuery;
