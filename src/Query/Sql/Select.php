@@ -90,6 +90,7 @@ class Select extends SelectBase implements FetchableInterface
         $query->distinct = $this->distinct;
         $query->orders = $this->orders;
         $query->groups = $this->groups;
+        $query->havings = $this->havings;
         $query->joins = $this->joins;
         $query->groupResults = $this->groupResults;
         $query->forwardKey = $this->forwardKey;

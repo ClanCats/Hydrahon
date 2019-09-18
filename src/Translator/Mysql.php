@@ -503,6 +503,12 @@ class Mysql implements TranslatorInterface
             $build .= $this->translateGroupBy();
         }
 
+        // build the having statements
+        if ($havings = $this->attr('havings'))
+        {
+            $build .= $this->translateHaving($havings);
+        }
+
         // build the order statement
         if ($this->attr('orders'))
         {
@@ -522,9 +528,11 @@ class Mysql implements TranslatorInterface
      * Translate the where statements into sql 
      * 
      * @param array                 $wheres
+     * @param string                $attribute make nested queries inside $wheres to be built using certain attribute
+     *                                  This arg is used to make the "translateHaving" method work (DRY).
      * @return string
      */
-    protected function translateWhere($wheres)
+    protected function translateWhere($wheres, $attribute = 'wheres')
     {
         $build = '';
 
@@ -536,8 +544,14 @@ class Mysql implements TranslatorInterface
             {
                 $subAttributes = $where[1]->attributes();
 
+                if ($attribute === 'wheres') {
+                    $subWhere = substr($this->translateWhere($subAttributes['wheres']), 7);
+                } else {
+                    $subWhere = substr($this->translateWhere($subAttributes['havings'], 'havings'), 8);
+                }
+
                 // The parameters get added by the call of compile where
-                $build .= ' ' . $where[0] . ' ( ' . substr($this->translateWhere($subAttributes['wheres']), 7) . ' )';
+                $build .= ' ' . $where[0] . ' ( ' . $subWhere . ' )';
 
                 continue;
             }
@@ -559,6 +573,17 @@ class Mysql implements TranslatorInterface
         }
 
         return $build;
+    }
+
+    /**
+     * Translate the having statements into sql
+     * 
+     * @param array                 $havings
+     * @return string
+     */
+    protected function translateHaving($havings)
+    {
+        return $this->translateWhere($havings, 'havings');
     }
 
     /**
