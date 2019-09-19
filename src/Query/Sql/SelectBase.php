@@ -204,7 +204,7 @@ class SelectBase extends Base
     public function whereIn($column, array $options = array())
     {
         // when the options are empty we skip
-        if ( empty( $options ) )
+        if (empty($options))
         {
             return $this;
         }
@@ -224,7 +224,7 @@ class SelectBase extends Base
     public function whereNotIn($column, array $options = array())
     {
         // when the options are empty we skip
-        if ( empty( $options ) )
+        if (empty($options))
         {
             return $this;
         }
