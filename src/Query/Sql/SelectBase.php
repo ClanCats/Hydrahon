@@ -22,13 +22,6 @@ class SelectBase extends Base
     protected $wheres = array();
 
     /**
-     * The query having statements
-     * 
-     * @var array
-     */
-    protected $havings = array();
-
-    /**
      * the query offset
      *
      * @var int
@@ -148,9 +141,9 @@ class SelectBase extends Base
      */
     protected function parseConditional($column, $param1 = null, $param2 = null, $type) {
         // check if the type is valid
-        if (!in_array($type, $validTypes = ['and', 'or', 'where', 'having']))
+        if (!in_array($type, array('and', 'or', 'where', 'having')))
         {
-            throw new Exception('Invalid condition type "'.$type.'", must be one of the following: ' . implode(', ', $validTypes));
+            throw new Exception('Invalid condition type "'.$type.'", must be one of the following: and, or, where, having');
         }
 
         // to make nested wheres/havings possible you can pass an closure
@@ -317,176 +310,6 @@ class SelectBase extends Base
     public function resetHavings()
     {
         $this->havings = array(); return $this;
-    }
-
-    /**
-     * Create a having statement
-     *
-     *     ->having('name', 'ladina')
-     *     ->having('age', '>', 18)
-     *     ->having('name', 'in', array('charles', 'john', 'jeffry'))
-     *
-     * @param string            $column The SQL column
-     * @param mixed             $param1 Operator or value depending if $param2 isset.
-     * @param mixed             $param2 The value if $param1 is an opartor.
-     * @param string            $type the where type ( and, or )
-     *
-     * @return self The current query builder.
-     */
-    public function having($column, $param1 = null, $param2 = null, $type = 'and')
-    {
-        // if this is the first having element we are going to change
-        // the having type to 'having'
-        if (empty($this->havings)) 
-        {
-            $type = 'having';
-        }
-        elseif($type === 'having')
-        {
-            $type = 'and';
-        }
-
-        // when column is an array we assume to make a bulk and having.
-        if (is_array($column)) 
-        {
-            $subquery = new static;
-            foreach ($column as $key => $val) 
-            {
-                $subquery->having($key, $val, null, $type);
-            }
-
-            $this->havings[] = array($type, $subquery);
-            return $this;
-        }
-
-        // Add the condition
-        $this->havings[] = $this->parseConditional($column, $param1, $param2, $type);
-
-        return $this;
-    }
-
-    /**
-     * Create an or having statement
-     *
-     * This is the same as the normal having just with a fixed type
-     *
-     * @param string        $column            The SQL column
-     * @param mixed        $param1
-     * @param mixed        $param2
-     *
-     * @return self The current query builder.
-     */
-    public function orHaving($column, $param1 = null, $param2 = null)
-    {
-        return $this->having($column, $param1, $param2, 'or');
-    }
-
-    /**
-     * Create an and having statement
-     *
-     * This is the same as the normal having just with a fixed type
-     *
-     * @param string        $column            The SQL column
-     * @param mixed        $param1
-     * @param mixed        $param2
-     *
-     * @return self The current query builder.
-     */
-    public function andHaving($column, $param1 = null, $param2 = null)
-    {
-        return $this->having($column, $param1, $param2, 'and');
-    }
-
-    /**
-     * Creates a having in statement
-     * 
-     *     ->havingIn('id', [42, 38, 12])
-     * 
-     * @param string                    $column
-     * @param array                     $options
-     * @return self The current query builder.
-     */
-    public function havingIn($column, array $options = array())
-    {
-        // when the options are empty we skip
-        if ( empty( $options ) )
-        {
-            return $this;
-        }
-
-        return $this->having($column, 'in', $options);
-    }
-
-    /**
-     * Creates a having in statement
-     * 
-     *     ->havingIn('id', [42, 38, 12])
-     * 
-     * @param string                    $column
-     * @param array                     $options
-     * @return self The current query builder.
-     */
-    public function havingNotIn($column, array $options = array())
-    {
-        // when the options are empty we skip
-        if ( empty( $options ) )
-        {
-            return $this;
-        }
-
-        return $this->having($column, 'not in', $options);
-    }
-
-    /**
-     * Creates a having something is null statement
-     * 
-     *     ->havingNull('modified_at')
-     * 
-     * @param string                    $column
-     * @return self The current query builder.
-     */
-    public function havingNull($column)
-    {
-        return $this->having($column, 'is', $this->raw('NULL'));
-    }
-
-     /**
-     * Creates a having something is not null statement
-     * 
-     *     ->havingNotNull('created_at')
-     * 
-     * @param string                    $column
-     * @return self The current query builder.
-     */
-    public function havingNotNull($column)
-    {
-        return $this->having($column, 'is not', $this->raw('NULL'));
-    }
-
-    /**
-     * Creates a or having something is null statement
-     * 
-     *     ->orHavingNull('modified_at')
-     * 
-     * @param string                    $column
-     * @return self The current query builder.
-     */
-    public function orHavingNull($column)
-    {
-        return $this->orHaving($column, 'is', $this->raw('NULL'));
-    }
-
-    /**
-     * Creates a or having something is not null statement
-     * 
-     *     ->orHavingNotNull('modified_at')
-     * 
-     * @param string                    $column
-     * @return self The current query builder.
-     */
-    public function orHavingNotNull($column)
-    {
-        return $this->orHaving($column, 'is not', $this->raw('NULL'));
     }
 
     /**
