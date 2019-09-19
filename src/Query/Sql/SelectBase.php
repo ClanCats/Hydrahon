@@ -97,53 +97,46 @@ class SelectBase extends Base
      */
     public function where($column, $param1 = null, $param2 = null, $type = 'and')
     {
-        // if this is the first where element we are going to change
-        // the where type to 'where'
-        if (empty($this->wheres)) 
+        return $this->appendConditional('where', $column, $param1, $param2, $type);
+    }
+
+    /**
+     * Parse the parameters that make a conditional statement
+     * 
+     * @param string            $statement The type of conditional statement ( where, having )
+     * @param string|array      $column The SQL column or an array of column => value pairs.
+     * @param mixed             $param1
+     * @param mixed             $param2
+     * @param string            $type
+     */
+    protected function appendConditional($statement, $column, $param1 = null, $param2 = null, $type = 'and')
+    {
+        // check if the type is valid
+        if (!in_array($type, array('and', 'or', 'where', 'having')))
         {
-            $type = 'where';
+            throw new Exception('Invalid condition type "'.$type.'", must be one of the following: and, or, where, having');
         }
-        elseif($type === 'where')
-        {
+
+        /** @var array $array A reference to the object's property that hold the conditions ($this->wheres, $this->havings) */
+        $array = &$this->{$statement . 's'};
+
+        if (empty($array)) {
+            $type = $statement;
+        } elseif ($type === $statement) {
             $type = 'and';
         }
 
-        // when column is an array we assume to make a bulk and where.
+        // when column is an array, add conditions in bulk
         if (is_array($column)) 
         {
             $subquery = new static;
             foreach ($column as $key => $val) 
             {
-                $subquery->where($key, $val, null, $type);
+                $subquery->appendConditional($statement, $key, $val, null, $type);
             }
 
-            $this->wheres[] = array($type, $subquery);
+            $array[] = array($type, $subquery);
             return $this;
-        }
-
-        // Add the condition
-        $this->wheres[] = $this->parseConditional($column, $param1, $param2, $type);
-
-        return $this;
-    }
-
-    /**
-     * Parse the parameters for methods that build conditional statements ( where, having )
-     * 
-     * @param string            $column The SQL column
-     * @param mixed             $param1
-     * @param mixed             $param2
-     * @param string            $type
-     * @return array            An array that might look like one of this examples:
-     *                           [ 'where', 'column', '=', 'value' ]
-     *                           [ 'or', 'column', 'in', array(1,2,3) ]
-     *                           [ 'and', <SelectBase object> ]
-     */
-    protected function parseConditional($column, $param1 = null, $param2 = null, $type) {
-        // check if the type is valid
-        if (!in_array($type, array('and', 'or', 'where', 'having')))
-        {
-            throw new Exception('Invalid condition type "'.$type.'", must be one of the following: and, or, where, having');
         }
 
         // to make nested wheres/havings possible you can pass an closure
@@ -156,7 +149,8 @@ class SelectBase extends Base
             // run the closure callback on the sub query
             call_user_func_array($column, array( &$subquery ));
  
-            return array($type, $subquery);
+            $array[] = array($type, $subquery);
+            return $this;
         }
 
         // when param2 is null we replace param2 with param one as the
@@ -175,7 +169,8 @@ class SelectBase extends Base
             $param2 = array_unique($param2);
         }
 
-        return array($type, $column, $param1, $param2);
+        $array[] = array($type, $column, $param1, $param2);
+        return $this;
     }
 
     /**

@@ -343,34 +343,7 @@ class Select extends SelectBase implements FetchableInterface
      */
     public function having($column, $param1 = null, $param2 = null, $type = 'and')
     {
-        // if this is the first having element we are going to change
-        // the having type to 'having'
-        if (empty($this->havings)) 
-        {
-            $type = 'having';
-        }
-        elseif($type === 'having')
-        {
-            $type = 'and';
-        }
-
-        // when column is an array we assume to make a bulk and having.
-        if (is_array($column)) 
-        {
-            $subquery = new static;
-            foreach ($column as $key => $val) 
-            {
-                $subquery->having($key, $val, null, $type);
-            }
-
-            $this->havings[] = array($type, $subquery);
-            return $this;
-        }
-
-        // Add the condition
-        $this->havings[] = $this->parseConditional($column, $param1, $param2, $type);
-
-        return $this;
+        return $this->appendConditional('having', $column, $param1, $param2, $type);
     }
 
     /**
