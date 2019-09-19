@@ -61,6 +61,16 @@ class Translator_Mysql_Test extends TranslatorCase
 		{
 			return $q->table('db.phpunit', 'foo')->select();
 		});
+
+		$this->assertQueryTranslation('select * from `db`.`phpunit` as `foo`', array(), function($q) 
+		{
+			return $q->table('db.phpunit as foo')->select();
+		});
+
+		$this->assertQueryTranslation('select * from `phpunit` as `foo`', array(), function($q) 
+		{
+			return $q->table('phpunit as foo')->select();
+		});
 	}
 
 	/**
