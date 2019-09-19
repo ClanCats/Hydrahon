@@ -65,8 +65,18 @@ class Select extends SelectBase implements FetchableInterface
     protected $forwardKey = false;
 
     /**
+     * Function to check if sub queries have been generated correctly, to avoid translation errors
+     *
+     * @return bool
+     */
+    protected function isValid()
+    {
+        return (bool)!empty($this->table);
+    }
+
+    /**
      * Inherit property values from parent query
-     * 
+     *
      * @param BaseQuery             $parent
      * @return void
      */
@@ -340,18 +350,22 @@ class Select extends SelectBase implements FetchableInterface
             throw new Exception('Invalid join type "'.$type.'" given. Available type: inner, left, right, outer');
         }
 
-        // to make nested joins possible you can pass an closure
-        // wich will create a new query where you can add your nested wheres
-        if (is_object($localKey) && ($localKey instanceof \Closure)) 
-        {
-            // create new query object
-            $subquery = new SelectJoin;
+        if (is_object($localKey)) {
+            // to make nested joins possible you can pass a closure
+            // which will create a new query where you can add your nested wheres
+            if ($localKey instanceof \Closure) {
+                $localKey = $this->generateSubQuery($localKey, new SelectJoin);
+            }
+            // also allow using a manually constructed SelectJoin object
+            if ($localKey instanceof SelectJoin) {
+                $this->joins[] = [$type, $table, $localKey];
+                return $this;
+            }
+            // continue, because localKey could be an expression object
+        }
 
-            // run the closure callback on the sub query
-            call_user_func_array($localKey, array(&$subquery));
-    
-            // add the join
-            $this->joins[] = array($type, $table, $subquery); return $this;
+        if (is_null($operator) || is_null($referenceKey)) {
+            throw new Exception('When using non nested join conditions, an operator and a reference key is required.');
         }
 
         $this->joins[] = array($type, $table, $localKey, $operator, $referenceKey); return $this;
