@@ -31,10 +31,10 @@ matrix:
     dist: xenial
     php: 7.3
   - os: linux
-    dist: xenial
+    dist: bionic
     php: 7.4
   - os: linux
-    dist: xenial
+    dist: bionic
     php: nightly
  allow_failures:
   - php: hhvm
