@@ -297,15 +297,6 @@ class SelectBase extends Base
         return $this->orWhere($column, 'is not', $this->raw('NULL'));
     }
 
-    /**
-     * Will reset the current selects having conditions
-     * 
-     * @return self The current query builder.
-     */
-    public function resetHavings()
-    {
-        $this->havings = array(); return $this;
-    }
 
     /**
      * Set the query limit

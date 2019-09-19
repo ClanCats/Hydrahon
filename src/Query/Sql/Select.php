@@ -471,6 +471,16 @@ class Select extends SelectBase implements FetchableInterface
     }
 
     /**
+     * Will reset the current selects having conditions
+     * 
+     * @return self The current query builder.
+     */
+    public function resetHavings()
+    {
+        $this->havings = array(); return $this;
+    }
+
+    /**
      * Add a join statement to the current query
      * 
      *     ->join('avatars', 'users.id', '=', 'avatars.user_id')
