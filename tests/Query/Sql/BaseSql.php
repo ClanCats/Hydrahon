@@ -135,6 +135,18 @@ class Query_Sql_BaseSql_Test extends Query_QueryCase
 	}
 
 	/**
+	 * BaseSql::whereNotIn
+	 */
+	public function testWhereNotIn()
+	{
+		$this->assertAttributes($this->createQuery()->whereNotIn('id', array(42, 31, 21)), array(
+			'wheres' => array(
+				array('where', 'id', 'not in', array(42, 31, 21))
+			)
+		));
+	}
+
+	/**
 	 * BaseSql::where
 	 * 
 	 * @expectedException ClanCats\Hydrahon\Query\Sql\Exception

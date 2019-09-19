@@ -45,6 +45,27 @@ class Translator_Mysql_Test extends TranslatorCase
 	/**
 	 * mysql grammar tests
 	 */
+	public function testTable()
+	{
+		$this->assertQueryTranslation('select * from `phpunit``b`', array(), function($q) 
+		{
+			return $q->table('phpunit`b')->select();
+		});
+
+		$this->assertQueryTranslation('select * from `phpunit` as `foo`', array(), function($q) 
+		{
+			return $q->table('phpunit', 'foo')->select();
+		});
+
+		$this->assertQueryTranslation('select * from `db`.`phpunit` as `foo`', array(), function($q) 
+		{
+			return $q->table('db.phpunit', 'foo')->select();
+		});
+	}
+
+	/**
+	 * mysql grammar tests
+	 */
 	public function testSelectFields()
 	{
 		$this->assertQueryTranslation('select `id` from `phpunit`', array(), function($q) 
@@ -294,6 +315,13 @@ class Translator_Mysql_Test extends TranslatorCase
 		{
 			return $q->table('phpunit')->select()
 				->whereIn('id', array(23, 213, 53));
+		});
+
+		// where not in
+		$this->assertQueryTranslation('select * from `phpunit` where `id` not in (?, ?, ?)', array(23, 213, 53), function($q)
+		{
+			return $q->table('phpunit')->select()
+				->whereNotIn('id', array(23, 213, 53));
 		});
 
 		//  where null

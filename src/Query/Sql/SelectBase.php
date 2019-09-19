@@ -229,12 +229,32 @@ class SelectBase extends Base
     public function whereIn($column, array $options = array())
     {
         // when the options are empty we skip
-        if ( empty( $options ) )
+        if (empty($options))
         {
             return $this;
         }
 
         return $this->where($column, 'in', $options);
+    }
+
+    /**
+     * Creates a where not in statement
+     * 
+     *     ->whereIn('id', [42, 38, 12])
+     * 
+     * @param string                    $column
+     * @param array                     $options
+     * @return self The current query builder.
+     */
+    public function whereNotIn($column, array $options = array())
+    {
+        // when the options are empty we skip
+        if (empty($options))
+        {
+            return $this;
+        }
+
+        return $this->where($column, 'not in', $options);
     }
 
     /**

@@ -126,7 +126,14 @@ You can also use the the `whereIn` method which will do exactly the same thing.
 $people->select()->whereIn('city', ['Zürich', 'Bern', 'Basel'])->get(); 
 ```
 
-> Warning: When passing an empty array to `whereIn` the condition will be simply skipped.
+Or 
+
+```php
+// SQL: select * from `people` where `city` not in (Zürich, Bern, Basel)
+$people->select()->whereNotIn('city', ['Zürich', 'Bern', 'Basel'])->get(); 
+```
+
+> Warning: When passing an empty array to `whereIn` or `whereNotIn` the condition will be simply skipped.
 
 [~ PHPDoc](/src/Query/Sql/SelectBase.php#where) 
 

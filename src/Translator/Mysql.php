@@ -39,14 +39,6 @@ class Mysql implements TranslatorInterface
     protected $attributes = array();
 
     /**
-     * The escape pattern escapes table column names etc.
-     * select * from `table`...
-     *
-     * @var string
-     */
-    protected $escapePattern = '`%s`';
-
-    /**
      * Translate the given query object and return the results as
      * argument array
      *
@@ -230,13 +222,25 @@ class Mysql implements TranslatorInterface
 
             foreach ($string as $key => $item) 
             {
-                $string[$key] = $this->escapeString($item);
+                $string[$key] = $this->escapeIdentifier($item);
             }
 
             return implode('.', $string);
         }
 
-        return $this->escapeString($string);
+        return $this->escapeIdentifier($string);
+    }
+
+    /**
+     * Function to escape identifier names (columns and tables)
+     * Doubles backticks, removes null bytes
+     * https://dev.mysql.com/doc/refman/8.0/en/identifiers.html
+     *
+     * @var string
+     */
+    public function escapeIdentifier($identifier)
+    {
+        return '`' . str_replace(array('`', "\0"), array('``',''), $identifier) . '`';
     }
 
     /**
@@ -257,17 +261,6 @@ class Mysql implements TranslatorInterface
         }
 
         return $buffer . implode(', ', $arguments) . ')';
-    }
-
-    /**
-     * Escape a single string without checking for as and dots
-     *
-     * @param string     $string
-     * @return string
-     */
-    protected function escapeString($string)
-    {
-        return sprintf($this->escapePattern, $string);
     }
 
     /**

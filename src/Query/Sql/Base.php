@@ -113,6 +113,10 @@ class Base extends BaseQuery
             $tableParts = explode(' as ', $table);
             $table = array($tableParts[0] => $tableParts[1]);
         }
+        elseif(is_string($table) && (!is_null($alias)))
+        {
+            $table = array($table => $alias);
+        }
 
         // assing the result
         $this->database = $database;
