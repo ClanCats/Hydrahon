@@ -26,7 +26,7 @@ Hydrahon only generates a query **string** and an array of parameters. On its ow
 Hydrahon follows `PSR-4` autoloading and can be installed using composer:
 
 ```
-$ composer require 'clancats/hydrahon'
+$ composer require clancats/hydrahon
 ```
 ## Documentation 💡
 
