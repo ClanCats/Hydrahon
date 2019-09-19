@@ -118,7 +118,7 @@ class SelectBase extends Base
         // when column is an array we assume to make a bulk and where.
         if (is_array($column)) 
         {
-            $subquery = new SelectBase;
+            $subquery = new static;
             foreach ($column as $key => $val) 
             {
                 $subquery->where($key, $val, null, $type);
@@ -158,7 +158,7 @@ class SelectBase extends Base
         if (is_object($column) && ($column instanceof \Closure)) 
         {
             // create new query object
-            $subquery = new SelectBase;
+            $subquery = new static;
 
             // run the closure callback on the sub query
             call_user_func_array($column, array( &$subquery ));
@@ -349,7 +349,7 @@ class SelectBase extends Base
         // when column is an array we assume to make a bulk and having.
         if (is_array($column)) 
         {
-            $subquery = new SelectBase;
+            $subquery = new static;
             foreach ($column as $key => $val) 
             {
                 $subquery->having($key, $val, null, $type);
