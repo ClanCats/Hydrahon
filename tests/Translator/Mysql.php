@@ -317,6 +317,13 @@ class Translator_Mysql_Test extends TranslatorCase
 				->whereIn('id', array(23, 213, 53));
 		});
 
+		// where not in
+		$this->assertQueryTranslation('select * from `phpunit` where `id` not in (?, ?, ?)', array(23, 213, 53), function($q)
+		{
+			return $q->table('phpunit')->select()
+				->whereNotIn('id', array(23, 213, 53));
+		});
+
 		//  where null
 		$this->assertQueryTranslation('select * from `phpunit` where `user`.`updated` is NULL', array(), function($q) 
 		{
