@@ -115,7 +115,7 @@ class Base extends BaseQuery
         }
         elseif(is_string($table) && (!is_null($alias)))
         {
-            $table = [$table => $alias];
+            $table = array($table => $alias);
         }
 
         // assing the result
