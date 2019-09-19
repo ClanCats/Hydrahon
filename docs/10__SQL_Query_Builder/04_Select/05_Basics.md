@@ -278,6 +278,7 @@ Like with `wheres`, you can concatenate, apply sub-queries and more using simila
 - `orHaving`
 - `andHaving`
 - `havingIn`
+- `havingNotIn`
 - `havingNull`
 - `havingNotNull`
 - `orHavingNull`

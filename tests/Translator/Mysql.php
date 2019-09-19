@@ -396,6 +396,13 @@ class Translator_Mysql_Test extends TranslatorCase
 				->havingIn('id', array(23, 213, 53));
 		});
 
+		// having not in
+		$this->assertQueryTranslation('select * from `phpunit` having `id` not in (?, ?, ?)', array(23, 213, 53), function($q)
+		{
+			return $q->table('phpunit')->select()
+				->havingNotIn('id', array(23, 213, 53));
+		});
+
 		//  having null
 		$this->assertQueryTranslation('select * from `phpunit` having `user`.`updated` is NULL', array(), function($q) 
 		{

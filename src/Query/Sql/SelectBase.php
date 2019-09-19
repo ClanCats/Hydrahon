@@ -309,7 +309,7 @@ class SelectBase extends Base
         return $this->orWhere($column, 'is not', $this->raw('NULL'));
     }
 
-        /**
+    /**
      * Will reset the current selects having conditions
      * 
      * @return self The current query builder.
@@ -415,6 +415,26 @@ class SelectBase extends Base
         }
 
         return $this->having($column, 'in', $options);
+    }
+
+    /**
+     * Creates a having in statement
+     * 
+     *     ->havingIn('id', [42, 38, 12])
+     * 
+     * @param string                    $column
+     * @param array                     $options
+     * @return self The current query builder.
+     */
+    public function havingNotIn($column, array $options = array())
+    {
+        // when the options are empty we skip
+        if ( empty( $options ) )
+        {
+            return $this;
+        }
+
+        return $this->having($column, 'not in', $options);
     }
 
     /**
