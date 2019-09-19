@@ -1,7 +1,5 @@
 language: php
 
-dist: trusty
-
 before_script:
  - composer self-update
  - composer install --prefer-source --no-interaction --dev
