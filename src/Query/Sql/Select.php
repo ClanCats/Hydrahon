@@ -334,7 +334,7 @@ class Select extends SelectBase implements FetchableInterface
      *     ->having('age', '>', 18)
      *     ->having('name', 'in', array('charles', 'john', 'jeffry'))
      *
-     * @param string            $column The SQL column
+     * @param string|array      $column The SQL column or an array of column => value pairs.
      * @param mixed             $param1 Operator or value depending if $param2 isset.
      * @param mixed             $param2 The value if $param1 is an opartor.
      * @param string            $type the where type ( and, or )
