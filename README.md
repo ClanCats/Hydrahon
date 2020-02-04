@@ -178,17 +178,19 @@ Notice that we use `->get()` to actually fetch data, while we used `->execute()`
 
 ### Where conditions
 
-For the next few examples, I just assume a larger dataset so that the queries make sense.
+For the next few examples, lets assume a larger dataset so that the queries make sense.
 
 Chaining where conditions:
 
 ```php
-// select * from `people` where `name` like 'J%' and `age` > 21
+// select * from `people` where `age` = 21 and `name` like 'J%'
 $people->select()
+    ->where('age', 21)
     ->where('name', 'like', 'J%')
-    ->where('age', '>', 21)
     ->get();
 ```
+
+Notice how omitting the operator in the first condition `->where('age', 21)` makes Hydrahon default to `=`.
 
 By default all where conditions are defined with the `and` operator.
 
@@ -201,6 +203,12 @@ $people->select()
     ->orWhere('name', 'like', 'I%')
     ->get();
 ```
+
+Please check the [relevant section in the full documentation](https://clancats.io/hydrahon/master/sql-query-builder/select/basics) for more where-functions, like
+- `whereIn()`
+- `whereNotIn()`
+- `whereNull()`
+- `whereNotNull()`
 
 #### Where scopes
 
