@@ -62,9 +62,20 @@ if ($iNeedTheAge) {
 }
 ```
 
-### Conditions / Aggregations / Raw
+The `addField` method allows you to define an alias with the optional second parameter:
 
-Because by default the columns will be quoted, you need to specify when you want to make some kind of raw operation or call an aggregation function.
+```php
+// SQL: select `name`, `complicated_age_column` as `age` from `people`
+$query = $people->select('name');
+
+if ($iNeedTheAge) {
+    $query->addField('complicated_age_column', 'age');
+}
+```
+
+### Raw Expressions
+
+Because by default the columns will be quoted, you need to specify when you want to make some kind of raw operation or call an aggregation function. Use the `ClanCats\Hydrahon\Query\Expression` to define a literal, raw expression for use in the generated query.
 
 ```php
 // SQL: select `name`, deleted_at is not null as is_deleted from `people`
@@ -76,7 +87,7 @@ $people->select([
 ])->get();
 ```
 
-This also works using the `addField` method. There you can pass the alias name a second argument.
+This also works using the `addField` method. There you can pass the alias as the optional second argument:
 
 ```php
 // SQL: select `name`, deleted_at is not null as `is_deleted` from `people`
@@ -87,7 +98,18 @@ $people->select('name')
     ->get();
 ```
 
-Using the `Func` object you can still make use of Hydrahons escaping functionality.
+### Functions
+
+Using the `ClanCats\Hydrahon\Query\Sql\Func` object you can call native database functions:
+
+```php
+// SQL: select NOW() from `people`
+use ClanCats\Hydrahon\Query\Sql\Func as F;
+
+$people->select(new F('NOW'))->get();
+```
+
+The first parameter to the constructor of `ClanCats\Hydrahon\Query\Sql\Func` is the name of the function. All other parameters will be used (and escaped) as parameters of this function:
 
 ```php
 // SQL: select count(`people`.`group_id`) from `people`
@@ -95,6 +117,26 @@ use ClanCats\Hydrahon\Query\Sql\Func as F;
 
 $people->select(new F('count', 'people.group_id'))->get();
 ```
+
+If you want to alias the result, use `addField` with its second parameter as documented above:
+
+```php
+// SQL: select `name`, count(`people`.`group_id`) as `group` from `people`
+use ClanCats\Hydrahon\Query\Sql\Func as F;
+
+$people->select('name')
+    ->addField(new F('count', 'people.group_id'), 'group')
+    ->get();
+```
+
+For the most common functions, Hydrahon features `addField`-shortcuts:
+- `addFieldCount($field, $alias = null)` as a shortcut for `addField(new Func('count', $field), $alias)`
+- `addFieldMax($field, $alias = null)` as a shortcut for `addField(new Func('max', $field), $alias)`
+- `addFieldMin($field, $alias = null)` as a shortcut for `addField(new Func('min', $field), $alias)`
+- `addFieldSum($field, $alias = null)` as a shortcut for `addField(new Func('sum', $field), $alias)`
+- `addFieldAvg($field, $alias = null)` as a shortcut for `addField(new Func('avg', $field), $alias)`
+- `addFieldRound($field, $decimals = 0, $alias = null)` as a shortcut for `addField(new Func('round', $field, new Expression((int)$decimals)), $alias)`
+        
 
 ## Where condition
 
