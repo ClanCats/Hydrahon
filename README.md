@@ -38,12 +38,12 @@ Hydrahon is designed to be a pretty generic query builder. So for this quick sta
 
 ### Create a builder
 
-Again this library is **not** built as a full database abstraction or ORM, it is only and will always be only a query builder. This means we need to implement the database connection and fetching by ourselves.
+Again this library is **not** built as a full database abstraction or ORM, it is only and will always be only a query builder. This means we need to implement the database connection and fetching by ourselves. The Hydrahon constructor therefore requires you to provide a callback function that does this, and returns the results.
 
 In this example, we are going to use [PDO](http://php.net/manual/en/book.pdo.php)
 
 ```php 
-$connection = new PDO('mysql:host=localhost;dbname=my_database', 'username', 'password');
+$connection = new PDO('mysql:host=localhost;dbname=my_database;charset=utf8', 'username', 'password');
 
 // create a new mysql query builder
 $h = new \ClanCats\Hydrahon\Builder('mysql', function($query, $queryString, $queryParameters) use($connection)
@@ -52,6 +52,7 @@ $h = new \ClanCats\Hydrahon\Builder('mysql', function($query, $queryString, $que
     $statement->execute($queryParameters);
 
     // when the query is fetchable return all results and let hydrahon do the rest
+    // (there's no results to be fetched for an update-query for example)
     if ($query instanceof \ClanCats\Hydrahon\Query\Sql\FetchableInterface)
     {
         return $statement->fetchAll(\PDO::FETCH_ASSOC);
