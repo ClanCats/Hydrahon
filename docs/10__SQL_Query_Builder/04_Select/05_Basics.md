@@ -12,7 +12,7 @@ $people = $h->table('people');
 
 ## Columns / fields
 
-By default, Hydrahon will simply select all fields using the `*` asterisks.
+By default, Hydrahon will simply select all fields using the `*` asterisk.
 
 ```php
 // SQL: select * from `people`
@@ -98,7 +98,7 @@ $people->select(new F('count', 'people.group_id'))->get();
 
 ## Where condition
 
-A where **equals** condition is build like this:
+A where **equals** condition is built like this:
 
 ```php
 // SQL: select * from `people` where `name` = James
@@ -119,7 +119,7 @@ Passing an array as value will comma separate the values:
 $people->select()->where('city', 'in', ['Zürich', 'Bern', 'Basel'])->get(); 
 ```
 
-You can also use the the `whereIn` method which will do exactly the same thing.
+You can also use the `whereIn` method which will do exactly the same thing.
 
 ```php
 // SQL: select * from `people` where `city` in (Zürich, Bern, Basel)
@@ -149,7 +149,7 @@ $people->select()
     ->get(); 
 ```
 
-use can use the methods `orWhere` and `andWhere` to specify which logical operator you want to use.
+you can use the methods `orWhere` and `andWhere` to specify which logical operator you want to use.
 
 ```php
 // SQL: select * from `people` where `city` = Zürich or `city` = Bern
@@ -175,7 +175,7 @@ Or reverse where it is not nothing.
 $people->select()->whereNotNull('deleted_at')->get();
 ```
 
-And of course, this also works with a or operator between the conditions.
+And of course, this also works with an or operator between the conditions.
 
 ```php
 // SQL: 
@@ -214,7 +214,7 @@ $people->select()
     ->get();
 ```
 
-There is no layer limit so you can but Closure into Closure.
+There is no layer limit so you can put Closure into Closure.
 
 ```php
 // SQL: select * from `people` where `is_admin` = 1 or ( ( `is_active` = 1 and `is_moderator` = 1 ) or ( `is_active` = 1 and `deleted_at` is NULL and `email_confirmed_at` is not NULL ) )
@@ -368,7 +368,7 @@ $people->select()->page(5, 50)->get();
 
 ## Distinct select
 
-To make your select distinct simply call the method corresponding method.
+To make your select distinct simply call the corresponding method.
 
 ```php
 // SQL: select distinct * from `people`

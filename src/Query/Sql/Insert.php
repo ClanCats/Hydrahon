@@ -60,7 +60,7 @@ class Insert extends Base
             return $this;
         }
         
-        // check if the the passed array is a collection.
+        // check if the passed array is a collection.
         // because we want to be able to insert bulk values.
         if (!is_array(reset( $values )))
         {

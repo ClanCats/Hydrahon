@@ -149,7 +149,7 @@ class SelectBase extends Base
         // if the param2 is an array we filter it. Im no more sure why
         // but it's there since 4 years so i think i had a reason.
         // edit: Found it out, when param2 is an array we probably 
-        // have an "in" or "between" statement which has no need for dublicates.
+        // have an "in" or "between" statement which has no need for duplicates.
         if (is_array($param2)) 
         {
             $param2 = array_unique($param2);
@@ -322,7 +322,7 @@ class SelectBase extends Base
     }
 
     /**
-     * Create an query limit based on a page and a page size
+     * Create a query limit based on a page and a page size
      *
      * @param int        $page
      * @param int         $size

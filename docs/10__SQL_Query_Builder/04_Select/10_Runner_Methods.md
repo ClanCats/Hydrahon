@@ -150,13 +150,13 @@ $highestScore = $h->table('game.ranking')->select()->max('score');
 
 [~ PHPDoc](/src/Query/Sql/Select.php#max)
 
-### Avarage 
+### Average 
 
 Selects using the MySQL `avg` function and returns the result.
 
 ```php
 // SQL: select avg(`age`) from `people` limit 0, 1
-$avarageAge = $people->select()->avg('age');
+$averageAge = $people->select()->avg('age');
 ```
 
 [~ PHPDoc](/src/Query/Sql/Select.php#avg)

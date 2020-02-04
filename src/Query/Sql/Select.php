@@ -661,7 +661,7 @@ class Select extends SelectBase implements FetchableInterface
     }
 
     /**
-     * Helper for the SQL avarage aggregation.
+     * Helper for the SQL average aggregation.
      *
      * @param string            $field
      * @return int

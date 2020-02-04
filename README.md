@@ -97,7 +97,7 @@ Will execute the following query:
 insert into `people` (`age`, `name`) values (?, ?), (?, ?), (?, ?)
 ```
 
-As you can see the Hydrahon automatically escapes the parameters. 
+As you can see Hydrahon automatically escapes the parameters. 
 
 However, because we are humans that get confused when there are hundreds of thousands of questions marks, I will continue to always display the runnable query:
 
