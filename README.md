@@ -61,7 +61,7 @@ $h = new \ClanCats\Hydrahon\Builder('mysql', function($query, $queryString, $que
 
 And we are ready and set. The variable `$h` contains now a MySQL query builder.
 
-### Setup a simple table:
+### Setup a simple table
 
 To continue with our examples, we need to create a simple MySQL table.
 
@@ -74,7 +74,7 @@ CREATE TABLE `people` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 ```
 
-### Inserting:
+### Inserting
 
 Currently, we do not have any data, to fix this let's go and insert some.
 
@@ -105,7 +105,7 @@ However, because we are humans that get confused when there are hundreds of thou
 insert into `people` (`age`, `name`) values (25, Ray), (30, John), (22, Ali)
 ```
 
-### Updating:
+### Updating
 
 Ah snap, time runs so fast, "Ray" is actually already 26.
 
