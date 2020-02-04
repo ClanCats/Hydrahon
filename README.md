@@ -174,6 +174,8 @@ Result:
 ]
 ```
 
+Notice that we use `->get()` to actually fetch data, while we used `->execute()` for our previous queries (updates, inserts and deletes). See the full documentation for more information about the Hydrahon [runners methods](https://clancats.io/hydrahon/master/sql-query-builder/select/runner-methods).
+
 ### Where conditions
 
 For the next few examples, I just assume a larger dataset so that the queries make sense.
