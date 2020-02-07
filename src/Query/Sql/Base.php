@@ -94,14 +94,14 @@ class Base extends BaseQuery
             $table = array($alias => $subquery);
         } 
 
-        // other wise normally try to split the table and database name
+        // otherwise normally try to split the table and database name
         elseif (is_string($table) && strpos($table, '.') !== false)
         {
             $selection = explode('.', $table);
 
             if (count($selection) !== 2)
             {
-                throw new Exception( 'Invalid argument given. You can only define one seperator.' );
+                throw new Exception( 'Invalid argument given. You can only define one separator.' );
             }
 
             list($database, $table) = $selection;
@@ -115,7 +115,7 @@ class Base extends BaseQuery
         }
         elseif(is_string($table) && (!is_null($alias)))
         {
-            $table = [$table => $alias];
+            $table = array($table => $alias);
         }
 
         // assing the result

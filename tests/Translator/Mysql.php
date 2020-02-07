@@ -61,6 +61,16 @@ class Translator_Mysql_Test extends TranslatorCase
 		{
 			return $q->table('db.phpunit', 'foo')->select();
 		});
+
+		$this->assertQueryTranslation('select * from `db`.`phpunit` as `foo`', array(), function($q) 
+		{
+			return $q->table('db.phpunit as foo')->select();
+		});
+
+		$this->assertQueryTranslation('select * from `phpunit` as `foo`', array(), function($q) 
+		{
+			return $q->table('phpunit as foo')->select();
+		});
 	}
 
 	/**
@@ -224,9 +234,9 @@ class Translator_Mysql_Test extends TranslatorCase
 		});
 
 		// with alias
-		$this->assertQueryTranslation('select avg(`views`) as `avarage_views` from `phpunit`', array(), function($q) 
+		$this->assertQueryTranslation('select avg(`views`) as `average_views` from `phpunit`', array(), function($q) 
 		{
-			return $q->table('phpunit')->select()->addFieldAvg('views', 'avarage_views');
+			return $q->table('phpunit')->select()->addFieldAvg('views', 'average_views');
 		});
 	}
 
@@ -315,6 +325,13 @@ class Translator_Mysql_Test extends TranslatorCase
 		{
 			return $q->table('phpunit')->select()
 				->whereIn('id', array(23, 213, 53));
+		});
+
+		// where not in
+		$this->assertQueryTranslation('select * from `phpunit` where `id` not in (?, ?, ?)', array(23, 213, 53), function($q)
+		{
+			return $q->table('phpunit')->select()
+				->whereNotIn('id', array(23, 213, 53));
 		});
 
 		//  where null

@@ -240,7 +240,7 @@ class Mysql implements TranslatorInterface
      */
     public function escapeIdentifier($identifier)
     {
-        return '`' . str_replace(['`', "\0"], ['``',''], $identifier) . '`';
+        return '`' . str_replace(array('`', "\0"), array('``',''), $identifier) . '`';
     }
 
     /**
