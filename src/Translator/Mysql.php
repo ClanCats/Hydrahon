@@ -496,6 +496,12 @@ class Mysql implements TranslatorInterface
             $build .= $this->translateGroupBy();
         }
 
+        // build the having statements
+        if ($havings = $this->attr('havings'))
+        {
+            $build .= $this->translateHaving($havings);
+        }
+
         // build the order statement
         if ($this->attr('orders'))
         {
@@ -512,43 +518,72 @@ class Mysql implements TranslatorInterface
     }
 
     /**
-     * Translate the where statements into sql 
+     * Translate the where statement into sql
      * 
      * @param array                 $wheres
      * @return string
      */
-    protected function translateWhere($wheres)
+    protected function translateWhere(array $wheres)
+    {
+        return $this->translateConditional('where', $wheres);
+    }
+
+    /**
+     * Translate the having statement into sql
+     * 
+     * @param array                 $havings
+     * @return string
+     */
+    protected function translateHaving(array $havings)
+    {
+        return $this->translateConditional('having', $havings);
+    }
+
+    /**
+     * Translate the conditional statements (where, having) into sql 
+     * 
+     * @param string                $statement The name of the statement ( where, having )
+     * @param array                 $conditions
+     * @return string
+     */
+    protected function translateConditional($statement, $conditions)
     {
         $build = '';
 
-        foreach ($wheres as $where) 
+        foreach ($conditions as $condition) 
         {
             // to make nested wheres possible you can pass an closure
             // wich will create a new query where you can add your nested wheres
-            if (!isset($where[2]) && isset( $where[1] ) && $where[1] instanceof BaseQuery ) 
+            if (!isset($condition[2]) && isset( $condition[1] ) && $condition[1] instanceof BaseQuery ) 
             {
-                $subAttributes = $where[1]->attributes();
+                /** @var array $subConditions The array of $conditions inside the nested query */
+                $subConditions = $condition[1]->attributes()[$statement . 's'];
+
+                $translatedSubConditions = $this->translateConditional($statement, $subConditions);
+
+                // remove the statement from the result (+2 for the space before and after)
+                $translatedSubConditions = substr($translatedSubConditions, strlen($statement) + 2);
 
                 // The parameters get added by the call of compile where
-                $build .= ' ' . $where[0] . ' ( ' . substr($this->translateWhere($subAttributes['wheres']), 7) . ' )';
+                $build .= ' ' . $condition[0] . ' ( ' . $translatedSubConditions . ' )';
 
                 continue;
             }
 
             // when we have an array as where values we have
             // to parameterize them
-            if (is_array($where[3])) 
+            if (is_array($condition[3])) 
             {
-                $where[3] = '(' . $this->parameterize($where[3]) . ')';
+                $condition[3] = '(' . $this->parameterize($condition[3]) . ')';
             } else {
-                $where[3] = $this->param($where[3]);
+                $condition[3] = $this->param($condition[3]);
             }
 
-            // we always need to escepe where 1 wich referrs to the key
-            $where[1] = $this->escape($where[1]);
+            // we always need to escape the key
+            $condition[1] = $this->escape($condition[1]);
 
             // implode the beauty
-            $build .= ' ' . implode(' ', $where);
+            $build .= ' ' . implode(' ', $condition);
         }
 
         return $build;

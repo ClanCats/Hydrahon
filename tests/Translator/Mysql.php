@@ -345,6 +345,85 @@ class Translator_Mysql_Test extends TranslatorCase
 	/**
 	 * mysql grammar tests
 	 */
+	public function testHaving()
+	{
+		// simple
+		$this->assertQueryTranslation('select * from `phpunit` group by `age` having `age` = ?', array(42), function($q) 
+		{
+			return $q->table('phpunit')->select()->groupBy('age')->having('age', 42);
+		});
+
+		// diffrent expression
+		$this->assertQueryTranslation('select * from `phpunit` having `id` != ?', array(42), function($q) 
+		{
+			return $q->table('phpunit')->select()->having('id', '!=', 42);
+		});
+
+		// raw value
+		$this->assertQueryTranslation('select * from `phpunit` having `id` != 42', array(), function($q) 
+		{
+			return $q->table('phpunit')->select()->having('id', '!=', new Expression('42'));
+		});
+
+		// 2 havings
+		$this->assertQueryTranslation('select * from `phpunit` having `id` = ? and `active` = ?', array(42, 1), function($q) 
+		{
+			return $q->table('phpunit')->select()
+				->having('id', 42 )
+				->having('active', 1);
+		});
+
+		// 2 havings or
+		$this->assertQueryTranslation('select * from `phpunit` having `id` = ? or `active` = ?', array(42, 1), function($q) 
+		{
+			return $q->table('phpunit')->select()
+				->having('id', 42 )
+				->orHaving('active', 1);
+		});
+
+		// nesting
+		$this->assertQueryTranslation('select * from `phpunit` having ( `a` = ? or `c` = ? )', array('b', 'd'), function($q) 
+		{
+			return $q->table('phpunit')->select()
+				->having(function( $q )
+				{
+					$q->having('a', 'b');
+					$q->orHaving('c', 'd');
+				});
+		});
+
+		// arrays
+		$this->assertQueryTranslation('select * from `phpunit` having ( `name` = ? and `age` = ? )', array('foo', 18), function($q) 
+		{
+			return $q->table('phpunit')->select()
+				->having(array( 'name' => 'foo', 'age' => 18 ));
+		});
+
+		//  having in
+		$this->assertQueryTranslation('select * from `phpunit` having `id` in (?, ?, ?)', array(23, 213, 53), function($q) 
+		{
+			return $q->table('phpunit')->select()
+				->havingIn('id', array(23, 213, 53));
+		});
+
+		// having not in
+		$this->assertQueryTranslation('select * from `phpunit` having `id` not in (?, ?, ?)', array(23, 213, 53), function($q)
+		{
+			return $q->table('phpunit')->select()
+				->havingNotIn('id', array(23, 213, 53));
+		});
+
+		//  having null
+		$this->assertQueryTranslation('select * from `phpunit` having `user`.`updated` is NULL', array(), function($q) 
+		{
+			return $q->table('phpunit')->select()
+				->havingNull('user.updated');
+		});
+	}
+
+	/**
+	 * mysql grammar tests
+	 */
 	public function testLimit()
 	{
 		// simple

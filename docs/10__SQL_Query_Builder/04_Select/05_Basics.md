@@ -1,6 +1,6 @@
 # SQL Select Basics
 
-The basics are `where`, `group`, `order` and `limit`. For joins check out [Joining data](docs://sql-query-builder/select/joining-data).
+The basics are `where`, `group`, `having`, `order` and `limit`. For joins check out [Joining data](docs://sql-query-builder/select/joining-data).
 
 Keep in mind that I'm also aliasing the `people` table inside the `$people` variable for all examples in this document.
 
@@ -304,6 +304,48 @@ $people->select()->groupBy(['age', 'is_active'])->get();
 ```
 
 [~ PHPDoc](/src/Query/Sql/Select.php#groupBy)
+
+## Having
+
+You can apply having conditions using the `having` method:
+
+```php
+// SQL: select * from `people` group by `status` having `status` = 1
+$people->select()->groupBy('age')->having('status', 1)->get();
+```
+
+Like with `wheres`, you can concatenate, apply sub-queries and more using similary-named methods:
+
+- `having`
+- `orHaving`
+- `andHaving`
+- `havingIn`
+- `havingNotIn`
+- `havingNull`
+- `havingNotNull`
+- `orHavingNull`
+- `orHavingNotNull`
+
+It's also posible to group conditions inside the `having` clause by passing a function as argument.
+
+```php
+// SQL: select * from `people` group by `age` having age is null or (age > 15 and age < 20)
+$people->select()->groupBy('age')
+    ->havingNull('age')
+    // grouped havings
+    ->orHaving(function ($query) {
+        $get->having('age', '>', 15)
+            ->andHaving('age', '<', 20);
+    })
+    ->get();
+```
+
+It's also possible to clear all the `havings` using the `resetHavings` method.
+
+```php
+// Clear all havings
+$myGroupedQuery->resetHavings();
+```
 
 ## Ordering / Order By
 

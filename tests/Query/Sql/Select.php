@@ -153,6 +153,57 @@ class Query_Sql_Select_Test extends Query_QueryCase
 	}
 
 	/**
+	 * Select::having
+	 */
+	public function testHaving()
+	{
+		// simple 
+		$this->assertAttributes($this->createQuery()->having('id', 42), array(
+			'havings' => array(
+				array('having', 'id', '=', '42')
+			)
+		));
+
+		// simple with other expression
+		$this->assertAttributes($this->createQuery()->having('id', '!=', 42), array(
+			'havings' => array(
+				array('having', 'id', '!=', '42')
+			)
+		));
+
+		// array parameter
+		$this->assertAttributes($this->createQuery()->having('id', 'in', array(1, 2, 3)), array(
+			'havings' => array(
+				array('having', 'id', 'in', array(1, 2, 3))
+			)
+		));
+
+		// 2 havings should be be and
+		$this->assertAttributes($this->createQuery()->having('age', '>', 18)->having('active', 1), array(
+			'havings' => array(
+				array('having', 'age', '>', 18),
+				array('and', 'active', '=', 1)
+			)
+		));
+
+		// 2 havings with sepcified or
+		$this->assertAttributes($this->createQuery()->having('age', '>', 18)->having('active', '=', 1, 'or'), array(
+			'havings' => array(
+				array('having', 'age', '>', 18),
+				array('or', 'active', '=', 1)
+			)
+		));
+	}
+
+	/**
+	 * Select::havingReset
+	 */
+	public function testHavingReset()
+	{
+		$this->assertAttributes($this->createQuery()->having('id', 42)->resetHavings(), array());
+	}
+
+	/**
 	 * Select::join
 	 */
 	public function testJoin()

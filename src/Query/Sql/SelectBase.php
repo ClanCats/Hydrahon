@@ -88,7 +88,7 @@ class SelectBase extends Base
      *     ->where('age', '>', 18)
      *     ->where('name', 'in', array('charles', 'john', 'jeffry'))
      *
-     * @param string            $column The SQL column
+     * @param string|array      $column The SQL column or an array of column => value pairs.
      * @param mixed             $param1 Operator or value depending if $param2 isset.
      * @param mixed             $param2 The value if $param1 is an opartor.
      * @param string            $type the where type ( and, or )
@@ -97,46 +97,60 @@ class SelectBase extends Base
      */
     public function where($column, $param1 = null, $param2 = null, $type = 'and')
     {
-        // check if the where type is valid
-        if ($type !== 'and' && $type !== 'or' && $type !== 'where' )
+        return $this->appendConditional('where', $column, $param1, $param2, $type);
+    }
+
+    /**
+     * Parse the parameters that make a conditional statement
+     * 
+     * @param string            $statement The type of conditional statement ( where, having )
+     * @param string|array      $column The SQL column or an array of column => value pairs.
+     * @param mixed             $param1
+     * @param mixed             $param2
+     * @param string            $type
+     */
+    protected function appendConditional($statement, $column, $param1 = null, $param2 = null, $type = 'and')
+    {
+        // check if the type is valid
+        if (!in_array($type, array('and', 'or', 'where', 'having')))
         {
-            throw new Exception('Invalid where type "'.$type.'"');
+            throw new Exception('Invalid condition type "'.$type.'", must be one of the following: and, or, where, having');
         }
 
-        // if this is the first where element we are going to change
-        // the where type to 'where'
-        if (empty($this->wheres)) 
-        {
-            $type = 'where';
-        }
-        elseif($type === 'where')
-        {
-             $type = 'and';
+        /** @var array $array A reference to the object's property that hold the conditions ($this->wheres, $this->havings) */
+        $array = &$this->{$statement . 's'};
+
+        if (empty($array)) {
+            $type = $statement;
+        } elseif ($type === $statement) {
+            $type = 'and';
         }
 
-        // when column is an array we assume to make a bulk and where.
+        // when column is an array, add conditions in bulk
         if (is_array($column)) 
         {
-            $subquery = new SelectBase;
+            $subquery = new static;
             foreach ($column as $key => $val) 
             {
-                $subquery->where($key, $val, null, $type);
+                $subquery->appendConditional($statement, $key, $val, null, $type);
             }
 
-            $this->wheres[] = array($type, $subquery); return $this;
+            $array[] = array($type, $subquery);
+            return $this;
         }
 
-        // to make nested wheres possible you can pass an closure
-        // wich will create a new query where you can add your nested wheres
+        // to make nested wheres/havings possible you can pass an closure
+        // wich will create a new query where you can add your nested wheres/havings
         if (is_object($column) && ($column instanceof \Closure)) 
         {
             // create new query object
-            $subquery = new SelectBase;
+            $subquery = new static;
 
             // run the closure callback on the sub query
             call_user_func_array($column, array( &$subquery ));
  
-            $this->wheres[] = array($type, $subquery); return $this;
+            $array[] = array($type, $subquery);
+            return $this;
         }
 
         // when param2 is null we replace param2 with param one as the
@@ -155,8 +169,7 @@ class SelectBase extends Base
             $param2 = array_unique($param2);
         }
 
-        $this->wheres[] = array($type, $column, $param1, $param2);
-
+        $array[] = array($type, $column, $param1, $param2);
         return $this;
     }
 
@@ -283,6 +296,7 @@ class SelectBase extends Base
     {
         return $this->orWhere($column, 'is not', $this->raw('NULL'));
     }
+
 
     /**
      * Set the query limit
