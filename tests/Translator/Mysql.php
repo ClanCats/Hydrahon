@@ -567,6 +567,22 @@ class Translator_Mysql_Test extends TranslatorCase
 				->join(['like_count' => $likeCount], 'u.id', '=', 'like_count.user_id');
 		});
 
+		// with subselect
+		$this->assertQueryTranslation('select `u`.`name`, `like_count`.`count` from `db1`.`users` as `u` left join (select count(*) as `count`, `user_id` from `likes` as `l` where `date` < ? group by `l`.`user_id`) as `like_count` on `u`.`id` = `like_count`.`user_id` right join `something` as `s` on `s`.`user_id` = `u`.`id`', array('2001-01-01'), function($q) 
+		{
+			$likeCount = $q->table('likes as l')
+				->select()
+				->groupBy('l.user_id')
+				->addFieldCount($q->raw('*'), 'count')
+				->addField('user_id')
+				->where('date', '<', '2001-01-01');
+
+			return $q->table('db1.users as u')
+				->select(['u.name', 'like_count.count'])
+				->join(['like_count' => $likeCount], 'u.id', '=', 'like_count.user_id')
+				->rightJoin('something as s', 's.user_id', '=', 'u.id');
+		});
+
 	}
 
 	/**
