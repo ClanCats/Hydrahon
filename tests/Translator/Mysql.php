@@ -314,7 +314,7 @@ class Translator_Mysql_Test extends TranslatorCase
 		});
 
 		// deep nesting
-		$this->assertQueryTranslation('select * from `phpunit` where ( `a` = ? or `c` = ? or ( `d` = ? and `f` = ? ) )', array('b', 'd', 'e', 'f'), function($q) 
+		$this->assertQueryTranslation('select * from `phpunit` where ( `a` = ? or `c` = ? or ( `d` = ? and `f` = ? ) )', array('b', 'd', 'e', 'g'), function($q) 
 		{
 			return $q->table('phpunit')->select()
 				->where(function( $q )
@@ -552,6 +552,21 @@ class Translator_Mysql_Test extends TranslatorCase
 		{
 			return $q->table('db1.users as u')->select()->join('db1.groups as g', 'u.id', '=', new Expression('`g`.`user_id` AND `g`.active = 1'));
 		});
+
+		// with subselect
+		$this->assertQueryTranslation('select `u`.`name`, `like_count`.`count` from `db1`.`users` as `u` left join (select count(*) as `count`, `user_id` from `likes` as `l` group by `l`.`user_id`) as `like_count` on `u`.`id` = `like_count`.`user_id`', array(), function($q) 
+		{
+			$likeCount = $q->table('likes as l')
+				->select()
+				->groupBy('l.user_id')
+				->addFieldCount($q->raw('*'), 'count')
+				->addField('user_id');
+
+			return $q->table('db1.users as u')
+				->select(['u.name', 'like_count.count'])
+				->join(['like_count' => $likeCount], 'u.id', '=', 'like_count.user_id');
+		});
+
 	}
 
 	/**

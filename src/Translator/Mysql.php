@@ -603,6 +603,9 @@ class Mysql implements TranslatorInterface
             // get the type and table
             $type = $join[0]; $table = $join[1];
 
+            // start the join
+            $build .= ' ' . $type . ' join ';
+
             // table 
             if (is_array($table)) 
             {
@@ -623,12 +626,15 @@ class Mysql implements TranslatorInterface
                         $this->addParameter($parameter);
                     }
 
-                    return '(' . $subQuery . ') as ' . $this->escape(key($table));
+                    $build .= '(' . $subQuery . ') as ' . $this->escape(key($table));
                 }
+            } else {
+                // start the join
+                $build .= $this->escape($table);
             }
 
             // start the join
-            $build .= ' ' . $type . ' join ' . $this->escape($table) . ' on ';
+            $build .= ' on ';
 
             // to make nested join conditions possible you can pass an closure
             // wich will create a new query where you can add your nested ons and wheres
