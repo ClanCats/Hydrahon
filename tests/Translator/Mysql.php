@@ -313,6 +313,22 @@ class Translator_Mysql_Test extends TranslatorCase
 				});
 		});
 
+		// deep nesting
+		$this->assertQueryTranslation('select * from `phpunit` where ( `a` = ? or `c` = ? or ( `d` = ? and `f` = ? ) )', array('b', 'd', 'e', 'f'), function($q) 
+		{
+			return $q->table('phpunit')->select()
+				->where(function( $q )
+				{
+					$q->where('a', 'b');
+					$q->orWhere('c', 'd');
+					$q->orWhere(function($q) 
+					{
+						$q->where('d', 'e');
+						$q->andWhere('f', 'g');
+					});
+				});
+		});
+
 		// arrays
 		$this->assertQueryTranslation('select * from `phpunit` where ( `name` = ? and `age` = ? )', array('foo', 18), function($q) 
 		{
