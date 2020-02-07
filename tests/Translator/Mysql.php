@@ -600,6 +600,39 @@ class Translator_Mysql_Test extends TranslatorCase
 		});
 	}
 
+	public function testSubselect()
+	{
+		$this->assertQueryTranslation('select * from (select * from `contact`) as `b` order by `name` asc', array(), function($q) 
+		{
+			return $q->select(['b' => function($q) 
+			{
+			    $q->table('contact');
+			}])
+			->orderBy('name');
+		});
+
+		$this->assertQueryTranslation('select * from (select * from `contact` where `age` > ?) as `b` order by `name` asc', array(18), function($q) 
+		{
+			return $q->select(['b' => function($q) 
+			{
+			    $q->table('contact');
+			    $q->where('age', '>', 18);
+			}])
+			->orderBy('name');
+		});
+
+		$this->assertQueryTranslation('select * from (select `c`.`name` from `contact` as `c` inner join `phone_numbers` as `n` on `n`.`id` = `c`.`phone_id`) as `b` order by `name` asc', array(), function($q) 
+		{
+			return $q->select(['b' => function($q) 
+			{
+			    $q->table('contact as c');
+			    $q->fields(['c.name']);
+			    $q->innerJoin('phone_numbers as n', 'n.id', '=', 'c.phone_id');
+			}])
+			->orderBy('name');
+		});
+	}
+
 	/**
 	 * mysql grammar tests
 	 */
