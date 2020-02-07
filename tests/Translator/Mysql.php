@@ -234,9 +234,9 @@ class Translator_Mysql_Test extends TranslatorCase
 		});
 
 		// with alias
-		$this->assertQueryTranslation('select avg(`views`) as `avarage_views` from `phpunit`', array(), function($q) 
+		$this->assertQueryTranslation('select avg(`views`) as `average_views` from `phpunit`', array(), function($q) 
 		{
-			return $q->table('phpunit')->select()->addFieldAvg('views', 'avarage_views');
+			return $q->table('phpunit')->select()->addFieldAvg('views', 'average_views');
 		});
 	}
 

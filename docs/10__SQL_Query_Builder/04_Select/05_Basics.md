@@ -12,7 +12,7 @@ $people = $h->table('people');
 
 ## Columns / fields
 
-By default, Hydrahon will simply select all fields using the `*` asterisks.
+By default, Hydrahon will simply select all fields using the `*` asterisk.
 
 ```php
 // SQL: select * from `people`
@@ -62,9 +62,20 @@ if ($iNeedTheAge) {
 }
 ```
 
-### Conditions / Aggregations / Raw
+The `addField` method allows you to define an alias with the optional second parameter:
 
-Because by default the columns will be quoted, you need to specify when you want to make some kind of raw operation or call an aggregation function.
+```php
+// SQL: select `name`, `complicated_age_column` as `age` from `people`
+$query = $people->select('name');
+
+if ($iNeedTheAge) {
+    $query->addField('complicated_age_column', 'age');
+}
+```
+
+### Raw Expressions
+
+Because by default the columns will be quoted, you need to specify when you want to make some kind of raw operation or call an aggregation function. Use the `ClanCats\Hydrahon\Query\Expression` to define a literal, raw expression for use in the generated query.
 
 ```php
 // SQL: select `name`, deleted_at is not null as is_deleted from `people`
@@ -76,7 +87,7 @@ $people->select([
 ])->get();
 ```
 
-This also works using the `addField` method. There you can pass the alias name a second argument.
+This also works using the `addField` method. There you can pass the alias as the optional second argument:
 
 ```php
 // SQL: select `name`, deleted_at is not null as `is_deleted` from `people`
@@ -87,7 +98,18 @@ $people->select('name')
     ->get();
 ```
 
-Using the `Func` object you can still make use of Hydrahons escaping functionality.
+### Functions
+
+Using the `ClanCats\Hydrahon\Query\Sql\Func` object you can call native database functions:
+
+```php
+// SQL: select NOW() from `people`
+use ClanCats\Hydrahon\Query\Sql\Func as F;
+
+$people->select(new F('NOW'))->get();
+```
+
+The first parameter to the constructor of `ClanCats\Hydrahon\Query\Sql\Func` is the name of the function. All other parameters will be used (and escaped) as parameters of this function:
 
 ```php
 // SQL: select count(`people`.`group_id`) from `people`
@@ -96,9 +118,29 @@ use ClanCats\Hydrahon\Query\Sql\Func as F;
 $people->select(new F('count', 'people.group_id'))->get();
 ```
 
+If you want to alias the result, use `addField` with its second parameter as documented above:
+
+```php
+// SQL: select `name`, count(`people`.`group_id`) as `group` from `people`
+use ClanCats\Hydrahon\Query\Sql\Func as F;
+
+$people->select('name')
+    ->addField(new F('count', 'people.group_id'), 'group')
+    ->get();
+```
+
+For the most common functions, Hydrahon features `addField`-shortcuts:
+- `addFieldCount($field, $alias = null)` as a shortcut for `addField(new Func('count', $field), $alias)`
+- `addFieldMax($field, $alias = null)` as a shortcut for `addField(new Func('max', $field), $alias)`
+- `addFieldMin($field, $alias = null)` as a shortcut for `addField(new Func('min', $field), $alias)`
+- `addFieldSum($field, $alias = null)` as a shortcut for `addField(new Func('sum', $field), $alias)`
+- `addFieldAvg($field, $alias = null)` as a shortcut for `addField(new Func('avg', $field), $alias)`
+- `addFieldRound($field, $decimals = 0, $alias = null)` as a shortcut for `addField(new Func('round', $field, new Expression((int)$decimals)), $alias)`
+        
+
 ## Where condition
 
-A where **equals** condition is build like this:
+A where **equals** condition is built like this:
 
 ```php
 // SQL: select * from `people` where `name` = James
@@ -119,7 +161,7 @@ Passing an array as value will comma separate the values:
 $people->select()->where('city', 'in', ['Zürich', 'Bern', 'Basel'])->get(); 
 ```
 
-You can also use the the `whereIn` method which will do exactly the same thing.
+You can also use the `whereIn` method which will do exactly the same thing.
 
 ```php
 // SQL: select * from `people` where `city` in (Zürich, Bern, Basel)
@@ -149,7 +191,7 @@ $people->select()
     ->get(); 
 ```
 
-use can use the methods `orWhere` and `andWhere` to specify which logical operator you want to use.
+you can use the methods `orWhere` and `andWhere` to specify which logical operator you want to use.
 
 ```php
 // SQL: select * from `people` where `city` = Zürich or `city` = Bern
@@ -175,7 +217,7 @@ Or reverse where it is not nothing.
 $people->select()->whereNotNull('deleted_at')->get();
 ```
 
-And of course, this also works with a or operator between the conditions.
+And of course, this also works with an or operator between the conditions.
 
 ```php
 // SQL: 
@@ -214,7 +256,7 @@ $people->select()
     ->get();
 ```
 
-There is no layer limit so you can but Closure into Closure.
+There is no layer limit so you can put Closure into Closure.
 
 ```php
 // SQL: select * from `people` where `is_admin` = 1 or ( ( `is_active` = 1 and `is_moderator` = 1 ) or ( `is_active` = 1 and `deleted_at` is NULL and `email_confirmed_at` is not NULL ) )
@@ -368,7 +410,7 @@ $people->select()->page(5, 50)->get();
 
 ## Distinct select
 
-To make your select distinct simply call the method corresponding method.
+To make your select distinct simply call the corresponding method.
 
 ```php
 // SQL: select distinct * from `people`

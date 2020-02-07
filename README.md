@@ -38,12 +38,12 @@ Hydrahon is designed to be a pretty generic query builder. So for this quick sta
 
 ### Create a builder
 
-Again this library is **not** built as a full database abstraction or ORM, it is only and will always be only a query builder. This means we need to implement the database connection and fetching by ourselves.
+Again this library is **not** built as a full database abstraction or ORM, it is only and will always be only a query builder. This means we need to implement the database connection and fetching by ourselves. The Hydrahon constructor therefore requires you to provide a callback function that does this, and returns the results.
 
 In this example, we are going to use [PDO](http://php.net/manual/en/book.pdo.php)
 
 ```php 
-$connection = new PDO('mysql:host=localhost;dbname=my_database', 'username', 'password');
+$connection = new PDO('mysql:host=localhost;dbname=my_database;charset=utf8', 'username', 'password');
 
 // create a new mysql query builder
 $h = new \ClanCats\Hydrahon\Builder('mysql', function($query, $queryString, $queryParameters) use($connection)
@@ -52,6 +52,7 @@ $h = new \ClanCats\Hydrahon\Builder('mysql', function($query, $queryString, $que
     $statement->execute($queryParameters);
 
     // when the query is fetchable return all results and let hydrahon do the rest
+    // (there's no results to be fetched for an update-query for example)
     if ($query instanceof \ClanCats\Hydrahon\Query\Sql\FetchableInterface)
     {
         return $statement->fetchAll(\PDO::FETCH_ASSOC);
@@ -61,7 +62,7 @@ $h = new \ClanCats\Hydrahon\Builder('mysql', function($query, $queryString, $que
 
 And we are ready and set. The variable `$h` contains now a MySQL query builder.
 
-### Setup a simple table:
+### Setup a simple table
 
 To continue with our examples, we need to create a simple MySQL table.
 
@@ -74,7 +75,7 @@ CREATE TABLE `people` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 ```
 
-### Inserting:
+### Inserting
 
 Currently, we do not have any data, to fix this let's go and insert some.
 
@@ -97,7 +98,7 @@ Will execute the following query:
 insert into `people` (`age`, `name`) values (?, ?), (?, ?), (?, ?)
 ```
 
-As you can see the Hydrahon automatically escapes the parameters. 
+As you can see Hydrahon automatically escapes the parameters. 
 
 However, because we are humans that get confused when there are hundreds of thousands of questions marks, I will continue to always display the runnable query:
 
@@ -105,7 +106,7 @@ However, because we are humans that get confused when there are hundreds of thou
 insert into `people` (`age`, `name`) values (25, Ray), (30, John), (22, Ali)
 ```
 
-### Updating:
+### Updating
 
 Ah snap, time runs so fast, "Ray" is actually already 26.
 
@@ -173,19 +174,23 @@ Result:
 ]
 ```
 
+Notice that we use `->get()` to actually fetch data, while we used `->execute()` for our previous queries (updates, inserts and deletes). See the full documentation for more information about the Hydrahon [runners methods](https://clancats.io/hydrahon/master/sql-query-builder/select/runner-methods).
+
 ### Where conditions
 
-For the next few examples, I just assume a larger dataset so that the queries make sense.
+For the next few examples, lets assume a larger dataset so that the queries make sense.
 
 Chaining where conditions:
 
 ```php
-// select * from `people` where `name` like 'J%' and `age` > 21
+// select * from `people` where `age` = 21 and `name` like 'J%'
 $people->select()
+    ->where('age', 21)
     ->where('name', 'like', 'J%')
-    ->where('age', '>', 21)
     ->get();
 ```
+
+Notice how omitting the operator in the first condition `->where('age', 21)` makes Hydrahon default to `=`.
 
 By default all where conditions are defined with the `and` operator.
 
@@ -198,6 +203,12 @@ $people->select()
     ->orWhere('name', 'like', 'I%')
     ->get();
 ```
+
+Please check the [relevant section in the full documentation](https://clancats.io/hydrahon/master/sql-query-builder/select/basics) for more where-functions, like
+- `whereIn()`
+- `whereNotIn()`
+- `whereNull()`
+- `whereNotNull()`
 
 #### Where scopes
 
