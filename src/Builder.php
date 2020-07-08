@@ -27,6 +27,12 @@ class Builder
             'ClanCats\\Hydrahon\\Query\\Sql',
             'ClanCats\\Hydrahon\\Translator\\Sqlite',
         ),
+
+        // SQLite
+        'pgsql' => array(
+            'ClanCats\\Hydrahon\\Query\\Sql',
+            'ClanCats\\Hydrahon\\Translator\\PgSql',
+        ),
     );
 
     /**
