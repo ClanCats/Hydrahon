@@ -85,6 +85,6 @@ class PgSql extends Mysql implements TranslatorInterface
             }
         }
 
-        return $buffer . $this->escape($table);    
+        return $buffer . $table;    
     }
 }
