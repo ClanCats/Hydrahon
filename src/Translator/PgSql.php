@@ -36,4 +36,55 @@ class PgSql extends Mysql implements TranslatorInterface
     {
         return '\'' . str_replace(array('\'', "\0"), array('\'\'',''), $identifier) . '\'';
     }
+
+    /**
+     * get and escape the table name
+     *
+     * @return string
+     */
+    protected function escapeTable($allowAlias = true)
+    {
+        $table = $this->attr('table');
+        $database = $this->attr('database');
+        $buffer = '';
+
+        if (!is_null($database))
+        {
+            $buffer .= $database . '.';
+        }
+
+        // when the table is an array we have a table with alias
+        if (is_array($table)) 
+        {
+            reset($table);
+
+            // the table might be a subselect so check that
+            // first and compile the select if it is one
+            if ($table[key($table)] instanceof Select)
+            {
+                $translator = new static;
+
+                // translate the subselect
+                list($subQuery, $subQueryParameters) = $translator->translate($table[key($table)]);
+
+                // merge the parameters
+                foreach($subQueryParameters as $parameter)
+                {
+                    $this->addParameter($parameter);
+                }
+
+                return '(' . $subQuery . ') as ' . $this->escape(key($table));
+            }
+
+            // otherwise continue with normal table
+            if ($allowAlias)
+            {
+                $table = key($table) . ' as ' . $table[key($table)];
+            } else {
+                $table = key($table);
+            }
+        }
+
+        return $buffer . $this->escape($table);    
+    }
 }
