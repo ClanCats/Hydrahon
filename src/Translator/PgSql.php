@@ -34,7 +34,7 @@ class PgSql extends Mysql implements TranslatorInterface
      */
     public function escapeIdentifier($identifier)
     {
-        return '\'' . str_replace(array('\'', "\0"), array('\'\'',''), $identifier) . '\'';
+        return '"' . str_replace(array('"', "\0"), array('"',''), $identifier) . '"';
     }
 
     /**
