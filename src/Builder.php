@@ -32,7 +32,7 @@ class Builder
     /**
      * Extend the query builder by a new grammar
      *
-     * @throws ClanCats\Hydrahon\Exception
+     * @throws \ClanCats\Hydrahon\Exception
      *
      * @param string                $grammarKey
      * @param string                $queryBuilder
@@ -59,7 +59,7 @@ class Builder
     /**
      * Currently loaded query translator
      *
-     * @var ClanCats\Hydrahon\TranslatorInterface
+     * @var \ClanCats\Hydrahon\TranslatorInterface
      */
     protected $queryTranslator = null;
 
@@ -73,7 +73,7 @@ class Builder
     /**
      * Create a new Hydrahon builder instance using the giving grammar
      *
-     * @throws ClanCats\Hydrahon\Exception
+     * @throws \ClanCats\Hydrahon\Exception
      *
      * @param string                $grammarKey
      * @param callable              $executionCallback
@@ -119,8 +119,9 @@ class Builder
     /**
      * Forwards calls to the current query builder
      * 
-     * @param string                        $table
-     * @return ClanCats\Hydrahon\BaseQuery
+     * @param string                        $method
+     * @param array                         $arguments
+     * @return BaseQuery
      */
     public function __call($method, $arguments)
     {
