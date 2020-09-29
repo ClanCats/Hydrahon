@@ -24,14 +24,14 @@ class SelectBase extends Base
     /**
      * the query offset
      *
-     * @var int
+     * @var int|null
      */
     protected $offset = null;
 
     /**
      * the query limit
      *
-     * @var int
+     * @var int|null
      */
     protected $limit = null;
 

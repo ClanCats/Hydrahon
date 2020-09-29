@@ -115,7 +115,7 @@ class Select extends SelectBase implements FetchableInterface
      *     
      *     ->fields('id, name, created_at as created')
      *
-     * @param array         $values
+     * @param array             $fields The fields that should be selected.
      * @return self The current query builder.
      */
     public function fields($fields)
@@ -262,8 +262,8 @@ class Select extends SelectBase implements FetchableInterface
      *     // muliple order statements with diffrent directions
      *     ->orderBy(['firstname' => 'asc', 'lastname' => 'desc'])
      *
-     * @param array|string              $cols
-     * @param string                    $order
+     * @param array|string              $columns The column or colums to order by.
+     * @param string                    $direction The sort direction (asc, desc...).
      * @return self The current query builder.
      */
     public function orderBy($columns, $direction = 'asc')
@@ -301,7 +301,7 @@ class Select extends SelectBase implements FetchableInterface
      *     ->groupBy('category')
      *     ->gorupBy(['category', 'price'])
      *
-     * @param array|string              $keys
+     * @param array|string              $groupKeys The keys on which the data should be grouped on.
      * @return self The current query builder.
      */
     public function groupBy($groupKeys)
@@ -534,7 +534,8 @@ class Select extends SelectBase implements FetchableInterface
     /**
      * Executes the 'executeResultFetcher' callback and handles the results
      *
-     * @param string         $handler
+     * @deprecated Please use the `get` method instead.
+     *
      * @return mixed
      */
     public function run()
@@ -583,8 +584,7 @@ class Select extends SelectBase implements FetchableInterface
     /**
      * Get the last result by key
      *
-     * @param string            $key
-     * @param string            $name
+     * @param string            $key The key on which should be determined what the last element is.
      * @return mixed the last result.
      */
     public function last($key = 'id')
