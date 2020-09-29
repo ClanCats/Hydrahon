@@ -50,11 +50,11 @@ class Builder
     }
 
     /**
-     * The current query class
+     * The current query builder instance
      *
-     * @var string
+     * @var BaseQuery
      */
-    protected $queryClass = null;
+    protected $queryBuilder = null;
 
     /**
      * Currently loaded query translator
