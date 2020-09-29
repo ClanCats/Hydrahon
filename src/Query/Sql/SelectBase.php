@@ -17,7 +17,7 @@ class SelectBase extends Base
     /**
      * The query where statements
      *
-     * @var array
+     * @var array<array>
      */
     protected $wheres = array();
 

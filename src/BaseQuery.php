@@ -14,7 +14,7 @@ class BaseQuery
     /**
      * Query builder callback macros
      * 
-     * @var array
+     * @var array<callable>
      */
     protected $macros = array();
 
@@ -24,7 +24,7 @@ class BaseQuery
      * This data has no influence on the generated query string or parameters directly.
      * But allow you to use the query a state mashine.
      *  
-     * @var array
+     * @var array<mixed>
      */
     protected $flags = array();
 
@@ -116,8 +116,8 @@ class BaseQuery
     /**
      * Allow macro calls 
      * 
-     * @param string                $name
-     * @param array                 $arguments
+     * @param string                       $name
+     * @param array<mixed>                 $arguments
      * @return mixed
      */ 
     public function __call($name, $arguments) 

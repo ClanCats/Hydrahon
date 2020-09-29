@@ -19,7 +19,7 @@ class Func
 	/**
 	 * The function arguments
 	 *
-	 * @var array
+	 * @var array<mixed>
 	 */
 	protected $arguments = array();
 	
