@@ -31,7 +31,7 @@ class BaseQuery
     /**
      * The callback where we fetch the results from
      *
-     * @var callable
+     * @var callable|null
      */
     protected $resultFetcher = null;
 

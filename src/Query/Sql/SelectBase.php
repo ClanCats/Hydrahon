@@ -88,10 +88,10 @@ class SelectBase extends Base
      *     ->where('age', '>', 18)
      *     ->where('name', 'in', array('charles', 'john', 'jeffry'))
      *
-     * @param string            $column The SQL column
-     * @param mixed             $param1 Operator or value depending if $param2 isset.
-     * @param mixed             $param2 The value if $param1 is an opartor.
-     * @param string            $type the where type ( and, or )
+     * @param string|array|\Closure     $column The SQL column or columns.
+     * @param mixed                     $param1 Operator or value depending if $param2 isset.
+     * @param mixed                     $param2 The value if $param1 is an opartor.
+     * @param string                    $type the where type ( and, or )
      *
      * @return self The current query builder.
      */

@@ -115,7 +115,7 @@ class Select extends SelectBase implements FetchableInterface
      *     
      *     ->fields('id, name, created_at as created')
      *
-     * @param array             $fields The fields that should be selected.
+     * @param string|array|object             $fields The fields that should be selected.
      * @return self The current query builder.
      */
     public function fields($fields)
@@ -157,7 +157,7 @@ class Select extends SelectBase implements FetchableInterface
      * 
      *     ->addField('title')
      *
-     * @param string                $field
+     * @param string|object         $field
      * @param string                $alias
      * @return self The current query builder.
      */
@@ -262,8 +262,8 @@ class Select extends SelectBase implements FetchableInterface
      *     // muliple order statements with diffrent directions
      *     ->orderBy(['firstname' => 'asc', 'lastname' => 'desc'])
      *
-     * @param array|string              $columns The column or colums to order by.
-     * @param string                    $direction The sort direction (asc, desc...).
+     * @param array|string|Expression              $columns The column or colums to order by.
+     * @param string                               $direction The sort direction (asc, desc...).
      * @return self The current query builder.
      */
     public function orderBy($columns, $direction = 'asc')
@@ -325,7 +325,7 @@ class Select extends SelectBase implements FetchableInterface
      *     ->join('avatars', 'users.id', '=', 'avatars.user_id')
      *
      * @param array|string              $table The table to join. (can contain an alias definition.)
-     * @param string                    $localKey 
+     * @param string|\Closure            $localKey 
      * @param string                    $operator The operator (=, !=, <, > etc.)
      * @param string                    $referenceKey
      * @param string                    $type The join type (inner, left, right, outer)
@@ -595,7 +595,7 @@ class Select extends SelectBase implements FetchableInterface
     /**
      * Just get a single value from the result
      *
-     * @param string            $column The name of the column.
+     * @param string|Func|Expression            $column The name of the column.
      * @return mixed The columns value
      */
     public function column($column)

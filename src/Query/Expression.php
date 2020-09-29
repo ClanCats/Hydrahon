@@ -14,14 +14,14 @@ class Expression
 	/**
 	 * The value holder 
 	 *
-	 * @var string
+	 * @var string|int
 	 */
 	protected $value = null;
 	
 	/**
 	 * The constructor that assigns our value
 	 *
-	 * @param string 		$value
+	 * @param string|int 		$value
 	 * @return void
 	 */
 	public function __construct($value)
@@ -32,7 +32,7 @@ class Expression
 	/**
 	 * Return the expressions value
 	 * 
-	 * @return string 
+	 * @return string|int 
 	 */
 	public function value()
 	{
