@@ -13,7 +13,7 @@ interface TranslatorInterface
 	 * Translate the given query object and return the results as 
 	 * argument array
 	 * 
-	 * @param ClanCats\Hydrahon\BaseQuery 				$query
+	 * @param BaseQuery 				$query
 	 * @return array
 	 */
     public function translate(BaseQuery $query);
