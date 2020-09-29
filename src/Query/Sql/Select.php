@@ -428,7 +428,7 @@ class Select extends SelectBase implements FetchableInterface
         if ($key === false) {
             $this->forwardKey = false;
         } elseif ($key === true) {
-            $this->forwardKey = \ClanCats::$config->get('database.default_primary_key', 'id');
+            $this->forwardKey = 'id';
         } else {
             $this->forwardKey = $key;
         }
