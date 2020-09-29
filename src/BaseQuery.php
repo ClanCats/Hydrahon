@@ -90,7 +90,7 @@ class BaseQuery
      *
      * @param string            $key
      * @param mixed             $default
-     * @return void
+     * @return mixed
      */
     final public function getFlag($key, $default = null)
     {
@@ -116,7 +116,7 @@ class BaseQuery
     /**
      * Allow macro calls 
      * 
-     * @param stirng                $name
+     * @param string                $name
      * @param array                 $arguments
      * @return mixed
      */ 
@@ -134,7 +134,7 @@ class BaseQuery
      * Pass the own query to a callback
      * 
      * @param callable              $callback
-     * @return void
+     * @return self
      */
     public function call($callback)
     {
@@ -152,7 +152,7 @@ class BaseQuery
      * Creates a new raw db expression instance
      * 
      * @param string                $expression
-     * @return ClanCats\Hydrahon\Query\Expression
+     * @return Expression
      */
     final public function raw($expression)
     {
