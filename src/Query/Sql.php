@@ -16,6 +16,7 @@ use ClanCats\Hydrahon\Query\Sql\Delete;
 use ClanCats\Hydrahon\Query\Sql\Drop;
 use ClanCats\Hydrahon\Query\Sql\Truncate;
 use ClanCats\Hydrahon\Query\Sql\Table;
+use ClanCats\Hydrahon\Query\Sql\Base;
 
 class Sql extends BaseQuery
 {
@@ -24,12 +25,16 @@ class Sql extends BaseQuery
      * 
      *     $h->table('users')
      *
-     * @param string|array                              $fields
+     * @param string|array                              $table
+     * @param string                                    $alias
      * @return Table
      */
     public function table($table = null, $alias = null)
     {
-        $query = new Table($this); return $query->table($table, $alias);
+        $query = new Table($this); 
+        $query->table($table, $alias);
+
+        return $query;
     }
 
     /**
