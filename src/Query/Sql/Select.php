@@ -99,7 +99,7 @@ class Select extends SelectBase implements FetchableInterface
      * Distinct select setter
      *
      * @param bool        $distinct
-     * @return self The current query builder.
+     * @return static The current query builder.
      */
     public function distinct($distinct = true)
     {
@@ -116,7 +116,7 @@ class Select extends SelectBase implements FetchableInterface
      *     ->fields('id, name, created_at as created')
      *
      * @param string|array|object             $fields The fields that should be selected.
-     * @return self The current query builder.
+     * @return static The current query builder.
      */
     public function fields($fields)
     {
@@ -159,7 +159,7 @@ class Select extends SelectBase implements FetchableInterface
      *
      * @param string|object         $field
      * @param string                $alias
-     * @return self The current query builder.
+     * @return static The current query builder.
      */
     public function addField($field, $alias = null)
     {
@@ -173,7 +173,7 @@ class Select extends SelectBase implements FetchableInterface
      *
      * @param string                $field
      * @param string                $alias
-     * @return self The current query builder.
+     * @return static The current query builder.
      */
     public function addFieldCount($field, $alias = null)
     {
@@ -187,7 +187,7 @@ class Select extends SelectBase implements FetchableInterface
      *
      * @param string                $field
      * @param string                $alias
-     * @return self The current query builder.
+     * @return static The current query builder.
      */
     public function addFieldMax($field, $alias = null)
     {
@@ -201,7 +201,7 @@ class Select extends SelectBase implements FetchableInterface
      *
      * @param string                $field
      * @param string                $alias
-     * @return self The current query builder.
+     * @return static The current query builder.
      */
     public function addFieldMin($field, $alias = null)
     {
@@ -215,7 +215,7 @@ class Select extends SelectBase implements FetchableInterface
      *
      * @param string                $field
      * @param string                $alias
-     * @return self The current query builder.
+     * @return static The current query builder.
      */
     public function addFieldSum($field, $alias = null)
     {
@@ -229,7 +229,7 @@ class Select extends SelectBase implements FetchableInterface
      *
      * @param string                $field
      * @param string                $alias
-     * @return self The current query builder.
+     * @return static The current query builder.
      */
     public function addFieldAvg($field, $alias = null)
     {
@@ -243,7 +243,7 @@ class Select extends SelectBase implements FetchableInterface
      *
      * @param string                $field
      * @param string                $alias
-     * @return self The current query builder.
+     * @return static The current query builder.
      */
     public function addFieldRound($field, $decimals = 0, $alias = null)
     {
@@ -264,7 +264,7 @@ class Select extends SelectBase implements FetchableInterface
      *
      * @param array|string|Expression              $columns The column or colums to order by.
      * @param string                               $direction The sort direction (asc, desc...).
-     * @return self The current query builder.
+     * @return static The current query builder.
      */
     public function orderBy($columns, $direction = 'asc')
     {
@@ -302,7 +302,7 @@ class Select extends SelectBase implements FetchableInterface
      *     ->gorupBy(['category', 'price'])
      *
      * @param array|string              $groupKeys The keys on which the data should be grouped on.
-     * @return self The current query builder.
+     * @return static The current query builder.
      */
     public function groupBy($groupKeys)
     {
@@ -330,7 +330,7 @@ class Select extends SelectBase implements FetchableInterface
      * @param string                    $referenceKey
      * @param string                    $type The join type (inner, left, right, outer)
      * 
-     * @return self The current query builder.
+     * @return static The current query builder.
      */
     public function join($table, $localKey, $operator = null, $referenceKey = null, $type = 'left')
     {
@@ -365,7 +365,7 @@ class Select extends SelectBase implements FetchableInterface
      * @param string                    $operator The operator (=, !=, <, > etc.)
      * @param string                    $referenceKey
      * 
-     * @return self The current query builder.
+     * @return static The current query builder.
      */
     public function leftJoin($table, $localKey, $operator = null, $referenceKey = null)
     {
@@ -380,7 +380,7 @@ class Select extends SelectBase implements FetchableInterface
      * @param string                    $operator The operator (=, !=, <, > etc.)
      * @param string                    $referenceKey
      * 
-     * @return self The current query builder.
+     * @return static The current query builder.
      */
     public function rightJoin($table, $localKey, $operator = null, $referenceKey = null)
     {
@@ -395,7 +395,7 @@ class Select extends SelectBase implements FetchableInterface
      * @param string                    $operator The operator (=, !=, <, > etc.)
      * @param string                    $referenceKey
      * 
-     * @return self The current query builder.
+     * @return static The current query builder.
      */
     public function innerJoin($table, $localKey, $operator = null, $referenceKey = null)
     {
@@ -410,7 +410,7 @@ class Select extends SelectBase implements FetchableInterface
      * @param string                    $operator The operator (=, !=, <, > etc.)
      * @param string                    $referenceKey
      * 
-     * @return self The current query builder.
+     * @return static The current query builder.
      */
     public function outerJoin($table, $localKey, $operator = null, $referenceKey = null)
     {
@@ -421,7 +421,7 @@ class Select extends SelectBase implements FetchableInterface
      * Forward a result value as array key
      *
      * @param string|bool        $key
-     * @return self The current query builder.
+     * @return static The current query builder.
      */
     public function forwardKey($key = true)
     {
@@ -453,7 +453,7 @@ class Select extends SelectBase implements FetchableInterface
      *     ),
      *
      * @param string|bool        $key
-     * @return self The current query builder.
+     * @return static The current query builder.
      */
     public function groupResults($key)
     {

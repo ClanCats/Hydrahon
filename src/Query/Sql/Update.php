@@ -23,7 +23,7 @@ class Update extends SelectBase
      * 
      * @param string|array          $param1
      * @param mixed                 $param2
-     * @return self
+     * @return static
      */
     public function set($param1, $param2 = null)
     {

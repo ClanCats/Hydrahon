@@ -34,7 +34,7 @@ class SelectJoin extends SelectBase
      * @param string                $operator
      * @param string                $referenceKey
      * 
-     * @return self
+     * @return static
      */
     public function on($localKey, $operator, $referenceKey, $type = 'and')
     {
@@ -48,7 +48,7 @@ class SelectJoin extends SelectBase
      * @param string                $operator
      * @param string                $referenceKey
      * 
-     * @return self
+     * @return static
      */
     public function orOn($localKey, $operator, $referenceKey)
     {
@@ -62,7 +62,7 @@ class SelectJoin extends SelectBase
      * @param string                $operator
      * @param string                $referenceKey
      * 
-     * @return self
+     * @return static
      */
     public function andOn($localKey, $operator, $referenceKey)
     {

@@ -31,7 +31,7 @@ class Insert extends Base
      *     ->ignore(true)
      * 
      * @param bool                  $ignore
-     * @return self The current query builder.
+     * @return static The current query builder.
      */
     public function ignore($ignore = true)
     {
@@ -50,7 +50,7 @@ class Insert extends Base
      *     ])
      * 
      * @param array                     $values The data you want to insert.
-     * @return self The current query builder.
+     * @return static The current query builder.
      */
     public function values(array $values = array())
     {
@@ -84,7 +84,7 @@ class Insert extends Base
     /**
      * Resets the current insert values of the query.
      *
-     * @return self The current query builder.
+     * @return static The current query builder.
      */
     public function resetValues()
     {
