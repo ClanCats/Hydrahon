@@ -53,7 +53,7 @@ class Base extends BaseQuery
      *     $h->table('db_mydatabase.posts')
      *
      * @param string|\Closure                   $table
-     * @return self
+     * @return static
      */
     public function table($table, $alias = null)
     {

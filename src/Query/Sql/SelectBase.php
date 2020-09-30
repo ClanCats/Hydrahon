@@ -54,7 +54,7 @@ class SelectBase extends Base
     /**
      * Will reset the current selects where conditions
      * 
-     * @return self The current query builder.
+     * @return static The current query builder.
      */
     public function resetWheres()
     {
@@ -64,7 +64,7 @@ class SelectBase extends Base
     /**
      * Will reset the current selects limit
      * 
-     * @return self The current query builder.
+     * @return static The current query builder.
      */
     public function resetLimit()
     {
@@ -74,7 +74,7 @@ class SelectBase extends Base
     /**
      * Will reset the current selects offset
      * 
-     * @return self The current query builder.
+     * @return static The current query builder.
      */
     public function resetOffset()
     {
@@ -93,7 +93,7 @@ class SelectBase extends Base
      * @param mixed                     $param2 The value if $param1 is an opartor.
      * @param string                    $type the where type ( and, or )
      *
-     * @return self The current query builder.
+     * @return static The current query builder.
      */
     public function where($column, $param1 = null, $param2 = null, $type = 'and')
     {
@@ -169,7 +169,7 @@ class SelectBase extends Base
      * @param mixed        $param1
      * @param mixed        $param2
      *
-     * @return self The current query builder.
+     * @return static The current query builder.
      */
     public function orWhere($column, $param1 = null, $param2 = null)
     {
@@ -185,7 +185,7 @@ class SelectBase extends Base
      * @param mixed        $param1
      * @param mixed        $param2
      *
-     * @return self The current query builder.
+     * @return static The current query builder.
      */
     public function andWhere($column, $param1 = null, $param2 = null)
     {
@@ -199,7 +199,7 @@ class SelectBase extends Base
      * 
      * @param string                    $column
      * @param array                     $options
-     * @return self The current query builder.
+     * @return static The current query builder.
      */
     public function whereIn($column, array $options = array())
     {
@@ -219,7 +219,7 @@ class SelectBase extends Base
      * 
      * @param string                    $column
      * @param array                     $options
-     * @return self The current query builder.
+     * @return static The current query builder.
      */
     public function whereNotIn($column, array $options = array())
     {
@@ -238,7 +238,7 @@ class SelectBase extends Base
      *     ->whereNull('modified_at')
      * 
      * @param string                    $column
-     * @return self The current query builder.
+     * @return static The current query builder.
      */
     public function whereNull($column)
     {
@@ -251,7 +251,7 @@ class SelectBase extends Base
      *     ->whereNotNull('created_at')
      * 
      * @param string                    $column
-     * @return self The current query builder.
+     * @return static The current query builder.
      */
     public function whereNotNull($column)
     {
@@ -264,7 +264,7 @@ class SelectBase extends Base
      *     ->orWhereNull('modified_at')
      * 
      * @param string                    $column
-     * @return self The current query builder.
+     * @return static The current query builder.
      */
     public function orWhereNull($column)
     {
@@ -277,7 +277,7 @@ class SelectBase extends Base
      *     ->orWhereNotNull('modified_at')
      * 
      * @param string                    $column
-     * @return self The current query builder.
+     * @return static The current query builder.
      */
     public function orWhereNotNull($column)
     {
@@ -295,7 +295,7 @@ class SelectBase extends Base
      *
      * @param int           $limit
      * @param int           $limit2
-     * @return self The current query builder.
+     * @return static The current query builder.
      */
     public function limit($limit, $limit2 = null)
     {
@@ -314,7 +314,7 @@ class SelectBase extends Base
      * Set the queries current offset
      * 
      * @param int               $offset
-     * @return self The current query builder.
+     * @return static The current query builder.
      */
     public function offset($offset)
     {
@@ -326,7 +326,7 @@ class SelectBase extends Base
      *
      * @param int        $page
      * @param int         $size
-     * @return self The current query builder.
+     * @return static The current query builder.
      */
     public function page($page, $size = 25)
     {
