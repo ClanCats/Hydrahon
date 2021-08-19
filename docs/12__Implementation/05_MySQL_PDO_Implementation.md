@@ -17,6 +17,17 @@ $h = new \ClanCats\Hydrahon\Builder('mysql', function($query, $queryString, $que
     {
         return $statement->fetchAll(\PDO::FETCH_ASSOC);
     }
+    // when the query is a instance of a insert return the last inserted id  
+    elseif($query instanceof \ClanCats\Hydrahon\Query\Sql\Insert)
+    {
+        return $connection->lastInsertId();
+    }
+    // when the query is not a instance of insert or fetchable then
+    // return the number os rows affected
+    else 
+    {
+        return $statement->rowCount();
+    }	
 });
 ```
 
