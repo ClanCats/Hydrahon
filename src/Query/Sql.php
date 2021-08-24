@@ -29,7 +29,8 @@ class Sql extends BaseQuery
      *
      *     $h->table('users')
      *
-     * @param string|array                              $fields
+     * @param string|array                              $table
+     * @param string                                    $alias
      * @return Table
      */
     public function table($table = null, ?string $alias = null): Table

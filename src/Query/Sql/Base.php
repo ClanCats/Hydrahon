@@ -16,15 +16,15 @@ class Base extends BaseQuery
 {
     /**
      * The database the query should be executed on
-     *
-     * @var string
+     * 
+     * @var string|null
      */
     protected $database = null;
 
     /**
      * The table the query should be executed on
-     *
-     * @var string
+     * 
+     * @var string|null
      */
     protected $table = null;
 
@@ -85,8 +85,8 @@ class Base extends BaseQuery
      *     // selecting table and database
      *     $h->table('db_mydatabase.posts')
      *
-     * @param string                   $table
-     * @return self
+     * @param string|\Closure                   $table
+     * @return static
      */
     public function table($table, ?string $alias = null): self
     {
@@ -128,14 +128,14 @@ class Base extends BaseQuery
             $table = [$alias => $subquery];
         }
 
-        // other wise normally try to split the table and database name
+        // otherwise normally try to split the table and database name
         elseif (is_string($table) && strpos($table, '.') !== false)
         {
             $selection = explode('.', $table);
 
             if (count($selection) !== 2)
             {
-                throw new Exception( 'Invalid argument given. You can only define one seperator.' );
+                throw new Exception( 'Invalid argument given. You can only define one separator.' );
             }
 
             [$database, $table] = $selection;
@@ -149,7 +149,7 @@ class Base extends BaseQuery
         }
         elseif(is_string($table) && (!is_null($alias)))
         {
-            $table = [$table => $alias];
+            $table = array($table => $alias);
         }
 
         // assing the result

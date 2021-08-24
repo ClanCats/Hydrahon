@@ -20,21 +20,21 @@ class SelectBase extends Base
     /**
      * The query where statements
      *
-     * @var array
+     * @var array<array>
      */
     protected $wheres = [];
 
     /**
      * the query offset
      *
-     * @var int
+     * @var int|null
      */
     protected $offset = null;
 
     /**
      * the query limit
      *
-     * @var int
+     * @var int|null
      */
     protected $limit = null;
 
@@ -67,7 +67,7 @@ class SelectBase extends Base
     /**
      * Will reset the current selects where conditions
      * 
-     * @return self The current query builder.
+     * @return static The current query builder.
      */
     public function resetWheres(): self
     {
@@ -78,7 +78,7 @@ class SelectBase extends Base
     /**
      * Will reset the current selects limit
      * 
-     * @return self The current query builder.
+     * @return static The current query builder.
      */
     public function resetLimit(): self
     {
@@ -89,7 +89,7 @@ class SelectBase extends Base
     /**
      * Will reset the current selects offset
      * 
-     * @return self The current query builder.
+     * @return static The current query builder.
      */
     public function resetOffset()
     {
@@ -104,12 +104,12 @@ class SelectBase extends Base
      *     ->where('age', '>', 18)
      *     ->where('name', 'in', array('charles', 'john', 'jeffry'))
      *
-     * @param string            $column The SQL column
-     * @param mixed             $param1 Operator or value depending if $param2 isset.
-     * @param mixed             $param2 The value if $param1 is an opartor.
-     * @param string            $type the where type ( and, or )
+     * @param string|array|\Closure     $column The SQL column or columns.
+     * @param mixed                     $param1 Operator or value depending if $param2 isset.
+     * @param mixed                     $param2 The value if $param1 is an opartor.
+     * @param string                    $type the where type ( and, or )
      *
-     * @return self The current query builder.
+     * @return static The current query builder.
      */
     public function where($column, $param1 = null, $param2 = null, string $type = 'and'): self
     {
@@ -160,7 +160,7 @@ class SelectBase extends Base
         // if the param2 is an array we filter it. Im no more sure why
         // but it's there since 4 years so i think i had a reason.
         // edit: Found it out, when param2 is an array we probably 
-        // have an "in" or "between" statement which has no need for dublicates.
+        // have an "in" or "between" statement which has no need for duplicates.
         if (is_array($param2)) 
         {
             $param2 = array_unique($param2);
@@ -179,7 +179,7 @@ class SelectBase extends Base
      * @param mixed        $param1
      * @param mixed        $param2
      *
-     * @return self The current query builder.
+     * @return static The current query builder.
      */
     public function orWhere($column, $param1 = null, $param2 = null): self
     {
@@ -195,7 +195,7 @@ class SelectBase extends Base
      * @param mixed        $param1
      * @param mixed        $param2
      *
-     * @return self The current query builder.
+     * @return static The current query builder.
      */
     public function andWhere($column, $param1 = null, $param2 = null): self
     {
@@ -209,7 +209,7 @@ class SelectBase extends Base
      * 
      * @param string                    $column
      * @param array                     $options
-     * @return self The current query builder.
+     * @return static The current query builder.
      */
     public function whereIn($column, array $options = []): self
     {
@@ -223,12 +223,32 @@ class SelectBase extends Base
     }
 
     /**
+     * Creates a where not in statement
+     * 
+     *     ->whereIn('id', [42, 38, 12])
+     * 
+     * @param string                    $column
+     * @param array                     $options
+     * @return static The current query builder.
+     */
+    public function whereNotIn($column, array $options = array())
+    {
+        // when the options are empty we skip
+        if (empty($options))
+        {
+            return $this;
+        }
+
+        return $this->where($column, 'not in', $options);
+    }
+
+    /**
      * Creates a where something is null statement
      * 
      *     ->whereNull('modified_at')
      * 
      * @param string                    $column
-     * @return self The current query builder.
+     * @return static The current query builder.
      */
     public function whereNull($column): self
     {
@@ -241,7 +261,7 @@ class SelectBase extends Base
      *     ->whereNotNull('created_at')
      * 
      * @param string                    $column
-     * @return self The current query builder.
+     * @return static The current query builder.
      */
     public function whereNotNull($column): self
     {
@@ -254,7 +274,7 @@ class SelectBase extends Base
      *     ->orWhereNull('modified_at')
      * 
      * @param string                    $column
-     * @return self The current query builder.
+     * @return static The current query builder.
      */
     public function orWhereNull($column): self
     {
@@ -267,7 +287,7 @@ class SelectBase extends Base
      *     ->orWhereNotNull('modified_at')
      * 
      * @param string                    $column
-     * @return self The current query builder.
+     * @return static The current query builder.
      */
     public function orNotNull($column): self
     {
@@ -285,7 +305,7 @@ class SelectBase extends Base
      *
      * @param int           $limit
      * @param int           $limit2
-     * @return self The current query builder.
+     * @return static The current query builder.
      */
     public function limit(?int $limit, ?int $limit2 = null): self
     {
@@ -304,7 +324,7 @@ class SelectBase extends Base
      * Set the queries current offset
      * 
      * @param int               $offset
-     * @return self The current query builder.
+     * @return static The current query builder.
      */
     public function offset(int $offset): self
     {
@@ -313,11 +333,11 @@ class SelectBase extends Base
     }
 
     /**
-     * Create an query limit based on a page and a page size
+     * Create a query limit based on a page and a page size
      *
      * @param int        $page
      * @param int         $size
-     * @return self The current query builder.
+     * @return static The current query builder.
      */
     public function page(int $page, int $size = 25): self
     {

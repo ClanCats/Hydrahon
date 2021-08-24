@@ -40,7 +40,7 @@ class Mysql implements TranslatorInterface
     /**
      * The current query attributes
      *
-     * @param array
+     * @var array
      */
     protected $attributes = [];
 
@@ -48,7 +48,7 @@ class Mysql implements TranslatorInterface
      * Translate the given query object and return the results as
      * argument array
      *
-     * @param ClanCats\Hydrahon\BaseQuery                 $query
+     * @param BaseQuery                 $query
      * @return array
      */
     public function translate(BaseQuery $query): array
@@ -133,7 +133,7 @@ class Mysql implements TranslatorInterface
     /**
      * Check if the given argument is an sql function
      *
-     * @param mixed                 $expression
+     * @param mixed                 $function
      * @return bool
      */
     protected function isFunction($function): bool
@@ -288,6 +288,18 @@ class Mysql implements TranslatorInterface
         }
 
         return $this->escapeIdentifier($string);
+    }
+
+    /**
+     * Function to escape identifier names (columns and tables)
+     * Doubles backticks, removes null bytes
+     * https://dev.mysql.com/doc/refman/8.0/en/identifiers.html
+     *
+     * @var string
+     */
+    public function escapeIdentifier($identifier)
+    {
+        return '`' . str_replace(array('`', "\0"), array('``',''), $identifier) . '`';
     }
 
     /**
@@ -762,7 +774,6 @@ class Mysql implements TranslatorInterface
     /**
      * Build the limit and offset part
      *
-     * @param Query         $query
      * @return string
      */
     protected function translateLimitWithOffset(): string
@@ -773,7 +784,6 @@ class Mysql implements TranslatorInterface
     /**
      * Build the limit and offset part
      *
-     * @param Query         $query
      * @return string
      */
     protected function translateLimit(): string

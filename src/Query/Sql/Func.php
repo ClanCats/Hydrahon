@@ -21,8 +21,8 @@ class Func
 
 	/**
 	 * The function arguments
-	 * 
-	 * @param array
+	 *
+	 * @var array<mixed>
 	 */
 	protected $arguments = [];
 	
@@ -30,14 +30,13 @@ class Func
 	 * The constructor that assigns our value
 	 *
 	 * @param string 		$name
-	 * @param ...
+	 * @param array...		$arguments
 	 * @return void
 	 */
 	public function __construct(...$arguments)
 	{
 		// throw an error when no arguments are given
-		if (empty($arguments))
-		{
+		if (empty($arguments)) {
 			throw new Exception("Cannot create function expression without arguments.");
 		}
 
@@ -61,7 +60,7 @@ class Func
 	/**
 	 * Return the functions arguments
 	 * 
-	 * @return string 
+	 * @return array 
 	 */
 	public function arguments(): array
 	{

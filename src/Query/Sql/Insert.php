@@ -34,7 +34,7 @@ class Insert extends Base
      *     ->ignore(true)
      * 
      * @param bool                  $ignore
-     * @return self The current query builder.
+     * @return static The current query builder.
      */
     public function ignore(bool $ignore = true): self
     {
@@ -54,7 +54,7 @@ class Insert extends Base
      *     ])
      * 
      * @param array                     $values The data you want to insert.
-     * @return self The current query builder.
+     * @return static The current query builder.
      */
     public function values(array $values = []): self
     {
@@ -64,7 +64,7 @@ class Insert extends Base
             return $this;
         }
         
-        // check if the the passed array is a collection.
+        // check if the passed array is a collection.
         // because we want to be able to insert bulk values.
         if (!is_array(reset( $values )))
         {
@@ -89,7 +89,7 @@ class Insert extends Base
     /**
      * Resets the current insert values of the query.
      *
-     * @return self The current query builder.
+     * @return static The current query builder.
      */
     public function resetValues(): self
     {
