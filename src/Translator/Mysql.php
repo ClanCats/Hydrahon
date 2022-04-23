@@ -164,6 +164,8 @@ class Mysql implements TranslatorInterface
     {
         if (!$this->isExpression($value)) 
         {
+            if ($value instanceof Func)
+                return $this->escapeFunction($value);
             $this->addParameter($value); return '?';
         }
 

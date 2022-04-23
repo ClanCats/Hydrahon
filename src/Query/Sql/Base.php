@@ -10,24 +10,24 @@
 use ClanCats\Hydrahon\BaseQuery;
 
 class Base extends BaseQuery
-{ 
+{
     /**
      * The database the query should be executed on
-     * 
+     *
      * @var string|null
      */
     protected $database = null;
 
     /**
      * The table the query should be executed on
-     * 
+     *
      * @var string|null
      */
     protected $table = null;
 
     /**
      * Inherit property values from parent query
-     * 
+     *
      * @param BaseQuery             $parent
      * @return void
      */
@@ -42,13 +42,24 @@ class Base extends BaseQuery
             $this->table = $parent->table;
         }
     }
-    
+
+    /**
+     * Returns the name of the builder's SQL table
+     * @return string
+     */
+    public function getTable()
+    {
+        if(isset($this->database))
+            return "$this->database.$this->table";
+        return "$this->table";
+    }
+
     /**
      * Create a new select query builder
-     *      
+     *
      *     // selecting a table
      *     $h->table('users')
-     *  
+     *
      *     // selecting table and database
      *     $h->table('db_mydatabase.posts')
      *
@@ -61,7 +72,7 @@ class Base extends BaseQuery
 
         // Check if the table is an object, this means
         // we have an subselect inside the table
-        if (is_object($table) && ($table instanceof \Closure)) 
+        if (is_object($table) && ($table instanceof \Closure))
         {
             // we have to check if an alias isset 
             // otherwise throw an exception to prevent the 
@@ -72,11 +83,11 @@ class Base extends BaseQuery
             }
 
             $table = array($alias => $table);
-        } 
+        }
 
         // Check if the $table is an array and the value is an closure
         // that we can pass a new query object as subquery 
-        if (is_array($table) && is_object(reset($table)) && (reset($table) instanceof \Closure)) 
+        if (is_array($table) && is_object(reset($table)) && (reset($table) instanceof \Closure))
         {
             $alias = key($table);
             $table = reset($table);
@@ -92,7 +103,7 @@ class Base extends BaseQuery
             // we set the alias as key. This might cause some confusion
             // but only this way we can keep the normal ['table' => 'alias'] syntax
             $table = array($alias => $subquery);
-        } 
+        }
 
         // otherwise normally try to split the table and database name
         elseif (is_string($table) && strpos($table, '.') !== false)
