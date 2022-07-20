@@ -285,6 +285,54 @@ class SelectBase extends Base
     }
 
     /**
+     * Create a where that behaves like a "sql between" operator.
+     *
+     *     ->whereBetween('something', [1,10])
+     *
+     * @param $column
+     * @param array $options
+     * @return SelectBase
+     * @throws Exception
+     */
+    public function whereBetween($column, array $options, $type = 'and')
+    {
+        if (count($options) != 2) {
+            throw new Exception('There must be 2 options in a "between" operation');
+        }
+
+        $options = array_values($options);
+        sort($options);
+
+        return $this
+            ->where($column, '>=', $options[0], $type)
+            ->where($column, '<=', $options[1], $type);
+    }
+
+    /**
+     * Create a where that behaves like a "not between" operator.
+     *
+     *     ->whereNotBetween('something', [1,10])
+     *
+     * @param $column
+     * @param array $options
+     * @return SelectBase
+     * @throws Exception
+     */
+    public function whereNotBetween($column, array $options, $type = 'and')
+    {
+        if (count($options) != 2) {
+            throw new Exception('There must be 2 options in a "between" operation');
+        }
+
+        $options = array_values($options);
+        sort($options);
+
+        return $this
+            ->where($column, '<', $options[0], $type)
+            ->where($column, '>', $options[1], $type);
+    }
+
+    /**
      * Set the query limit
      * 
      *     // limit(<limit>)
