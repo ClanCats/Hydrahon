@@ -52,7 +52,7 @@ $jeffry = $people->select()->where('name', 'jeffry')->one(); // [id: 2, name: 'j
 
 ### First & Last
 
-Selects the first/last result ordered by the given key (default is `id`).
+Selects the first/last result sorted in ascending(`asc`)/descending(`desc`) order by the given key (default is `id`).
 
 ```php
 $firstPerson = $people->select()->first(); 
