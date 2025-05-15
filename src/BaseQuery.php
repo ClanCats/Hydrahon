@@ -41,7 +41,7 @@ class BaseQuery
      * @param BaseQuery             $parent
      * @return void
      */
-    final public function __construct(BaseQuery $parent = null)
+    final public function __construct(?BaseQuery $parent = null)
     {
         if (!is_null($parent))
         {
