@@ -540,7 +540,18 @@ class Mysql implements TranslatorInterface
             if (is_array($where[3])) 
             {
                 $where[3] = '(' . $this->parameterize($where[3]) . ')';
-            } else {
+            }
+            // when we have an entire query as where value, we 
+            // need to translate it and add its parameters to ours
+            elseif (is_object($where[3]) && ($where[3] instanceof BaseQuery))
+            {
+                $translator = new static;
+                list($sql, $params) = $translator->translate($where[3]);
+                foreach($params as $param) $this->addParameter($param);
+                $where[3] = '(' . $sql . ')';
+            }
+            else
+            {
                 $where[3] = $this->param($where[3]);
             }
 
